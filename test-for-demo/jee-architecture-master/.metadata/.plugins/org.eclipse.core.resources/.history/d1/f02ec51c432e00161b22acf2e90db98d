@@ -1,0 +1,107 @@
+package co.com.techandsolve.creditcard.business;
+
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+@RunWith(MockitoJUnitRunner.class)
+public class BillBusinness {
+	
+	@Mock
+	private QueueConnectionFactory queueConnectionFactory;
+	
+	@Mock 
+	private Queue queue;
+	
+	@Mock 
+	private Connection connection;
+	
+	@Mock
+	private Session session;
+	
+	@Mock
+	private MessageProducer messageProducer;
+	
+	private TextMessage textMessage;
+	
+	@InjectMocks
+	private BillBusinnes billBusinnes;
+	
+	@Test 
+	public void debeConectarse() throws JMSException{
+		
+		Mockito.when(queueConnectionFactory.createConnection())
+			.thenReturn(connection);
+		
+		billBusinnes.connect();
+		
+		
+		Mockito.verify(queueConnectionFactory).createConnection();
+	}
+	
+	@Test 
+	public void debeCrearLaSession() throws JMSException{
+		
+		Mockito.when(connection.createSession(false, Session.AUTO_ACKNOWLEDGE))
+			.thenReturn(session);
+		
+		billBusinnes.createSession();
+		
+		Mockito.verify(connection).createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+	}
+	
+	@Test 
+	public void debeCrearProducer() throws JMSException{
+		
+		Mockito.when(connection.createSession(false, Session.AUTO_ACKNOWLEDGE))
+		.thenReturn(session);
+		
+		Mockito.when(session.createProducer(queue))
+		.thenReturn(messageProducer);
+		
+		billBusinnes.createProducer(session);
+		
+		Mockito.verify(session).createProducer(queue);
+
+	}
+	
+	@Test 
+	public void debeEnviarUnMensaje() throws JMSException{
+		
+		Mockito.when(queueConnectionFactory.createConnection())
+		.thenReturn(connection);
+		
+		Mockito.when(connection.createSession(false, Session.AUTO_ACKNOWLEDGE))
+		.thenReturn(session);
+		
+		Mockito.when(session.createProducer(queue))
+		.thenReturn(messageProducer);
+		
+		Mockito.when(session.createTextMessage())
+		.thenReturn(textMessage);		
+		
+		billBusinnes.connect();
+		billBusinnes.createSession();
+		billBusinnes.createProducer();
+		billBusinnes.setMessage("Hola mundo");
+		
+		Mockito.verify(session).createTextMessage();
+		Mockito.verify(messageProducer).send(textMessage);
+
+	}
+	
+	
+
+}

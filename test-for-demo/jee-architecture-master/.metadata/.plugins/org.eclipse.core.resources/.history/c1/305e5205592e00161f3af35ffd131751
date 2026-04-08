@@ -1,0 +1,12 @@
+var creditcardApp = angular.module("bill",["ngRoute"]).
+
+config(function($routeProvider){
+	$routeProvider
+	.when("/save", {
+		controller:'saveController',
+		templateUrl:'bill/save.html'
+	})
+	.otherwise({redirectTo:'/save'});
+});
+
+

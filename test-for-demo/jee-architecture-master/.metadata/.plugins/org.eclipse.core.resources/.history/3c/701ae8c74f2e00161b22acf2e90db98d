@@ -1,0 +1,66 @@
+package co.com.techandsolve.creditcard.entities;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+@Entity
+@Table(name="bill")
+public class Bill {
+	
+	@Id
+	private int id;
+	
+	@NotNull(message="label requerido")
+	private String label;
+	
+	@NotNull(message="description requerido")
+	private String description;
+	
+	@Column(name="mount")
+	@NotNull(message="monto requerida")
+	private double mount;
+
+
+	public double getMount() {
+		return mount;
+	}
+
+
+	public void setMount(double mount) {
+		this.mount = mount;
+	}
+
+
+	public String getDescription() {
+		return description;
+	}
+
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+
+	public String getLabel() {
+		return label;
+	}
+
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+
+	public int getId() {
+		return id;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+}

@@ -1,0 +1,46 @@
+package co.com.techandsolve.testatdd;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+public class GuardarFacturaFeature {
+
+WebDriver webDriver;
+	
+	@Before("@guardar")
+	public void setup(){
+		Utilidadesbd.ejecutarSentencia("DELETE FROM bill WHERE label = 'Factura de credito (test)';");
+	}
+	
+	@After("@guardar")
+	public void after(){
+		Utilidadesbd.ejecutarSentencia("DELETE FROM bill WHERE label = 'Factura de credito (test)';");
+		webDriver.close();
+	}
+	
+
+	@Given("^Dado que el usuario ingresa a la aplicacion para guardar una factura$")
+	public void dado_que_el_usuario_ingresa_a_la_aplicacion_para_guardar_una_factura() throws Throwable {
+		webDriver = new FirefoxDriver();
+		webDriver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		webDriver.get("http://localhost:8080/CreditCardWeb/#/bill");
+	}
+	
+	@When("^El usuario da click en el boton guardar$")
+	public void el_usuario_da_click_en_el_boton_guardar() throws Throwable {
+	  
+	}
+	
+	@Then("^debe registrar la factura con el nombre \"([^\"]*)\", con la descripcion \"([^\"]*)\" y con el monto de (\\d+)$")
+	public void debe_registrar_la_factura_con_el_nombre_con_la_descripcion_y_con_el_monto_de(String arg1, String arg2, int arg3) throws Throwable {
+	   
+	}
+}

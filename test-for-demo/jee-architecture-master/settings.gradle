@@ -1,0 +1,4 @@
+include ':CreditCardEJB'
+include ':CreditCardWeb'
+include ':CreditCardEAR'
+rootProject.name='CreditCard'

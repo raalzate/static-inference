@@ -1,0 +1,10 @@
+<h2>GUARDAR FACTURA</h2>
+<div ng-controller="saveBillController">
+	<h4>Factura</h4>
+	<input type="text" name="label" required  placeholder="Label" ng-model="label"> <br />
+	<input type="text" name="description" required  placeholder="Descripción" ng-model="description"> <br />
+	<input type="number" name="mount" required placeholder="Monto" ng-model="mount"> <br />
+	<br />
+	<button name="save" ng-click="onClickSaveBill()">Guardar</button>
+	
+</div>

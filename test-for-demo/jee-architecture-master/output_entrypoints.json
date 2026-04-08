@@ -1,0 +1,55 @@
+{
+  "endpoints" : [ {
+    "id" : "BillService.register",
+    "path" : "/bill/register",
+    "method" : "PUT",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : null,
+    "response_schema" : "Response",
+    "component_id" : "co.com.techandsolve.creditcard.services.BillService"
+  }, {
+    "id" : "CardService.cardDelete",
+    "path" : "/creditcard/delete/id",
+    "method" : "DELETE",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "id",
+      "in" : "path",
+      "type" : "int",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : null,
+    "component_id" : "co.com.techandsolve.creditcard.services.CardService"
+  }, {
+    "id" : "CardService.cardList",
+    "path" : "/creditcard/list/cedula",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "cedula",
+      "in" : "path",
+      "type" : "String",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "List",
+    "component_id" : "co.com.techandsolve.creditcard.services.CardService"
+  }, {
+    "id" : "CardService.cardSave",
+    "path" : "/creditcard/save",
+    "method" : "PUT",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : null,
+    "response_schema" : null,
+    "component_id" : "co.com.techandsolve.creditcard.services.CardService"
+  } ],
+  "schemas" : {
+    "List" : {
+      "type" : "object",
+      "properties" : { }
+    }
+  }
+}

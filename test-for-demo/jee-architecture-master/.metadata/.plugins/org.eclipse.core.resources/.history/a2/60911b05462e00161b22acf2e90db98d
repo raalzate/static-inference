@@ -1,0 +1,55 @@
+package co.com.techandsolve.services;
+
+
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.Session;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import co.com.techandsolve.creditcard.business.BillBusiness;
+import co.com.techandsolve.creditcard.services.BillService;
+import cucumber.api.java.Before;
+
+@RunWith(MockitoJUnitRunner.class)
+public class BillServiceTest {
+	
+	@Mock BillBusiness billBusinnes;
+	@Mock Connection connection;
+	@Mock Session session;
+
+	
+	@InjectMocks BillService billService;
+	
+	private final String TEXT_MESSAGE = "Hola mundo";
+	
+	@Before
+	public void setUp(){
+		
+	}
+	
+	@Test
+	public void debeRetornarValid() throws JMSException{
+		
+		//Mockito.when(billBusinnes.createSession()).thenReturn(session);
+		
+		
+		String result = billService.register(TEXT_MESSAGE);
+
+		//session = Mockito.verify(billBusinnes).createSession();
+		
+		Mockito.verify(billBusinnes).connect();
+		//Mockito.verify(billBusinnes).sendMessage(session, TEXT_MESSAGE);
+		
+		Assert.assertEquals("valid", result);
+
+		
+	}
+
+}

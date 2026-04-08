@@ -1,0 +1,5 @@
+package co.com.techandsolve.creditcard.entities;
+
+public class Bill {
+
+}

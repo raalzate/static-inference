@@ -1,0 +1,15 @@
+package co.com.techandsolve.creditcard.bean;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import co.com.techandsolve.creditcard.entities.Bill;
+
+public class BillBean {
+	
+	@PersistenceContext
+	private EntityManager entityManager;
+	
+	public void create(Bill bill) {
+	}
+}

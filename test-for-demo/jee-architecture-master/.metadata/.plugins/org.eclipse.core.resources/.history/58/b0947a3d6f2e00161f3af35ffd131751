@@ -1,0 +1,15 @@
+package co.com.techandsolve.testatdd;
+
+import org.openqa.selenium.WebDriver;
+
+import cucumber.api.java.Before;
+
+public class GuardarFacturaFeature {
+
+WebDriver webDriver;
+	
+	@Before("@guardar")
+	public void setup(){
+		Utilidadesbd.ejecutarSentencia("DELETE FROM bill WHERE label = 'Factura de credito (test)';");
+	}
+}

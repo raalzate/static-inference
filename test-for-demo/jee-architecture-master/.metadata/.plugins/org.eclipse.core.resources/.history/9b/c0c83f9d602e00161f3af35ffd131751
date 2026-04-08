@@ -1,0 +1,10 @@
+package co.com.techandsolve.creditcard.exception;
+
+public class BillMDBException extends Exception{
+
+	private static final long serialVersionUID = 1L;
+
+	public BillMDBException(String msn){
+		super(msn);
+	}
+}

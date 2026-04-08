@@ -1,0 +1,11 @@
+var billModule = angular.module("bill",["ngRoute"]).
+
+config(function($routeProvider){
+	$routeProvider
+	.when("/bill", {
+		controller:'saveController',
+		templateUrl:'bill/save.html'
+	});
+});
+
+

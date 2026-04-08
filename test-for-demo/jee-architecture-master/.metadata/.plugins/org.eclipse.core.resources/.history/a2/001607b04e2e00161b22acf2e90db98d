@@ -1,0 +1,26 @@
+package co.com.techandsolve.creditcard.entities;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
+@Entity
+@Table(name="bill")
+public class Bill {
+	@Id
+	private int id;
+	
+	@NotNull(message="label requerido")
+	private String label;
+	
+	@NotNull(message="description requerido")
+	private String description;
+	
+	@Column(name="mount")
+	@NotNull(message="monto requerida")
+	private double mount;
+	
+}

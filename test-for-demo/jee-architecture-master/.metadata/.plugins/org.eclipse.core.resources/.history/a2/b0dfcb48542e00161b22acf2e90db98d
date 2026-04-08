@@ -1,0 +1,35 @@
+package co.com.techandsolve.creditcard.bean;
+
+import javax.persistence.EntityManager;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import co.com.techandsolve.creditcard.entities.Bill;
+
+public class BillBeanTest {
+
+	@Mock
+	EntityManager entityManager;
+	
+	@InjectMocks
+	BillBean billBean;
+
+	private Bill bill;
+	
+	@Before
+	public void setUp(){
+	
+		bill = new Bill("Label", "Description", 10000);
+	}
+	
+	@Test
+	public void verificarPersistencia(){
+		
+		Mockito.verify(entityManager).persist(bill);
+	}
+	
+}

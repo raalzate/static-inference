@@ -1,0 +1,29 @@
+package co.com.techandsolve.testatdd;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+public class GuardarFacturaFeature {
+
+WebDriver webDriver;
+	
+	@Before("@guardar")
+	public void setup(){
+		Utilidadesbd.ejecutarSentencia("DELETE FROM bill WHERE label = 'Factura de credito (test)';");
+	}
+	
+	@After("@guardar")
+	public void after(){
+		Utilidadesbd.ejecutarSentencia("DELETE FROM bill WHERE label = 'Factura de credito (test)';");
+		webDriver.close();
+	}
+
+}

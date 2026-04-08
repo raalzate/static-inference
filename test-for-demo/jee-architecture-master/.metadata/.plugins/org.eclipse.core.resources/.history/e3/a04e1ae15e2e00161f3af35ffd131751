@@ -1,0 +1,30 @@
+package co.com.techandsolve.creditcard.mdb;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import co.com.techandsolve.creditcard.bean.BillBean;
+import co.com.techandsolve.creditcard.entities.Bill;
+
+@RunWith(MockitoJUnitRunner.class)
+public class BillMDBTest {
+	
+	@Mock
+	BillBean billBean;
+	
+	@InjectMocks
+	BillMDB billMDB;
+	
+	@Test
+	public void debeGuardarUnaFactura(){
+		Bill bill = new Bill("label", "description", 1000);
+		
+		billMDB.save(bill);
+		
+		Mockito.verify(billBean).create(bill);
+	}
+}

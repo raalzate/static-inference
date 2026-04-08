@@ -1,0 +1,46 @@
+package co.com.techandsolve.services;
+
+
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.Session;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import co.com.techandsolve.creditcard.business.BillBusiness;
+import co.com.techandsolve.creditcard.entities.Bill;
+import co.com.techandsolve.creditcard.services.BillService;
+
+@RunWith(MockitoJUnitRunner.class)
+public class BillServiceTest {
+	
+	@Mock BillBusiness billBusinnes;
+	@Mock Connection connection;
+	@Mock Session session;
+
+	
+	@InjectMocks BillService billService;
+	
+	Bill bill;
+	
+	@Before
+	public void setUp(){
+		bill = new Bill("Cuenta de cobro", "valor por prestaciones", 500000);
+	}
+	
+	@Test
+	public void debeRetornarValid() throws JMSException{
+		
+		billService.register(JSON_MESSAGE);
+
+		Mockito.verify(billBusinnes).sendMessage(TEXT_MESSAGE);
+
+	}
+
+}

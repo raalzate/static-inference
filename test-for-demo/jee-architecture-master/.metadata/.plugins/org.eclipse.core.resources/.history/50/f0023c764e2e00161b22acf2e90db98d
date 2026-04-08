@@ -1,0 +1,8 @@
+package co.com.techandsolve.creditcard.entities;
+
+import javax.persistence.Entity;
+
+@Entity
+public class Bill {
+
+}

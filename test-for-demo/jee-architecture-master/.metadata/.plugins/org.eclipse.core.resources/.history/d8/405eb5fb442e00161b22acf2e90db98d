@@ -1,0 +1,39 @@
+package co.com.techandsolve.services;
+
+
+import javax.jms.Connection;
+import javax.jms.Session;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import co.com.techandsolve.creditcard.business.BillBusinnes;
+import co.com.techandsolve.creditcard.services.BillService;
+
+@RunWith(MockitoJUnitRunner.class)
+public class BillServiceTest {
+	
+	@Mock BillBusinnes billBusinnes;
+	@Mock Connection connection;
+	@Mock Session session;
+
+	
+	@InjectMocks BillService billService;
+	
+	@Test
+	public void debeRetornarValid(){
+		
+		Mockito.when(billBusinnes.createSession()).thenReturn(session);
+		
+		String result = billService.register("123");
+		Assert.assertEquals("valid", result);
+		
+		
+	}
+
+}

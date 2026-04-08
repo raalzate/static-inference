@@ -1,0 +1,26 @@
+package co.com.techandsolve.creditcard.services;
+
+
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import co.com.techandsolve.creditcard.business.BillBusiness;
+
+@Path("bill")
+public class BillService {
+	
+	@Inject BillBusiness billBusiness;
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("register/{message}")
+	public void register(@PathParam("message") String message) throws JMSException {
+		
+		billBusiness.sendMessage(message);
+
+	}
+}

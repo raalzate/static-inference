@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  myDB:
+    image: postgres:15.3
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_DB: DBprueba
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: springboot_app
+    depends_on:
+      - myDB
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://myDB:5432/DBprueba
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:

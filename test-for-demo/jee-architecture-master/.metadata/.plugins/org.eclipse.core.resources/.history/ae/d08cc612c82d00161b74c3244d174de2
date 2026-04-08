@@ -1,0 +1,45 @@
+package co.com.techandsolve.creditcard.business;
+
+import javax.annotation.Resource;
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
+public class BillBusinnes {
+
+	@Resource(mappedName="BillFactory")
+	private QueueConnectionFactory queueConnectionFactory;
+	
+	@Resource(mappedName="jms/queue/BillQueue")
+	private Queue queue;
+	
+	private Connection connection;
+	private MessageProducer messageProducer;
+
+	public void connect() throws JMSException {
+		connection = queueConnectionFactory.createConnection();
+		
+		
+	}
+	
+	public Session createSession() throws JMSException{
+		return connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+	}
+	
+	 public void createProducer() throws JMSException{
+			messageProducer = createSession().createProducer(queue);
+	 }
+	
+	public void setMessage(String message){
+//		TextMessage textMessage = session.createTextMessage();
+//		String message = "12345 12.5 50";
+//		textMessage.setText(message);
+//		messageProducer.send(textMessage);
+	
+	}
+	
+}

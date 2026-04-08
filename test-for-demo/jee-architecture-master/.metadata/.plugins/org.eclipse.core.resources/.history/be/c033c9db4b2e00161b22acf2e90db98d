@@ -1,0 +1,53 @@
+package co.com.techandsolve.creditcard.business;
+
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+@RunWith(MockitoJUnitRunner.class)
+public class BillBusinessTest {
+	
+	@Mock QueueConnectionFactory queueConnectionFactory;
+	@Mock Queue queue;
+	@Mock Connection connection;
+	@Mock Session session;
+	@Mock MessageProducer messageProducer;
+	@Mock TextMessage textMessage;
+	
+	@InjectMocks BillBusiness billBusinnes;
+	
+
+	
+	@Test 
+	public void debeEnviarUnMensaje() throws JMSException{
+		
+		Mockito.when(queueConnectionFactory.createConnection())
+		.thenReturn(connection);
+		
+		Mockito.when(connection.createSession(false, Session.AUTO_ACKNOWLEDGE))
+		.thenReturn(session);
+		
+		Mockito.when(session.createTextMessage())
+		.thenReturn(textMessage);
+
+		billBusinnes.sendMessage("Hola mundo");
+		
+		Mockito.verify(session).createTextMessage();
+		Mockito.verify(messageProducer).send(textMessage);
+
+	}
+	
+	
+
+}

@@ -1,0 +1,139 @@
+name: CI - Build, Test & Code Analysis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─── Java (Maven) ──────────────────────────────────────────────
+  java-build-and-test:
+    name: Java - Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build & run tests
+        run: mvn -B clean verify
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-test-results
+          path: target/surefire-reports/
+
+  java-code-analysis:
+    name: Java - Code Analysis
+    runs-on: ubuntu-latest
+    needs: java-build-and-test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run SpotBugs analysis
+        run: |
+          mvn -B clean compile
+          mvn -B com.github.spotbugs:spotbugs-maven-plugin:4.8.3.1:check || true
+
+      - name: Run Checkstyle
+        run: |
+          mvn -B checkstyle:check \
+            -Dcheckstyle.config.location=sun_checks.xml \
+            -Dcheckstyle.violationSeverity=warning || true
+
+      - name: Upload analysis reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-analysis-reports
+          path: |
+            target/spotbugsXml.xml
+            target/checkstyle-result.xml
+
+  # ─── .NET (C#) ─────────────────────────────────────────────────
+  dotnet-build-and-test:
+    name: .NET - Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj
+
+      - name: Build
+        run: dotnet build src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj --no-restore -c Release
+
+      - name: Restore test dependencies
+        run: dotnet restore src/test/dotnet/DotNetAnalyzer.Tests/DotNetAnalyzer.Tests.csproj
+
+      - name: Run tests
+        run: |
+          dotnet test src/test/dotnet/DotNetAnalyzer.Tests/DotNetAnalyzer.Tests.csproj \
+            --no-restore \
+            --logger "trx;LogFileName=test-results.trx" \
+            --results-directory ./dotnet-test-results
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-test-results
+          path: dotnet-test-results/
+
+  dotnet-code-analysis:
+    name: .NET - Code Analysis
+    runs-on: ubuntu-latest
+    needs: dotnet-build-and-test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install analysis tools
+        run: |
+          dotnet tool install --global dotnet-format || true
+          dotnet tool install --global security-scan || true
+
+      - name: Run dotnet format check
+        run: |
+          dotnet format src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj \
+            --verify-no-changes --verbosity diagnostic || true
+
+      - name: Run security scan
+        run: |
+          security-scan src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj \
+            --export=dotnet-security-report.sarif || true
+
+      - name: Upload analysis reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-analysis-reports
+          path: dotnet-security-report.sarif

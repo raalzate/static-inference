@@ -1,0 +1,27 @@
+package co.com.techandsolve.creditcard.services;
+
+
+import javax.inject.Inject;
+import javax.jms.JMSException;
+import javax.jms.Session;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import co.com.techandsolve.creditcard.business.BillBusiness;
+
+public class BillService {
+	
+	@Inject BillBusiness billBusiness;
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("register/{number}")
+	public String register(@PathParam("number") String number) throws JMSException {
+		billBusiness.connect();
+		Session session = billBusiness.createSession();
+		return "valid";
+	}
+}

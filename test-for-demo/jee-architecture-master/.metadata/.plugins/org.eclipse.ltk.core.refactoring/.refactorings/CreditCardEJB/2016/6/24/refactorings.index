@@ -1,0 +1,11 @@
+1465478422745	Rename type 'BillBusinness'
+1465478763074	Rename type 'BillBusinnessTest'
+1465478788921	Rename type 'BillBusinnes'
+1465482631996	Encapsulate field 'mount'
+1465482644990	Encapsulate field 'description'
+1465482658994	Encapsulate field 'label'
+1465482672001	Encapsulate field 'id'
+1465490317140	Delete element
+1465564106887	Rename type 'CardBusinnes'
+1465564128487	Rename type 'BillMDB'
+1465564147198	Rename type 'BillMDBTest'

@@ -1,0 +1,14 @@
+<html ng-app="creditcard">
+<head>
+	<script src="js/ext/moment.js"></script>
+	<script src="js/ext/angular.min.js"></script>
+	<script src="js/ext/angular-route.js"></script>
+	
+	<script src="js/modules/bill.js"></script>
+	<script src="js/services/billService.js"></script>
+	<script src="js/controllers/bill/saveController.js"></script>
+</head>
+<body>
+	<div ng-view></div>
+</body>
+</html>

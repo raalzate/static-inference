@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "static-inference": {
+      "type": "stdio",
+      "command": "java",
+      "args": ["-jar", "/absolute/path/to/java-dependency-extractor.jar", "--mcp"]
+    }
+  }
+}

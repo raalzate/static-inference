@@ -1,0 +1,27 @@
+package co.com.techandsolve.services;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import co.com.techandsolve.creditcard.services.BillService;
+
+@RunWith(MockitoJUnitRunner.class)
+public class BillServiceTest {
+	
+	@InjectMocks
+	private BillService billService;
+	
+	@Test
+	public void debeRetornarValid(){
+		
+		//Mockito.when().thenReturn();
+		
+		billService.register("123");
+		
+	}
+
+}

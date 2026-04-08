@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Class-Path: antlr-2.7.6.jar gson-2.3.1.jar guava-18.0.jar catch-except
+ ion-1.2.0.jar retrofit-1.9.0.jar commons-beanutils-1.9.2.jar commons-
+ collections-3.2.1.jar commons-logging-1.1.1.jar dom4j-1.6.1.jar activ
+ ation-1.1.1.jar cdi-api-1.0-SP4.jar javax.inject-1.jar jsr181-api-1.0
+ -MR1.jar mail-1.4.4.jar jta-1.1.jar validation-api-1.0.0.GA.jar junit
+ -4.11.jar quickcheck-src-generator-0.6.jar quickcheck-0.6.jar fest-as
+ sert-core-2.0M10.jar fest-util-1.2.5.jar hamcrest-core-1.3.jar hibern
+ ate-jpa-2.0-api-1.0.1.Final.jar hibernate-commons-annotations-3.1.0.G
+ A.jar hibernate-core-3.3.0.SP1.jar hibernate-validator-3.1.0.GA.jar j
+ avassist-3.17.1-GA.jar jboss-logging-3.0.0.CR1.jar jboss-annotations-
+ api_1.1_spec-1.0.1.Final.jar jboss-ejb-api_3.1_spec-1.0.2.Final.jar j
+ boss-el-api_2.2_spec-1.0.4.Final.jar jboss-jad-api_1.2_spec-1.0.1.Fin
+ al.jar jboss-jsf-api_2.1_spec-2.0.9.Final.jar jboss-interceptors-api_
+ 1.1_spec-1.0.1.Final.jar jboss-jms-api_1.1_spec-1.0.1.Final.jar jboss
+ -j2eemgmt-api_1.1_spec-1.0.1.Final.jar jboss-connector-api_1.6_spec-1
+ .0.1.Final.jar jboss-rmi-api_1.0_spec-1.0.4.Final.jar jboss-jaspi-api
+ _1.0_spec-1.0.1.Final.jar jboss-jacc-api_1.4_spec-1.0.2.Final.jar jbo
+ ss-jsp-api_2.2_spec-1.0.1.Final.jar jboss-jstl-api_1.2_spec-1.0.6.Fin
+ al.jar jboss-servlet-api_3.0_spec-1.0.2.Final.jar jboss-transaction-a
+ pi_1.1_spec-1.0.1.Final.jar jboss-jaxrs-api_1.1_spec-1.0.1.Final.jar 
+ jboss-jaxb-api_2.2_spec-1.0.4.Final.jar jboss-jaxr-api_1.0_spec-1.0.2
+ .Final.jar jboss-jaxrpc-api_1.1_spec-1.0.1.Final.jar jboss-saaj-api_1
+ .3_spec-1.0.2.Final.jar jboss-jaxws-api_2.2_spec-2.0.1.Final.jar mock
+ ito-all-1.9.5.jar mockito-core-1.9.5.jar objenesis-1.2.jar powermock-
+ api-mockito-1.5.jar powermock-api-support-1.5.jar powermock-core-1.5.
+ jar powermock-module-junit4-common-1.5.jar powermock-module-junit4-1.
+ 5.jar powermock-reflect-1.5.jar slf4j-api-1.4.2.jar serializer-2.7.1.
+ jar xalan-2.7.1.jar xml-apis-1.3.04.jar
+

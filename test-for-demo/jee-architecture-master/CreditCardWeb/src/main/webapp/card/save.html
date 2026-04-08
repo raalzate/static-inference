@@ -1,0 +1,12 @@
+<h2>GUARDAR CARDS</h2>
+<div ng-controller="saveCardController">
+	<h4>Cliente</h4>
+    <h5>{{nameClient}} (CC: {{cedula}})</h5>
+	<input type="text" name="label" required  placeholder="Label" ng-model="label"> <br />
+	<input type="number" name="mount" required placeholder="Monto" ng-model="mount"> <br />
+	<input type="date" step="1" min="2016-01-01" max="2016-12-01" name="dateCut" required placeholder="Fecha de corte" ng-model="dateCut"> <br />
+	<br />
+	<button name="save" ng-click="onClickSaveCard()">Guardar</button>
+	<button name="return" ng-click="onPressBack()">Regresar</button>
+	
+</div>

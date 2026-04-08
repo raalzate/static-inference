@@ -1,0 +1,31 @@
+<h2>LISTAR CARD</h2>
+<div ng-controller="listCardController">
+	<input type="text" name="cedula" ng-model="cedula">
+
+	<button name="buscar" ng-click="onClickSearch()">Buscar</button>
+	<button name="new" ng-click="onClickNew()" id="btnNew">Nuevo</button>
+	<span>{{result}}</span>
+	<table frame="border" style="border:solid 1px;margin:10px 0 10px 0" id="cardsTable">
+		<thead>
+			<tr>
+				<th>Label</th>
+				<th>Moto</th>
+				<th>Cédula</th>
+				<th>Bono</th>
+				<th>Fecha de Corte</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody ng-repeat="card in listCards">
+			<tr name="card" id="tr-{{card.id}}">
+				<td>{{card.label}}</td>
+				<td>{{card.mount | currency:"$"}}</td>
+				<td>{{card.client.cedula}}</td>
+				<td>{{card.bonus | currency:"$"}}</td>
+				<td>{{card.dateCut | limitTo : 10 : 0}}</td>
+				<td><button name="eliminar" ng-click="onClickDelete(card.id)">Eliminar</button></td>
+			</tr>
+		</tbody>
+	</table>
+	<button name="new" ng-click="onClickNewBill()" id="btnNew">Crear Factura</button>
+</div>

@@ -1,0 +1,37 @@
+apply plugin: "sonar-runner"
+
+repositories {
+	mavenCentral()
+}
+
+if(System.properties['sonarServer'] == "Tech"){
+	println "Usando el servidor sonar de Tech."
+	sonarRunner {
+		sonarProperties {
+		property "sonar.host.url", "http://192.168.1.33:9000/"
+		property "sonar.jdbc.url", "jdbc:mysql://192.168.1.32:3306/sonar?autoReconnect=true&useUnicode=true&characterEncoding=utf8"
+		property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+		property "sonar.login", "usuario.tecnico"
+		property "sonar.build-stability.url", "Jenkins:$System.env.JOB_URL"
+		property "sonar.password", "T3ch+T3cnic0IC"
+		property "sonar.jdbc.username", "sonar"
+		property "sonar.jdbc.password", "t0ps3cr3t"
+		property "sonar.sourceEncoding", "UTF-8"
+		property "sonar.language", "java"
+		property "sonar.projectVersion", "1.0"
+		}
+	}
+}else{
+	println "Usando el servidor sonar de GCO."
+	sonarRunner {
+		sonarProperties {
+		  property "sonar.host.url", "http://gesconf2.corp.gco.com.co:8082/"
+		  property "sonar.jdbc.url", "jdbc:postgresql://postgres3.gco.com.co/sonar"
+		  property "sonar.jdbc.driverClassName", "org.postgresql.Driver"
+		  property "sonar.jdbc.username", "postgres"
+		  property "sonar.sourceEncoding", "UTF-8"
+		  property "sonar.language", "java"
+		  property "sonar.projectVersion", "1.0"
+		}
+	}
+}

@@ -1,0 +1,19 @@
+var cardModule = angular.module("creditcard",["ngRoute"]).
+
+config(function($routeProvider){
+	$routeProvider.when("/", {
+		controller:'listController',
+		templateUrl:'card/list.html'
+	})
+	.when("/save", {
+		controller:'saveController',
+		templateUrl:'card/save.html'
+	})
+	.when("/bill", {
+		controller:'saveController',
+		templateUrl:'bill/save.html'
+	})
+	.otherwise({redirectTo:'/'});
+});
+
+

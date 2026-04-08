@@ -1,0 +1,266 @@
+{
+  "endpoints" : [ {
+    "id" : "AccountController.createAccount",
+    "path" : "/cuentas/crearCuenta",
+    "method" : "POST",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : "Account",
+    "response_schema" : "Account",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+  }, {
+    "id" : "AccountController.deleteAccount",
+    "path" : "/cuentas/eliminarCuenta/accountNumber",
+    "method" : "DELETE",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "accountNumber",
+      "in" : "path",
+      "type" : "Long",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Void",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+  }, {
+    "id" : "AccountController.getAccountByAccountNumber",
+    "path" : "/cuentas/obtenerCuentaPorNumeroCuenta",
+    "method" : "POST",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : "Account",
+    "response_schema" : "Account",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+  }, {
+    "id" : "AccountController.getAccountById",
+    "path" : "/cuentas/obtenerCuentaPorId/accountId",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "accountId",
+      "in" : "path",
+      "type" : "Long",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Account",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+  }, {
+    "id" : "AccountController.getAccountByNumberId",
+    "path" : "/cuentas/obtenerCuentaPorIdentificacion",
+    "method" : "POST",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : "Account",
+    "response_schema" : "List",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+  }, {
+    "id" : "AccountController.getAllAccounts",
+    "path" : "/cuentas/obtenerCuentas",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : null,
+    "response_schema" : "List",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+  }, {
+    "id" : "AccountController.updateAccount",
+    "path" : "/cuentas/modificarCuenta/accountId",
+    "method" : "PUT",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "accountId",
+      "in" : "path",
+      "type" : "Long",
+      "required" : true
+    } ],
+    "request_body_schema" : "Account",
+    "response_schema" : "Account",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+  }, {
+    "id" : "ClientController.createClient",
+    "path" : "/clientes/crearCliente",
+    "method" : "POST",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : "Client",
+    "response_schema" : "Client",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+  }, {
+    "id" : "ClientController.deleteClient",
+    "path" : "/clientes/eliminarCliente/id",
+    "method" : "DELETE",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "id",
+      "in" : "path",
+      "type" : "Long",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Void",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+  }, {
+    "id" : "ClientController.getClientAll",
+    "path" : "/clientes",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : null,
+    "response_schema" : "List",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+  }, {
+    "id" : "ClientController.getClientById",
+    "path" : "/clientes/obtenerClienteId/id",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "id",
+      "in" : "path",
+      "type" : "Long",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Client",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+  }, {
+    "id" : "ClientController.putClient",
+    "path" : "/clientes/actualizarCliente/id",
+    "method" : "PUT",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "id",
+      "in" : "path",
+      "type" : "Long",
+      "required" : true
+    } ],
+    "request_body_schema" : "Client",
+    "response_schema" : "Client",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+  }, {
+    "id" : "MovementController.getAccountforDate",
+    "path" : "/movimientos/accountNumber",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "accountNumber",
+      "in" : "path",
+      "type" : "Long",
+      "required" : true
+    }, {
+      "name" : "/from",
+      "in" : "query",
+      "type" : "LocalDate",
+      "required" : true
+    }, {
+      "name" : "/to",
+      "in" : "query",
+      "type" : "LocalDate",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "List",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController"
+  }, {
+    "id" : "MovementController.registerMovement",
+    "path" : "/movimientos/crearMovimiento",
+    "method" : "POST",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : "Movement",
+    "response_schema" : "Movement",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController"
+  }, {
+    "id" : "ReportController.generateReport",
+    "path" : "/reportes",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "/clientId",
+      "in" : "query",
+      "type" : "Long",
+      "required" : true
+    }, {
+      "name" : "/fecha",
+      "in" : "query",
+      "type" : "String",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Map",
+    "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ReportController"
+  } ],
+  "schemas" : {
+    "Account" : {
+      "type" : "object",
+      "properties" : {
+        "accountId" : {
+          "type" : "Long"
+        },
+        "accountNumber" : {
+          "type" : "Long"
+        },
+        "accountType" : {
+          "type" : "String"
+        },
+        "client" : {
+          "type" : "Client"
+        },
+        "initialBalance" : {
+          "type" : "Double"
+        },
+        "status" : {
+          "type" : "String"
+        }
+      }
+    },
+    "Client" : {
+      "type" : "object",
+      "properties" : {
+        "clientId" : {
+          "type" : "Long"
+        },
+        "email" : {
+          "type" : "String"
+        },
+        "password" : {
+          "type" : "String"
+        },
+        "status" : {
+          "type" : "String"
+        }
+      }
+    },
+    "List" : {
+      "type" : "object",
+      "properties" : { }
+    },
+    "Map" : {
+      "type" : "object",
+      "properties" : { }
+    },
+    "Movement" : {
+      "type" : "object",
+      "properties" : {
+        "account" : {
+          "type" : "Account"
+        },
+        "balance" : {
+          "type" : "Double"
+        },
+        "date" : {
+          "type" : "LocalDate"
+        },
+        "movementId" : {
+          "type" : "long"
+        },
+        "movementType" : {
+          "type" : "String"
+        },
+        "value" : {
+          "type" : "Double"
+        }
+      }
+    }
+  }
+}

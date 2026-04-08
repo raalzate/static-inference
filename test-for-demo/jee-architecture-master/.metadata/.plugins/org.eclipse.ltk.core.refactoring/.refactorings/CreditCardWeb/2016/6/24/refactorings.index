@@ -1,0 +1,21 @@
+1465421693048	Rename type 'BeillServiceTest'
+1465486084714	Copy file
+1465486149068	Rename resource 'app.js'
+1465486186961	Copy file
+1465486248107	Copy file
+1465486372100	Rename resource 'billService'
+1465486591485	Copy file
+1465486994917	Delete element
+1465487085468	Move 2 resources to 'card'
+1465487161739	Move 2 resources to 'card'
+1465487582301	Delete element
+1465487593888	Rename resource 'card.js'
+1465487761190	Rename resource 'saveController.js'
+1465487764529	Move 'saveBillController.js' to 'controllers'
+1465487772278	Delete element
+1465487779279	Move 2 resources to 'controllers'
+1465487790186	Delete element
+1465487804751	Rename resource 'saveController.js'
+1465487818018	Rename resource 'listController.js'
+1465496182334	Copy file
+1465496549230	Rename type 'GuardarFactura'

@@ -1,0 +1,16 @@
+package co.com.techandsolve.creditcard.business;
+
+import javax.annotation.Resource;
+import javax.jms.Queue;
+import javax.jms.QueueConnectionFactory;
+
+public class BillBusinnes {
+
+	@Resource(mappedName="BillFactory")
+	private QueueConnectionFactory queueConnectionFactory;
+	
+	@Resource(mappedName="jms/queue/BillQueue")
+	private Queue queue;
+	
+	
+}

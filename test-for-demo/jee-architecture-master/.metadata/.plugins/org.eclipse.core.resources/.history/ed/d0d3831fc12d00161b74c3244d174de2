@@ -1,0 +1,22 @@
+package co.com.techandsolve.creditcard.services;
+
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import co.com.techandsolve.creditcard.entities.Card;
+import co.com.techandsolve.creditcard.exception.LockedException;
+
+public class BillService {
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("register/{number}")
+	public void register(@PathParam("number") String number) {
+		
+	}
+}

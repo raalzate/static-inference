@@ -1,0 +1,21 @@
+var module = angular.module("bill");
+
+
+module.controller("saveBillController", function($scope, billService, $location){	
+	
+	$scope.onClickSaveBill = function(){
+		
+		var saveBill = billService.saveBill($scope.label, $scope.description, $scope.mount);
+
+		saveCard.success(function(data){
+			alert("Se encolo la factura!.");
+			$location.url("/");
+		}).error(function(data, status, headers, config){
+			alert(headers("internalServerError"));
+		});
+	};
+	
+	$scope.onPressBack = function(){
+		$location.url("/");
+	};
+});
