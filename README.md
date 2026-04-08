@@ -8,7 +8,7 @@ Herramienta de análisis estático que extrae dependencias de proyectos Java mul
 
 ### Requisitos
 
-- **Java 11+**
+- **Java 17+**
 - **Maven 3.6+**
 - **.NET 8.0 SDK** (solo para analizar proyectos .NET/C#)
 
@@ -31,6 +31,10 @@ dotnet publish src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj \
 
 ### Ejecución
 
+La herramienta soporta dos modos de operación: **CLI** (línea de comandos) y **MCP** (Model Context Protocol para integración con asistentes IA).
+
+#### Modo CLI
+
 La herramienta detecta automáticamente si el proyecto destino es Java o .NET a partir de los archivos de construcción presentes (ver sección **Detección de Proyecto** más abajo).
 
 ```bash
@@ -46,6 +50,16 @@ mvn exec:java -Dexec.args="/home/runner/workspace/spring-boot-monolith output.js
 ```bash
 mvn exec:java -Dexec.args="/path/to/dotnet-project output.json"
 ```
+
+#### Modo MCP (Model Context Protocol)
+
+Inicia el servidor MCP para integrar el análisis con asistentes IA como Claude Code:
+
+```bash
+java -jar target/java-dependency-extractor.jar --mcp
+```
+
+Ver [MCP.md](MCP.md) para documentación completa del servidor MCP, herramientas disponibles y configuración.
 
 ### Archivos Generados
 
@@ -597,10 +611,24 @@ Ejecuta `dotnet restore` en el proyecto destino antes de lanzar el análisis.
 - Si solo quieres analizar el lado .NET, elimina o mueve `pom.xml` / `build.gradle`.
 - Si el repositorio contiene ambos stacks de forma intencional, ejecuta la herramienta desde el subdirectorio específico de cada stack.
 
-## 📚 Documentación Adicional
+## 🔄 Integración Continua (CI/CD)
 
-- [ALGORITHMS.md](ALGORITHMS.md) - Deep dive técnico en algoritmos de consolidación
-- [CONFIGURATION.md](CONFIGURATION.md) - Guía de configuración y personalización
+El proyecto incluye un pipeline de GitHub Actions (`.github/workflows/ci.yml`) que se ejecuta en push a `main` y en pull requests:
+
+| Job | Plataforma | Descripcion |
+|-----|------------|-------------|
+| `java-build-and-test` | Java 17 / Maven | Compila y ejecuta tests JUnit 5 |
+| `java-code-analysis` | Java 17 / Maven | SpotBugs + Checkstyle |
+| `dotnet-build-and-test` | .NET 8 | Compila y ejecuta tests xUnit |
+| `dotnet-code-analysis` | .NET 8 | dotnet format + security-scan |
+
+Los resultados de tests y reportes de analisis se publican como artifacts en cada ejecucion.
+
+## 📚 Documentacion Adicional
+
+- [MCP.md](MCP.md) - Servidor MCP: herramientas, configuracion e integracion con asistentes IA
+- [ALGORITHMS.md](ALGORITHMS.md) - Deep dive tecnico en algoritmos de consolidacion
+- [CONFIGURATION.md](CONFIGURATION.md) - Guia de configuracion y personalizacion
 
 ## 🤝 Contribución
 
@@ -615,70 +643,41 @@ Para extender el sistema:
 
 ```
 src/main/java/com/extractor/
-├── MicroserviceInferenceMain.java     # Punto de entrada principal
-├── analyzer/                          # Motor de análisis de código
-│   ├── ProjectAnalyzer.java           # Análisis Spoon de AST
-│   ├── MetricsCalculator.java         # Cálculo de CBO y LCOM
-│   ├── PackageGroupAnalyzer.java      # Agrupación de dependencias por paquete
-│   ├── ComponentRegistry.java         # Registro de componentes
-│   ├── EdgeAccumulator.java           # Acumulador de relaciones
-│   ├── TableNameExtractor.java        # Extracción de nombres de tablas
-│   ├── ClassNameValidator.java        # Validación de nombres de clases
-│   ├── SpoonLauncherFactory.java      # Fábrica de configuración Spoon
-│   ├── StaticCodeAnalyzer.java        # Analizador de patrones de código y estilo
-│   └── SourcePathDiscoverer.java      # Descubridor de rutas fuente
-├── constants/                         # Constantes del sistema
-│   └── LayerConstants.java            # Constantes de capas
+├── MicroserviceInferenceMain.java     # Punto de entrada (CLI + MCP)
+├── mcp/                               # Servidor MCP
+│   ├── McpServerMain.java            # Orquestador del servidor MCP
+│   ├── ToolSchemas.java              # Esquemas JSON de herramientas
+│   └── tools/                        # Implementacion de herramientas MCP
+│       ├── AnalyzeProjectTool.java
+│       ├── GetDependencyGraphTool.java
+│       ├── GetArchitectureTool.java
+│       ├── GetApiContractsTool.java
+│       └── GetComponentMetricsTool.java
+├── service/
+│   └── AnalysisService.java          # Logica compartida CLI/MCP
+├── analyzer/                          # Motor de analisis de codigo
+│   ├── ProjectAnalyzer.java          # Analisis Spoon de AST
+│   ├── ProjectTypeDetector.java      # Auto-deteccion Java/.NET
+│   ├── DotNetBridgeAnalyzer.java     # Puente Java → .NET
+│   ├── MetricsCalculator.java        # Calculo de CBO y LCOM
+│   ├── StaticCodeAnalyzer.java       # Patrones de codigo y estilo
+│   └── ...
 ├── inference/                         # Motor de inferencia de microservicios
-│   ├── InferenceEngine.java           # Motor principal de clustering
-│   ├── ClusteringAlgorithm.java       # Algoritmo de clustering
-│   ├── InterClusterGraph.java         # Cálculo de relaciones entre clusters
-│   ├── ClusterConsolidator.java       # Consolidación greedy de clusters
-│   ├── MicroserviceNameGenerator.java # Generación de nombres de negocio
-│   ├── ViabilityScorer.java           # Clasificación de viabilidad
-│   ├── MicroserviceRecommendationEngine.java  # Recomendaciones
-│   ├── LayerClassifier.java           # Clasificación de capas arquitectónicas
-│   ├── Cluster.java                   # Modelo de cluster
-│   ├── ClusterMetrics.java            # Métricas de clusters
-│   ├── ClusterExplanation.java        # Explicaciones de clusters
-│   ├── ExplanationGenerator.java      # Generador de explicaciones
-│   ├── MicroserviceProposal.java      # Propuesta consolidada
-│   ├── MicroserviceCandidates.java    # Candidatos a microservicios
-│   ├── ConsolidatedArchitecture.java  # Arquitectura final
-│   ├── InferenceRule.java             # Reglas de inferencia
-│   ├── MetricsCalculator.java         # Calculador de métricas
-│   └── rules/                         # Reglas de inferencia
-│       ├── DomainAffinityRule.java    # Afinidad de dominio
-│       ├── SharedTableRule.java       # Regla de tablas compartidas
-│       └── CallPatternRule.java       # Regla de patrones de llamadas
+│   ├── InferenceEngine.java          # Motor principal de clustering
+│   ├── ClusterConsolidator.java      # Consolidacion greedy
+│   ├── ViabilityScorer.java          # Clasificacion de viabilidad
+│   └── ...
 ├── model/                             # Modelos de datos
-│   ├── DependencyGraph.java           # Modelo de grafo de dependencias
-│   ├── Component.java                 # Modelo de componente
-│   ├── Edge.java                      # Modelo de arista
-│   ├── EdgeData.java                  # Datos de arista
-│   ├── CallInfo.java                  # Información de llamadas
-│   ├── DependencyInfo.java            # Información de dependencias
-│   ├── PackageGroup.java              # Agrupación de paquetes
-│   ├── CodeIssue.java                 # Modelo de hallazgos de análisis estático
-│   └── WebArchitecture.java           # Arquitectura web
-└── utils/                             # Utilidades de detección
-    ├── DatabaseDetector.java          # Detección de BD
-    ├── DependencyResolver.java        # Resolución de dependencias
-    ├── SensitiveDataDetector.java     # Detección de datos sensibles
-    ├── SecretsDetector.java           # Detección de secretos
-    ├── MessagingDetector.java         # Detección de mensajería
-    └── EJBDetector.java               # Detección de EJBs
+└── utils/                             # Utilidades de deteccion
 
-src/main/dotnet/                       # Analizador .NET (Roslyn)
-│   ├── DotNetAnalyzer.sln
-│   └── DotNetAnalyzer/
-│       ├── Analysis/                  # TypeAnalyzer, EndpointExtractor, etc.
-│       ├── Model/                     # Mirrors en C# de los modelos Java
-│       └── Program.cs
+src/main/dotnet/DotNetAnalyzer/        # Analizador .NET (Roslyn)
+├── Analysis/                          # 11 pasadas de analisis
+├── Model/                             # Modelos C# (mirror de Java)
+└── Program.cs
 
+src/test/java/                         # Tests JUnit 5
 src/test/dotnet/                       # Tests xUnit
-│   └── DotNetAnalyzer.Tests/
-
-test-for-demo/dotnet-ecommerce         # Proyecto .NET de demo
+.github/workflows/ci.yml              # Pipeline CI/CD
+.mcp.json                             # Configuracion del servidor MCP
 ```
 
