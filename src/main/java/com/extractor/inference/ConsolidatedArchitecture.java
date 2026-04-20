@@ -1,5 +1,7 @@
 package com.extractor.inference;
 
+import com.extractor.model.SecretLocation;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Map;
@@ -32,45 +34,52 @@ public class ConsolidatedArchitecture {
     public List<SupportLibrary> getSupportLibraries() { return supportLibraries; }
     public String getSummary() { return summary; }
     
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ProjectMetadata {
         @JsonProperty("external_dependencies")
         private Map<String, String> externalDependencies;
-        
+
         @JsonProperty("package_dependencies")
         private Map<String, PackageDependencyInfo> packageDependencies;
-        
+
         @JsonProperty("total_components")
         private int totalComponents;
-        
+
         @JsonProperty("total_loc")
         private int totalLoc;
-        
+
         @JsonProperty("components_with_secrets")
         private int componentsWithSecrets;
-        
+
         @JsonProperty("shared_domain")
         private String sharedDomain;
-        
+
+        @JsonProperty("secrets_locations")
+        private List<SecretLocation> secretsLocations;
+
         public ProjectMetadata(Map<String, String> externalDependencies,
                              Map<String, PackageDependencyInfo> packageDependencies,
                              int totalComponents,
                              int totalLoc,
                              int componentsWithSecrets,
-                             String sharedDomain) {
+                             String sharedDomain,
+                             List<SecretLocation> secretsLocations) {
             this.externalDependencies = externalDependencies;
             this.packageDependencies = packageDependencies;
             this.totalComponents = totalComponents;
             this.totalLoc = totalLoc;
             this.componentsWithSecrets = componentsWithSecrets;
             this.sharedDomain = sharedDomain;
+            this.secretsLocations = secretsLocations;
         }
-        
+
         public Map<String, String> getExternalDependencies() { return externalDependencies; }
         public Map<String, PackageDependencyInfo> getPackageDependencies() { return packageDependencies; }
         public int getTotalComponents() { return totalComponents; }
         public int getTotalLoc() { return totalLoc; }
         public int getComponentsWithSecrets() { return componentsWithSecrets; }
         public String getSharedDomain() { return sharedDomain; }
+        public List<SecretLocation> getSecretsLocations() { return secretsLocations; }
     }
     
     public static class PackageDependencyInfo {

@@ -1,41 +1,48 @@
 package com.extractor.inference;
 
+import com.extractor.model.JpaTable;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Map;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MicroserviceProposal {
     @JsonProperty("id")
     private int id;
-    
+
     @JsonProperty("name")
     private String name;
-    
+
     @JsonProperty("viability")
     private String viability;
-    
+
     @JsonProperty("clusters")
     private List<Integer> clusterIds;
-    
+
     @JsonProperty("components")
     private List<String> componentNames;
-    
+
     @JsonProperty("metrics")
     private ConsolidatedMetrics metrics;
-    
+
     @JsonProperty("signals")
     private Map<String, Object> signals;
-    
+
     @JsonProperty("rationale")
     private List<String> rationale;
-    
+
     @JsonProperty("recommended_actions")
     private List<String> recommendedActions;
 
-    public MicroserviceProposal(int id, String name, String viability, 
+    @JsonProperty("tables")
+    private List<JpaTable> tables;
+
+    public MicroserviceProposal(int id, String name, String viability,
                                List<Integer> clusterIds, List<String> componentNames,
                                ConsolidatedMetrics metrics, Map<String, Object> signals,
-                               List<String> rationale, List<String> recommendedActions) {
+                               List<String> rationale, List<String> recommendedActions,
+                               List<JpaTable> tables) {
         this.id = id;
         this.name = name;
         this.viability = viability;
@@ -45,6 +52,7 @@ public class MicroserviceProposal {
         this.signals = signals;
         this.rationale = rationale;
         this.recommendedActions = recommendedActions;
+        this.tables = tables;
     }
 
     public int getId() { return id; }
@@ -56,32 +64,37 @@ public class MicroserviceProposal {
     public Map<String, Object> getSignals() { return signals; }
     public List<String> getRationale() { return rationale; }
     public List<String> getRecommendedActions() { return recommendedActions; }
+    public List<JpaTable> getTables() { return tables; }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ConsolidatedMetrics {
         @JsonProperty("size")
         private int size;
-        
+
         @JsonProperty("cohesion_avg")
         private double cohesionAvg;
-        
+
         @JsonProperty("external_coupling")
         private double externalCoupling;
-        
+
         @JsonProperty("internal_edge_density")
         private double internalEdgeDensity;
-        
+
         @JsonProperty("data_jaccard")
         private double dataJaccard;
-        
+
         @JsonProperty("tables")
         private List<String> tables;
-        
+
         @JsonProperty("sensitive")
         private boolean sensitive;
 
+        @JsonProperty("tables_source")
+        private String tablesSource;
+
         public ConsolidatedMetrics(int size, double cohesionAvg, double externalCoupling,
                                   double internalEdgeDensity, double dataJaccard,
-                                  List<String> tables, boolean sensitive) {
+                                  List<String> tables, boolean sensitive, String tablesSource) {
             this.size = size;
             this.cohesionAvg = cohesionAvg;
             this.externalCoupling = externalCoupling;
@@ -89,6 +102,7 @@ public class MicroserviceProposal {
             this.dataJaccard = dataJaccard;
             this.tables = tables;
             this.sensitive = sensitive;
+            this.tablesSource = tablesSource;
         }
 
         public int getSize() { return size; }
@@ -98,5 +112,6 @@ public class MicroserviceProposal {
         public double getDataJaccard() { return dataJaccard; }
         public List<String> getTables() { return tables; }
         public boolean isSensitive() { return sensitive; }
+        public String getTablesSource() { return tablesSource; }
     }
 }

@@ -1,7 +1,11 @@
 package com.extractor.inference;
 
 import com.extractor.model.Component;
+import com.extractor.model.JpaTable;
+import com.extractor.model.SecretLocation;
+import com.extractor.utils.SecretLocationScanner;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,8 +21,23 @@ public class MicroserviceRecommendationEngine {
     
     /**
      * Analyzes candidates and generates consolidated architecture proposal.
+     *
+     * <p>Overload without projectRoot skips filesystem-based enrichment
+     * (secrets locations scan). Prefer the overload that accepts projectRoot.
      */
     public ConsolidatedArchitecture analyzeConsolidated(MicroserviceCandidates candidates, List<Component> allComponents, Map<String, String> projectDependencies) {
+        return analyzeConsolidated(candidates, allComponents, projectDependencies, null);
+    }
+
+    /**
+     * Analyzes candidates and generates consolidated architecture proposal,
+     * enriched with JPA table attribution per proposal and project-wide
+     * redacted secret locations (FR-008, FR-009).
+     */
+    public ConsolidatedArchitecture analyzeConsolidated(MicroserviceCandidates candidates,
+                                                        List<Component> allComponents,
+                                                        Map<String, String> projectDependencies,
+                                                        Path projectRoot) {
         List<Cluster> allClusters = candidates.getCandidates();
         
         ClusterConsolidator consolidator = new ClusterConsolidator(allClusters, allComponents);
@@ -37,7 +56,7 @@ public class MicroserviceRecommendationEngine {
             if (isSupportGroup(group, allClusters)) {
                 supportLibraries.add(createSupportLibrary(proposalId++, group, allClusters));
             } else {
-                MicroserviceProposal proposal = createProposal(proposalId++, group, allClusters, allComponents, scorer);
+                MicroserviceProposal proposal = createProposal(proposalId++, group, allClusters, allComponents, scorer, componentMapById(allComponents));
                 proposals.add(proposal);
                 
                 List<Cluster> clusters = group.stream()
@@ -89,14 +108,25 @@ public class MicroserviceRecommendationEngine {
         
         // Identify shared domain
         String sharedDomain = identifySharedDomain(allComponents);
-        
+
+        // FR-009: redacted secret locations. Scanner emits pointers only, never values.
+        List<SecretLocation> secretsLocations = new ArrayList<>();
+        if (projectRoot != null) {
+            try {
+                secretsLocations = new SecretLocationScanner().scan(projectRoot);
+            } catch (RuntimeException ex) {
+                secretsLocations = new ArrayList<>();
+            }
+        }
+
         ConsolidatedArchitecture.ProjectMetadata metadata = new ConsolidatedArchitecture.ProjectMetadata(
             finalDependencies,
             packageDepsMap,
             allComponents.size(),
             totalLoc,
             componentsWithSecrets,
-            sharedDomain
+            sharedDomain,
+            secretsLocations
         );
         
         String summary = generateConsolidatedSummary(proposals, supportLibraries);
@@ -124,34 +154,65 @@ public class MicroserviceRecommendationEngine {
         return totalCount > 0 && ((double) infraCount / totalCount) >= 0.8;
     }
     
-    private MicroserviceProposal createProposal(int id, Set<Integer> clusterIds, 
-                                                List<Cluster> allClusters, 
+    private MicroserviceProposal createProposal(int id, Set<Integer> clusterIds,
+                                                List<Cluster> allClusters,
                                                 List<Component> allComponents,
-                                                ViabilityScorer scorer) {
+                                                ViabilityScorer scorer,
+                                                Map<String, Component> componentsById) {
         String name = MicroserviceNameGenerator.generateName(clusterIds, allClusters);
         ViabilityScorer.ViabilityResult viabilityResult = scorer.calculateViability(clusterIds);
-        
+
         List<Cluster> clusters = clusterIds.stream()
             .map(cId -> allClusters.stream().filter(c -> c.getClusterId() == cId).findFirst().orElse(null))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
-        
+
         List<String> componentNames = clusters.stream()
             .flatMap(c -> c.getMembers().stream())
             .distinct()
             .filter(comp -> !isInfrastructureComponent(comp))
             .sorted()
             .collect(Collectors.toList());
-        
-        MicroserviceProposal.ConsolidatedMetrics metrics = calculateConsolidatedMetrics(clusters, allComponents, true);
+
+        List<JpaTable> jpaTables = buildJpaTables(name, componentNames, componentsById);
+        String tablesSource = jpaTables.isEmpty() ? "none" : "jpa";
+
+        MicroserviceProposal.ConsolidatedMetrics metrics = calculateConsolidatedMetrics(clusters, allComponents, true, tablesSource);
         Map<String, Object> signals = calculateSignalsMap(clusters, allComponents);
         List<String> recommendedActions = generateActions(viabilityResult.getViability(), metrics);
-        
+
         return new MicroserviceProposal(
-            id, name, viabilityResult.getViability(), 
+            id, name, viabilityResult.getViability(),
             new ArrayList<>(clusterIds), componentNames,
-            metrics, signals, viabilityResult.getRationale(), recommendedActions
+            metrics, signals, viabilityResult.getRationale(), recommendedActions,
+            jpaTables
         );
+    }
+
+    /**
+     * Builds a per-proposal list of JpaTable entries from the members' tables_used sets.
+     * Source attribution defaults to DEFAULT; the Java extractor's downstream JPA/SQL
+     * detectors may override this in future iterations.
+     */
+    private List<JpaTable> buildJpaTables(String proposalName,
+                                          List<String> componentNames,
+                                          Map<String, Component> componentsById) {
+        Map<String, JpaTable> byName = new LinkedHashMap<>();
+        for (String memberId : componentNames) {
+            Component comp = componentsById.get(memberId);
+            if (comp == null || comp.getTablesUsed() == null) continue;
+            for (String table : comp.getTablesUsed()) {
+                if (table == null || table.isBlank()) continue;
+                byName.computeIfAbsent(table, t -> new JpaTable(t, proposalName, "DEFAULT", null));
+            }
+        }
+        List<JpaTable> out = new ArrayList<>(byName.values());
+        out.sort(Comparator.comparing(JpaTable::getName));
+        return out;
+    }
+
+    private Map<String, Component> componentMapById(List<Component> allComponents) {
+        return allComponents.stream().collect(Collectors.toMap(Component::getId, c -> c, (a, b) -> a));
     }
     
     private ConsolidatedArchitecture.SupportLibrary createSupportLibrary(int id, Set<Integer> clusterIds, List<Cluster> allClusters) {
@@ -168,7 +229,7 @@ public class MicroserviceRecommendationEngine {
         return new ConsolidatedArchitecture.SupportLibrary(id, name, new ArrayList<>(clusterIds), componentNames);
     }
     
-    private MicroserviceProposal.ConsolidatedMetrics calculateConsolidatedMetrics(List<Cluster> clusters, List<Component> allComponents, boolean filterInfrastructure) {
+    private MicroserviceProposal.ConsolidatedMetrics calculateConsolidatedMetrics(List<Cluster> clusters, List<Component> allComponents, boolean filterInfrastructure, String tablesSource) {
         Set<String> allMembers = clusters.stream()
             .flatMap(c -> c.getMembers().stream())
             .filter(comp -> !filterInfrastructure || !isInfrastructureComponent(comp))
@@ -221,8 +282,8 @@ public class MicroserviceRecommendationEngine {
         boolean sensitive = clusters.stream().anyMatch(c -> c.getMetrics().isSensitive());
         
         return new MicroserviceProposal.ConsolidatedMetrics(
-            size, cohesionAvg, externalCoupling, internalEdgeDensity, 
-            dataJaccard, new ArrayList<>(allTables), sensitive
+            size, cohesionAvg, externalCoupling, internalEdgeDensity,
+            dataJaccard, new ArrayList<>(allTables), sensitive, tablesSource
         );
     }
     

@@ -51,7 +51,7 @@ public class AnalysisService {
         Map<String, String> projectDeps = analyzer.getDependencyResolver().getAllDependencies();
         MicroserviceRecommendationEngine recommendationEngine = new MicroserviceRecommendationEngine();
         ConsolidatedArchitecture architecture = recommendationEngine.analyzeConsolidated(
-                candidates, dependencyGraph.getComponents(), projectDeps);
+                candidates, dependencyGraph.getComponents(), projectDeps, projectRoot);
 
         DependencyGraph.ApiContracts apiContracts = dependencyGraph.getApiContracts();
 
@@ -84,7 +84,7 @@ public class AnalysisService {
         Map<String, String> projectDeps = analyzer.getDependencyResolver().getAllDependencies();
         MicroserviceRecommendationEngine recommendationEngine = new MicroserviceRecommendationEngine();
         ConsolidatedArchitecture architecture = recommendationEngine.analyzeConsolidated(
-                candidates, dependencyGraph.getComponents(), projectDeps);
+                candidates, dependencyGraph.getComponents(), projectDeps, projectRoot);
 
         if (minViability != null && !minViability.isEmpty()) {
             return filterByViability(architecture, minViability);
