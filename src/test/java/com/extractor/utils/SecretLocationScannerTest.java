@@ -117,6 +117,49 @@ class SecretLocationScannerTest {
     }
 
     @Test
+    void scan_dotnetAppsettingsConnectionString_detectsPasswordAndKeys() throws IOException {
+        Path settings = tempDir.resolve("appsettings.json");
+        Files.writeString(settings,
+                "{\n" +
+                "  \"ConnectionStrings\": {\n" +
+                "    \"Default\": \"Server=localhost;Database=db;User Id=sa;Password=VerySecret123;\"\n" +
+                "  },\n" +
+                "  \"Messaging\": {\n" +
+                "    \"Sb\": \"Endpoint=sb://x;SharedAccessKey=abc123==\"\n" +
+                "  }\n" +
+                "}\n");
+
+        List<SecretLocation> hits = new SecretLocationScanner().scan(tempDir);
+
+        Set<String> kinds = hits.stream().map(SecretLocation::getKind).collect(Collectors.toSet());
+        assertTrue(kinds.contains("JDBC_PASSWORD"),
+                "connection-string Password= must be flagged as JDBC_PASSWORD, got " + kinds);
+        assertTrue(kinds.contains("API_KEY"),
+                "SharedAccessKey must be flagged as API_KEY, got " + kinds);
+        for (SecretLocation hit : hits) {
+            assertTrue(hit.isRedacted());
+            assertFalse(hit.getKind().contains("VerySecret123"));
+        }
+    }
+
+    @Test
+    void scan_webConfigConnectionString_detectsJdbcPassword() throws IOException {
+        Path webConfig = tempDir.resolve("web.config");
+        Files.writeString(webConfig,
+                "<configuration>\n" +
+                "  <connectionStrings>\n" +
+                "    <add name=\"MyDb\" connectionString=\"Server=x;Database=y;User Id=sa;pwd=LeakedPwd;\" />\n" +
+                "  </connectionStrings>\n" +
+                "</configuration>\n");
+
+        List<SecretLocation> hits = new SecretLocationScanner().scan(tempDir);
+
+        Set<String> kinds = hits.stream().map(SecretLocation::getKind).collect(Collectors.toSet());
+        assertTrue(kinds.contains("JDBC_PASSWORD"),
+                "web.config connectionString pwd= must be flagged as JDBC_PASSWORD, got " + kinds);
+    }
+
+    @Test
     void scan_skipsLargeFiles() throws IOException {
         Path big = tempDir.resolve("big.properties");
         StringBuilder sb = new StringBuilder();

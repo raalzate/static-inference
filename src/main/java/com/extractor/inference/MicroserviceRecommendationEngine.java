@@ -175,7 +175,7 @@ public class MicroserviceRecommendationEngine {
             .collect(Collectors.toList());
 
         List<JpaTable> jpaTables = buildJpaTables(name, componentNames, componentsById);
-        String tablesSource = jpaTables.isEmpty() ? "none" : "jpa";
+        String tablesSource = inferTablesSource(jpaTables, componentNames, componentsById);
 
         MicroserviceProposal.ConsolidatedMetrics metrics = calculateConsolidatedMetrics(clusters, allComponents, true, tablesSource);
         Map<String, Object> signals = calculateSignalsMap(clusters, allComponents);
@@ -213,6 +213,55 @@ public class MicroserviceRecommendationEngine {
 
     private Map<String, Component> componentMapById(List<Component> allComponents) {
         return allComponents.stream().collect(Collectors.toMap(Component::getId, c -> c, (a, b) -> a));
+    }
+
+    /**
+     * Picks a value for {@code tables_source} based on which components in
+     * the proposal carry ORM markers. Contract: {@code jpa}, {@code ef},
+     * {@code sql}, {@code orm}, {@code none}.
+     *
+     * <p>JPA is inferred from the presence of {@code Entity}/{@code Table}
+     * annotations on Java components; EF is inferred from .NET-flavored
+     * dependencies ({@code EntityFrameworkCore}) or attributes. Anything
+     * else with tables falls back to {@code orm} so non-Java projects
+     * still get a meaningful signal.
+     */
+    private String inferTablesSource(List<JpaTable> jpaTables,
+                                     List<String> componentNames,
+                                     Map<String, Component> componentsById) {
+        if (jpaTables.isEmpty()) return "none";
+        boolean jpa = false;
+        boolean ef = false;
+        for (String id : componentNames) {
+            Component comp = componentsById.get(id);
+            if (comp == null) continue;
+            List<String> annotations = comp.getAnnotations();
+            if (annotations != null) {
+                for (String a : annotations) {
+                    if (a == null) continue;
+                    String lower = a.toLowerCase();
+                    if (lower.equals("entity") || lower.equals("table")) jpa = true;
+                    if (lower.contains("dbcontext") || lower.contains("entityframework")) ef = true;
+                }
+            }
+            List<String> deps = comp.getExternalDependencies();
+            if (deps != null) {
+                for (String d : deps) {
+                    if (d == null) continue;
+                    String lower = d.toLowerCase();
+                    if (lower.contains("jakarta.persistence") || lower.contains("javax.persistence")
+                            || lower.contains("hibernate")) {
+                        jpa = true;
+                    }
+                    if (lower.contains("entityframeworkcore") || lower.contains("entityframework")) {
+                        ef = true;
+                    }
+                }
+            }
+        }
+        if (jpa) return "jpa";
+        if (ef) return "ef";
+        return "orm";
     }
     
     private ConsolidatedArchitecture.SupportLibrary createSupportLibrary(int id, Set<Integer> clusterIds, List<Cluster> allClusters) {

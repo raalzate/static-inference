@@ -50,6 +50,15 @@ public class SecretLocationScanner {
             Pattern.CASE_INSENSITIVE), "API_KEY"),
         new Detector(Pattern.compile(
             "AKIA[0-9A-Z]{16}"), "API_KEY"),
+        // .NET connection strings: "ConnectionString": "Server=...;Password=xxx;..."
+        // or web.config `connectionString="...Password=xxx..."`.
+        new Detector(Pattern.compile(
+            "(?:password|pwd)\\s*=\\s*[^;\\\\\"'\\s]+",
+            Pattern.CASE_INSENSITIVE), "JDBC_PASSWORD"),
+        // Azure SAS keys and account keys in appsettings.json / connection strings.
+        new Detector(Pattern.compile(
+            "(?:SharedAccessKey|AccountKey|AccessKey)\\s*=\\s*[^;\\\\\"'\\s]+",
+            Pattern.CASE_INSENSITIVE), "API_KEY"),
         new Detector(Pattern.compile(
             "(?:^|[\\s_\\-\\.])(?:password|passwd|secret|token)\\s*[:=]\\s*[\"'][^\"']+[\"']",
             Pattern.CASE_INSENSITIVE), "GENERIC")
@@ -64,7 +73,10 @@ public class SecretLocationScanner {
         "persistence.xml", "web.xml", "hibernate.cfg.xml",
         "application.properties", "application.yml", "application.yaml",
         "bootstrap.properties", "bootstrap.yml",
-        ".env", "config.json"
+        ".env", "config.json",
+        // .NET conventions.
+        "appsettings.json", "appsettings.development.json", "appsettings.production.json",
+        "web.config", "app.config"
     );
 
     public List<SecretLocation> scan(Path projectRoot) {
@@ -86,7 +98,8 @@ public class SecretLocationScanner {
         String name = file.getFileName().toString().toLowerCase();
         if (SCAN_GLOBS.contains(name)) return true;
         return name.endsWith(".properties") || name.endsWith(".yml") || name.endsWith(".yaml")
-                || name.endsWith(".xml") || name.endsWith(".json") || name.endsWith(".env");
+                || name.endsWith(".xml") || name.endsWith(".json") || name.endsWith(".env")
+                || name.endsWith(".config");
     }
 
     private void scanFile(Path projectRoot, Path file, List<SecretLocation> hits) {
