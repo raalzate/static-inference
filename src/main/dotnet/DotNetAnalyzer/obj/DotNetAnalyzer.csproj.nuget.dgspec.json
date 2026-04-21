@@ -56,6 +56,12 @@
             "Microsoft.CodeAnalysis.Workspaces.MSBuild": {
               "target": "Package",
               "version": "[4.9.2, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.25, )",
+              "autoReferenced": true
             }
           },
           "imports": [
