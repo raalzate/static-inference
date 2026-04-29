@@ -1,5 +1,6 @@
 package com.extractor.inference;
 
+import com.extractor.model.ApiEndpoint;
 import com.extractor.model.Component;
 import com.extractor.model.JpaTable;
 import com.extractor.model.SecretLocation;
@@ -15,10 +16,18 @@ import java.util.stream.Collectors;
 public class MicroserviceRecommendationEngine {
     
     private static final Set<String> INFRASTRUCTURE_KEYWORDS = Set.of(
-        "config", "configuration", "security", "application", "exception", 
+        "config", "configuration", "security", "application", "exception",
         "error", "filter", "interceptor", "aspect", "swagger", "openapi", "main"
     );
-    
+
+    private static final Set<String> REST_METHODS = Set.of(
+        "GET", "POST", "PUT", "DELETE", "PATCH", "SOAP", "STRUTS_ACTION"
+    );
+
+    private static final Set<String> MESSAGING_METHODS = Set.of(
+        "KAFKA_LISTEN", "RABBIT_LISTEN", "JMS_LISTEN"
+    );
+
     /**
      * Analyzes candidates and generates consolidated architecture proposal.
      *
@@ -26,7 +35,7 @@ public class MicroserviceRecommendationEngine {
      * (secrets locations scan). Prefer the overload that accepts projectRoot.
      */
     public ConsolidatedArchitecture analyzeConsolidated(MicroserviceCandidates candidates, List<Component> allComponents, Map<String, String> projectDependencies) {
-        return analyzeConsolidated(candidates, allComponents, projectDependencies, null);
+        return analyzeConsolidated(candidates, allComponents, projectDependencies, null, List.of());
     }
 
     /**
@@ -38,6 +47,18 @@ public class MicroserviceRecommendationEngine {
                                                         List<Component> allComponents,
                                                         Map<String, String> projectDependencies,
                                                         Path projectRoot) {
+        return analyzeConsolidated(candidates, allComponents, projectDependencies, projectRoot, List.of());
+    }
+
+    /**
+     * Primary implementation: analyzes candidates and generates consolidated architecture proposal
+     * with {@code legacy_entrypoint} on each proposal built from the provided API endpoints.
+     */
+    public ConsolidatedArchitecture analyzeConsolidated(MicroserviceCandidates candidates,
+                                                        List<Component> allComponents,
+                                                        Map<String, String> projectDependencies,
+                                                        Path projectRoot,
+                                                        List<ApiEndpoint> apiEndpoints) {
         List<Cluster> allClusters = candidates.getCandidates();
         
         ClusterConsolidator consolidator = new ClusterConsolidator(allClusters, allComponents);
@@ -48,15 +69,22 @@ public class MicroserviceRecommendationEngine {
         List<MicroserviceProposal> proposals = new ArrayList<>();
         List<ConsolidatedArchitecture.SupportLibrary> supportLibraries = new ArrayList<>();
         Set<String> filteredInfraComponents = new HashSet<>();
-        
+        Set<String> assignedComponents = new HashSet<>();
+
         int proposalId = 0;
         for (Set<Integer> group : mergedGroups) {
             if (group.isEmpty()) continue;
-            
+
             if (isSupportGroup(group, allClusters)) {
                 supportLibraries.add(createSupportLibrary(proposalId++, group, allClusters));
             } else {
-                MicroserviceProposal proposal = createProposal(proposalId++, group, allClusters, allComponents, scorer, componentMapById(allComponents));
+                MicroserviceProposal proposal = createProposal(proposalId++, group, allClusters, allComponents, scorer, componentMapById(allComponents), apiEndpoints != null ? apiEndpoints : List.of());
+                // Skip proposals that only contain already-assigned components (dedup safety net)
+                List<String> newComponents = proposal.getComponentNames().stream()
+                    .filter(c -> !assignedComponents.contains(c))
+                    .collect(Collectors.toList());
+                if (newComponents.isEmpty()) continue;
+                assignedComponents.addAll(proposal.getComponentNames());
                 proposals.add(proposal);
                 
                 List<Cluster> clusters = group.stream()
@@ -158,7 +186,8 @@ public class MicroserviceRecommendationEngine {
                                                 List<Cluster> allClusters,
                                                 List<Component> allComponents,
                                                 ViabilityScorer scorer,
-                                                Map<String, Component> componentsById) {
+                                                Map<String, Component> componentsById,
+                                                List<ApiEndpoint> apiEndpoints) {
         String name = MicroserviceNameGenerator.generateName(clusterIds, allClusters);
         ViabilityScorer.ViabilityResult viabilityResult = scorer.calculateViability(clusterIds);
 
@@ -180,12 +209,13 @@ public class MicroserviceRecommendationEngine {
         MicroserviceProposal.ConsolidatedMetrics metrics = calculateConsolidatedMetrics(clusters, allComponents, true, tablesSource);
         Map<String, Object> signals = calculateSignalsMap(clusters, allComponents);
         List<String> recommendedActions = generateActions(viabilityResult.getViability(), metrics);
+        LegacyEntrypoint legacyEntrypoint = buildLegacyEntrypoint(componentNames, apiEndpoints, componentsById);
 
         return new MicroserviceProposal(
             id, name, viabilityResult.getViability(),
             new ArrayList<>(clusterIds), componentNames,
             metrics, signals, viabilityResult.getRationale(), recommendedActions,
-            jpaTables
+            jpaTables, legacyEntrypoint
         );
     }
 
@@ -264,6 +294,115 @@ public class MicroserviceRecommendationEngine {
         return "orm";
     }
     
+    private LegacyEntrypoint buildLegacyEntrypoint(List<String> componentFQCNs,
+                                                    List<ApiEndpoint> allEndpoints,
+                                                    Map<String, Component> componentsById) {
+        Set<String> componentSet = new HashSet<>(componentFQCNs);
+        List<ApiEndpoint> matched = allEndpoints.stream()
+            .filter(ep -> ep.getComponentId() != null && componentSet.contains(ep.getComponentId()))
+            .collect(Collectors.toList());
+
+        if (matched.isEmpty()) {
+            return buildEntrypointFromComponents(componentFQCNs, componentsById);
+        }
+
+        boolean hasRest = matched.stream().anyMatch(ep -> isRestMethod(ep.getMethod()));
+        boolean hasMessaging = matched.stream().anyMatch(ep -> isMessagingMethod(ep.getMethod()));
+
+        String type = hasRest ? "rest" : hasMessaging ? "messaging" : "service";
+        String primaryEntryClass = matched.get(0).getComponentId();
+
+        List<String> exposedOps = matched.stream()
+            .map(ep -> ep.getMethod() + " " + ep.getPath())
+            .distinct()
+            .sorted()
+            .collect(Collectors.toList());
+
+        List<String> messagingChannels = null;
+        if (hasMessaging) {
+            messagingChannels = matched.stream()
+                .filter(ep -> isMessagingMethod(ep.getMethod()))
+                .map(ApiEndpoint::getPath)
+                .filter(Objects::nonNull)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+            if (messagingChannels.isEmpty()) messagingChannels = null;
+        }
+
+        return new LegacyEntrypoint(type, primaryEntryClass, exposedOps, messagingChannels,
+            matched, generateEntrypointDescription(type, primaryEntryClass, exposedOps, messagingChannels));
+    }
+
+    private LegacyEntrypoint buildEntrypointFromComponents(List<String> componentFQCNs,
+                                                           Map<String, Component> componentsById) {
+        boolean anyMessaging = componentFQCNs.stream()
+            .map(componentsById::get)
+            .filter(Objects::nonNull)
+            .anyMatch(c -> c.getMessagingType() != null);
+
+        if (anyMessaging) {
+            String primaryClass = componentFQCNs.stream()
+                .map(componentsById::get)
+                .filter(c -> c != null && c.getMessagingType() != null)
+                .map(Component::getId)
+                .findFirst().orElse(null);
+            return new LegacyEntrypoint("messaging", primaryClass, List.of(), null, List.of(),
+                "Servicio basado en mensajería sin endpoints REST detectados. Integrar vía broker de mensajes.");
+        }
+
+        boolean anyEjb = componentFQCNs.stream()
+            .map(componentsById::get)
+            .filter(Objects::nonNull)
+            .anyMatch(c -> c.getEjbType() != null);
+
+        if (anyEjb) {
+            String primaryClass = componentFQCNs.stream()
+                .map(componentsById::get)
+                .filter(c -> c != null && c.getEjbType() != null)
+                .map(Component::getId)
+                .findFirst().orElse(null);
+            return new LegacyEntrypoint("service", primaryClass, List.of(), null, List.of(),
+                "Componente EJB sin endpoints REST detectados. Acceso vía JNDI o EJB remoto.");
+        }
+
+        return new LegacyEntrypoint("internal", null, List.of(), null, List.of(),
+            "No se detectaron endpoints de entrada. Componente interno o de infraestructura.");
+    }
+
+    private boolean isRestMethod(String method) {
+        return method != null && REST_METHODS.contains(method.toUpperCase());
+    }
+
+    private boolean isMessagingMethod(String method) {
+        return method != null && MESSAGING_METHODS.contains(method.toUpperCase());
+    }
+
+    private String generateEntrypointDescription(String type, String primaryClass,
+                                                  List<String> ops, List<String> channels) {
+        String simpleName = primaryClass != null
+            ? primaryClass.substring(primaryClass.lastIndexOf('.') + 1)
+            : "Desconocido";
+
+        return switch (type) {
+            case "rest" -> {
+                String paths = ops.stream()
+                    .map(op -> op.contains(" ") ? op.substring(op.indexOf(' ') + 1) : op)
+                    .distinct().limit(3)
+                    .collect(Collectors.joining(", "));
+                yield "Servicio expuesto vía REST en " + paths + ". Entrada principal: " + simpleName + ".";
+            }
+            case "messaging" -> {
+                String ch = channels != null && !channels.isEmpty()
+                    ? String.join(", ", channels)
+                    : "canales no identificados";
+                yield "Servicio consumidor de mensajes en: " + ch + ". Integrar vía broker de mensajes.";
+            }
+            case "service" -> "Servicio sin endpoints HTTP directos. Acceso a través de API interna o RPC.";
+            default -> "No se detectaron endpoints de entrada. Componente interno o de infraestructura.";
+        };
+    }
+
     private ConsolidatedArchitecture.SupportLibrary createSupportLibrary(int id, Set<Integer> clusterIds, List<Cluster> allClusters) {
         String name = MicroserviceNameGenerator.generateName(clusterIds, allClusters);
         

@@ -165,6 +165,10 @@ public class ClusteringAlgorithm {
 
         // Group related components (repositories, services) with their entities
         Set<String> assignedComponents = new HashSet<>();
+        // Mark entities themselves as already assigned so the second loop doesn't re-add them
+        for (Cluster entityCluster : entityToClusters.values()) {
+            assignedComponents.addAll(entityCluster.getMembers());
+        }
 
         for (Component component : dependencyGraph.getComponents()) {
             if (assignedComponents.contains(component.getId()))
@@ -565,7 +569,8 @@ public class ClusteringAlgorithm {
         return className.contains("entity") ||
                 className.contains(".model.entity.") ||
                 (!component.getTablesUsed().isEmpty() && !className.contains("repository")
-                        && !className.contains("service"));
+                        && !className.contains("service")
+                        && !className.contains("dao"));
     }
 
     /**

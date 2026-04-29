@@ -38,11 +38,14 @@ public class MicroserviceProposal {
     @JsonProperty("tables")
     private List<JpaTable> tables;
 
+    @JsonProperty("legacy_entrypoint")
+    private LegacyEntrypoint legacyEntrypoint;
+
     public MicroserviceProposal(int id, String name, String viability,
                                List<Integer> clusterIds, List<String> componentNames,
                                ConsolidatedMetrics metrics, Map<String, Object> signals,
                                List<String> rationale, List<String> recommendedActions,
-                               List<JpaTable> tables) {
+                               List<JpaTable> tables, LegacyEntrypoint legacyEntrypoint) {
         this.id = id;
         this.name = name;
         this.viability = viability;
@@ -53,6 +56,7 @@ public class MicroserviceProposal {
         this.rationale = rationale;
         this.recommendedActions = recommendedActions;
         this.tables = tables;
+        this.legacyEntrypoint = legacyEntrypoint;
     }
 
     public int getId() { return id; }
@@ -65,6 +69,7 @@ public class MicroserviceProposal {
     public List<String> getRationale() { return rationale; }
     public List<String> getRecommendedActions() { return recommendedActions; }
     public List<JpaTable> getTables() { return tables; }
+    public LegacyEntrypoint getLegacyEntrypoint() { return legacyEntrypoint; }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ConsolidatedMetrics {

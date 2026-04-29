@@ -48,12 +48,13 @@ public class AnalysisService {
         InferenceEngine inferenceEngine = new InferenceEngine();
         MicroserviceCandidates candidates = inferenceEngine.analyze(dependencyGraph);
 
+        DependencyGraph.ApiContracts apiContracts = dependencyGraph.getApiContracts();
+
         Map<String, String> projectDeps = analyzer.getDependencyResolver().getAllDependencies();
         MicroserviceRecommendationEngine recommendationEngine = new MicroserviceRecommendationEngine();
         ConsolidatedArchitecture architecture = recommendationEngine.analyzeConsolidated(
-                candidates, dependencyGraph.getComponents(), projectDeps, projectRoot);
-
-        DependencyGraph.ApiContracts apiContracts = dependencyGraph.getApiContracts();
+                candidates, dependencyGraph.getComponents(), projectDeps, projectRoot,
+                apiContracts.getEndpoints());
 
         return new AnalysisResult(dependencyGraph, architecture, apiContracts, warnings);
     }
@@ -81,10 +82,13 @@ public class AnalysisService {
         InferenceEngine inferenceEngine = new InferenceEngine();
         MicroserviceCandidates candidates = inferenceEngine.analyze(dependencyGraph);
 
+        DependencyGraph.ApiContracts apiContracts = dependencyGraph.getApiContracts();
+
         Map<String, String> projectDeps = analyzer.getDependencyResolver().getAllDependencies();
         MicroserviceRecommendationEngine recommendationEngine = new MicroserviceRecommendationEngine();
         ConsolidatedArchitecture architecture = recommendationEngine.analyzeConsolidated(
-                candidates, dependencyGraph.getComponents(), projectDeps, projectRoot);
+                candidates, dependencyGraph.getComponents(), projectDeps, projectRoot,
+                apiContracts.getEndpoints());
 
         if (minViability != null && !minViability.isEmpty()) {
             return filterByViability(architecture, minViability);

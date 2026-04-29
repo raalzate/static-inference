@@ -1,0 +1,313 @@
+{
+  "project_metadata" : {
+    "external_dependencies" : {
+      "com.oracle.database.jdbc:ojdbc8" : "com.oracle.database.jdbc:ojdbc8:19.8.0.0",
+      "commons-beanutils:commons-beanutils" : "commons-beanutils:commons-beanutils:1.9.4",
+      "commons-lang:commons-lang" : "commons-lang:commons-lang:2.6",
+      "javax.jms:javax.jms-api" : "javax.jms:javax.jms-api:2.0.1",
+      "javax.xml.ws:jaxws-api" : "javax.xml.ws:jaxws-api:2.3.1",
+      "javax:javaee-api" : "javax:javaee-api:7.0",
+      "junit:junit" : "junit:junit:4.13.2",
+      "log4j:log4j" : "log4j:log4j:1.2.17",
+      "org.apache.struts:struts-core" : "org.apache.struts:struts-core:1.3.10",
+      "org.apache.struts:struts-taglib" : "org.apache.struts:struts-taglib:1.3.10",
+      "org.hibernate:hibernate-core" : "org.hibernate:hibernate-core:4.3.11.Final",
+      "org.hibernate:hibernate-entitymanager" : "org.hibernate:hibernate-entitymanager:4.3.11.Final"
+    },
+    "package_dependencies" : {
+      "com.acme.erp.config" : {
+        "components_count" : 1,
+        "total_dependencies_out" : 0,
+        "depends_on_packages" : [ ]
+      },
+      "com.acme.erp.dao" : {
+        "components_count" : 3,
+        "total_dependencies_out" : 4,
+        "depends_on_packages" : [ "com.acme.erp.model" ]
+      },
+      "com.acme.erp.messaging" : {
+        "components_count" : 1,
+        "total_dependencies_out" : 2,
+        "depends_on_packages" : [ "com.acme.erp.service" ]
+      },
+      "com.acme.erp.model" : {
+        "components_count" : 5,
+        "total_dependencies_out" : 0,
+        "depends_on_packages" : [ ]
+      },
+      "com.acme.erp.service" : {
+        "components_count" : 6,
+        "total_dependencies_out" : 16,
+        "depends_on_packages" : [ "com.acme.erp.dao", "com.acme.erp.model" ]
+      },
+      "com.acme.erp.web" : {
+        "components_count" : 4,
+        "total_dependencies_out" : 10,
+        "depends_on_packages" : [ "com.acme.erp.model", "com.acme.erp.service" ]
+      }
+    },
+    "total_components" : 20,
+    "total_loc" : 1006,
+    "components_with_secrets" : 5,
+    "shared_domain" : "com.acme.erp",
+    "secrets_locations" : [ ]
+  },
+  "proposals" : [ {
+    "id" : 0,
+    "name" : "Componente de Notification y Inventory",
+    "viability" : "Baja",
+    "clusters" : [ 0 ],
+    "components" : [ "com.acme.erp.dao.CustomerDAO", "com.acme.erp.model.Customer", "com.acme.erp.service.CustomerServiceBean", "com.acme.erp.service.InventoryServiceBean", "com.acme.erp.service.NotificationServiceBean" ],
+    "metrics" : {
+      "size" : 5,
+      "cohesion_avg" : 0.4166666666666667,
+      "external_coupling" : 0.5,
+      "internal_edge_density" : 0.2,
+      "data_jaccard" : 0.8,
+      "tables" : [ "customer" ],
+      "sensitive" : true,
+      "tables_source" : "jpa"
+    },
+    "signals" : {
+      "avg_cluster_size" : 6.0,
+      "cluster_count" : 1,
+      "total_components" : 6
+    },
+    "rationale" : [ "📊 Métricas de Calidad: CBO promedio 2,2 (acoplamiento entre objetos), LCOM promedio 0,25 (cohesión de métodos: 0=alta, 1=baja)", "❌ Baja cohesión (33%) - componentes poco relacionados que no comparten un propósito claro", "❌ Alto acoplamiento externo (50%) - fuertemente acoplado a otros módulos, dificultando la extracción independiente", "✅ CBO bajo (2,2) - acoplamiento entre clases controlado, fácil de mantener", "✅ LCOM bajo (0,25) - alta cohesión de métodos, clases con responsabilidad única bien definida", "✅ Tamaño adecuado (6 componentes) - módulo de tamaño manejable", "", "⛔ RAZONES POR LAS QUE ESTA DESCOMPOSICIÓN NO ES VIABLE:", "• Los componentes no comparten suficiente funcionalidad ni datos como para formar un módulo coherente. Extraerlos juntos crearía un módulo artificial sin un propósito de negocio claro.", "• El alto acoplamiento externo (50%) significa que este módulo depende fuertemente de otros componentes del sistema. Extraerlo como módulo independiente requeriría replicar o exponer demasiada funcionalidad de otros módulos, creando interfaces complejas y frágiles.", "", "💡 RECOMENDACIÓN: Mantener estos componentes en el monolito actual o reagrupar con otros componentes con los que compartan más funcionalidad y datos. Enfocarse primero en extraer módulos con viabilidad Alta o Media." ],
+    "recommended_actions" : [ "❌ NO implementar como microservicio en estado actual", "🔧 Requiere refactorización profunda o fusión con otros dominios", "💡 Evaluar si debe ser librería compartida o módulo interno" ],
+    "tables" : [ {
+      "name" : "CUSTOMERS",
+      "component" : "Componente de Notification y Inventory",
+      "source" : "DEFAULT"
+    }, {
+      "name" : "customer",
+      "component" : "Componente de Notification y Inventory",
+      "source" : "DEFAULT"
+    } ],
+    "legacy_entrypoint" : {
+      "type" : "service",
+      "primary_entry_class" : "com.acme.erp.service.CustomerServiceBean",
+      "exposed_operations" : [ ],
+      "endpoints" : [ ],
+      "description" : "Componente EJB sin endpoints REST detectados. Acceso vía JNDI o EJB remoto."
+    }
+  }, {
+    "id" : 1,
+    "name" : "Componente de Orderweb y Web",
+    "viability" : "Media",
+    "clusters" : [ 1 ],
+    "components" : [ "com.acme.erp.dao.OrderDAO", "com.acme.erp.messaging.OrderEventMDB", "com.acme.erp.model.Order", "com.acme.erp.model.OrderStatus", "com.acme.erp.service.OrderServiceBean", "com.acme.erp.service.OrderServiceLocal", "com.acme.erp.web.OrderAction", "com.acme.erp.web.OrderApiServlet", "com.acme.erp.web.OrderSoapResponse", "com.acme.erp.web.OrderWebService" ],
+    "metrics" : {
+      "size" : 10,
+      "cohesion_avg" : 0.696969696969697,
+      "external_coupling" : 0.3548387096774194,
+      "internal_edge_density" : 0.2222222222222222,
+      "data_jaccard" : 0.0,
+      "tables" : [ ],
+      "sensitive" : true,
+      "tables_source" : "jpa"
+    },
+    "signals" : {
+      "avg_cluster_size" : 10.0,
+      "cluster_count" : 1,
+      "total_components" : 10
+    },
+    "rationale" : [ "📊 Métricas de Calidad: CBO promedio 4,3 (acoplamiento entre objetos), LCOM promedio 0,63 (cohesión de métodos: 0=alta, 1=baja)", "⚠️ Cohesión moderada (55%) - componentes parcialmente relacionados; considerar refactorización para agrupar responsabilidades más claramente", "⚠️ Acoplamiento moderado (35%) - algunas dependencias externas; considerar aplicar patrones como facades o abstracciones para reducir acoplamiento", "✅ CBO bajo (4,3) - acoplamiento entre clases controlado, fácil de mantener", "❌ LCOM alto (0,63) - baja cohesión de métodos, clases con múltiples responsabilidades que deberían dividirse", "⚠️ Datos parcialmente cohesivos - revisar si las tablas compartidas realmente pertenecen al mismo dominio", "✅ Tamaño adecuado (10 componentes) - módulo de tamaño manejable" ],
+    "recommended_actions" : [ "🔧 Refactorizar para mejorar cohesión y reducir acoplamiento", "🔧 Aplicar principios SOLID (SRP, DIP) para separación de responsabilidades", "🔧 Considerar eventos asíncronos para reducir acoplamiento síncrono", "📋 Re-evaluar después de refactorización" ],
+    "tables" : [ {
+      "name" : "ORDERS",
+      "component" : "Componente de Orderweb y Web",
+      "source" : "DEFAULT"
+    }, {
+      "name" : "fetch",
+      "component" : "Componente de Orderweb y Web",
+      "source" : "DEFAULT"
+    }, {
+      "name" : "order",
+      "component" : "Componente de Orderweb y Web",
+      "source" : "DEFAULT"
+    }, {
+      "name" : "terminal",
+      "component" : "Componente de Orderweb y Web",
+      "source" : "DEFAULT"
+    } ],
+    "legacy_entrypoint" : {
+      "type" : "rest",
+      "primary_entry_class" : "com.acme.erp.web.OrderAction",
+      "exposed_operations" : [ "GET /api/orders", "PUT /api/orders", "SOAP /OrderService/getOrder", "SOAP /OrderService/getOrdersByCustomer", "SOAP /OrderService/getOrdersByStatus", "SOAP /OrderService/updateOrderStatus", "STRUTS_ACTION /order.do" ],
+      "endpoints" : [ {
+        "id" : "OrderAction.execute",
+        "path" : "/order.do",
+        "method" : "STRUTS_ACTION",
+        "description" : "Struts 1.x action — dispatches on 'action' request parameter",
+        "parameters" : [ ],
+        "request_body_schema" : null,
+        "response_schema" : null,
+        "component_id" : "com.acme.erp.web.OrderAction"
+      }, {
+        "id" : "OrderApiServlet.doGet",
+        "path" : "/api/orders",
+        "method" : "GET",
+        "description" : null,
+        "parameters" : [ ],
+        "request_body_schema" : null,
+        "response_schema" : null,
+        "component_id" : "com.acme.erp.web.OrderApiServlet"
+      }, {
+        "id" : "OrderApiServlet.doPut",
+        "path" : "/api/orders",
+        "method" : "PUT",
+        "description" : null,
+        "parameters" : [ ],
+        "request_body_schema" : null,
+        "response_schema" : null,
+        "component_id" : "com.acme.erp.web.OrderApiServlet"
+      }, {
+        "id" : "OrderWebService.getOrder",
+        "path" : "/OrderService/getOrder",
+        "method" : "SOAP",
+        "description" : null,
+        "parameters" : [ {
+          "name" : "orderId",
+          "in" : "body",
+          "type" : "Long",
+          "required" : true
+        } ],
+        "request_body_schema" : null,
+        "response_schema" : "OrderSoapResponse",
+        "component_id" : "com.acme.erp.web.OrderWebService"
+      }, {
+        "id" : "OrderWebService.getOrdersByCustomer",
+        "path" : "/OrderService/getOrdersByCustomer",
+        "method" : "SOAP",
+        "description" : null,
+        "parameters" : [ {
+          "name" : "customerId",
+          "in" : "body",
+          "type" : "Long",
+          "required" : true
+        } ],
+        "request_body_schema" : null,
+        "response_schema" : "List",
+        "component_id" : "com.acme.erp.web.OrderWebService"
+      }, {
+        "id" : "OrderWebService.getOrdersByStatus",
+        "path" : "/OrderService/getOrdersByStatus",
+        "method" : "SOAP",
+        "description" : null,
+        "parameters" : [ {
+          "name" : "status",
+          "in" : "body",
+          "type" : "String",
+          "required" : true
+        } ],
+        "request_body_schema" : null,
+        "response_schema" : "List",
+        "component_id" : "com.acme.erp.web.OrderWebService"
+      }, {
+        "id" : "OrderWebService.updateOrderStatus",
+        "path" : "/OrderService/updateOrderStatus",
+        "method" : "SOAP",
+        "description" : null,
+        "parameters" : [ {
+          "name" : "orderId",
+          "in" : "body",
+          "type" : "Long",
+          "required" : true
+        }, {
+          "name" : "newStatus",
+          "in" : "body",
+          "type" : "String",
+          "required" : true
+        } ],
+        "request_body_schema" : null,
+        "response_schema" : "OrderSoapResponse",
+        "component_id" : "com.acme.erp.web.OrderWebService"
+      } ],
+      "description" : "Servicio expuesto vía REST en /api/orders, /OrderService/getOrder, /OrderService/getOrdersByCustomer. Entrada principal: OrderAction."
+    }
+  }, {
+    "id" : 2,
+    "name" : "Componente de Negocio",
+    "viability" : "Baja",
+    "clusters" : [ 2 ],
+    "components" : [ "com.acme.erp.model.OrderItem", "com.acme.erp.service.OrderItemRequest" ],
+    "metrics" : {
+      "size" : 2,
+      "cohesion_avg" : 0.0,
+      "external_coupling" : 1.0,
+      "internal_edge_density" : 0.0,
+      "data_jaccard" : 0.0,
+      "tables" : [ ],
+      "sensitive" : false,
+      "tables_source" : "jpa"
+    },
+    "signals" : {
+      "avg_cluster_size" : 2.0,
+      "cluster_count" : 1,
+      "total_components" : 2
+    },
+    "rationale" : [ "📊 Métricas de Calidad: CBO promedio 1,0 (acoplamiento entre objetos), LCOM promedio 0,00 (cohesión de métodos: 0=alta, 1=baja)", "❌ Baja cohesión (0%) - componentes poco relacionados que no comparten un propósito claro", "❌ Alto acoplamiento externo (100%) - fuertemente acoplado a otros módulos, dificultando la extracción independiente", "✅ CBO bajo (1,0) - acoplamiento entre clases controlado, fácil de mantener", "⚠️ Datos parcialmente cohesivos - revisar si las tablas compartidas realmente pertenecen al mismo dominio", "⚠️ Tamaño muy pequeño (2 componentes) - considerar fusionar con otro módulo relacionado para evitar sobrefragmentación", "", "⛔ RAZONES POR LAS QUE ESTA DESCOMPOSICIÓN NO ES VIABLE:", "• Los componentes no comparten suficiente funcionalidad ni datos como para formar un módulo coherente. Extraerlos juntos crearía un módulo artificial sin un propósito de negocio claro.", "• El alto acoplamiento externo (100%) significa que este módulo depende fuertemente de otros componentes del sistema. Extraerlo como módulo independiente requeriría replicar o exponer demasiada funcionalidad de otros módulos, creando interfaces complejas y frágiles.", "• Con solo 2 componente(s), no justifica crear un módulo separado. El overhead de gestionar un módulo adicional (interfaces, versionado, deployment) superaría los beneficios.", "", "💡 RECOMENDACIÓN: Mantener estos componentes en el monolito actual o reagrupar con otros componentes con los que compartan más funcionalidad y datos. Enfocarse primero en extraer módulos con viabilidad Alta o Media." ],
+    "recommended_actions" : [ "❌ NO implementar como microservicio en estado actual", "🔧 Requiere refactorización profunda o fusión con otros dominios", "💡 Evaluar si debe ser librería compartida o módulo interno" ],
+    "tables" : [ {
+      "name" : "ORDER_ITEMS",
+      "component" : "Componente de Negocio",
+      "source" : "DEFAULT"
+    }, {
+      "name" : "order_item",
+      "component" : "Componente de Negocio",
+      "source" : "DEFAULT"
+    } ],
+    "legacy_entrypoint" : {
+      "type" : "internal",
+      "exposed_operations" : [ ],
+      "endpoints" : [ ],
+      "description" : "No se detectaron endpoints de entrada. Componente interno o de infraestructura."
+    }
+  }, {
+    "id" : 3,
+    "name" : "Componente de Negocio",
+    "viability" : "Baja",
+    "clusters" : [ 3 ],
+    "components" : [ "com.acme.erp.dao.ProductDAO", "com.acme.erp.model.Product" ],
+    "metrics" : {
+      "size" : 2,
+      "cohesion_avg" : 1.0,
+      "external_coupling" : 0.0,
+      "internal_edge_density" : 0.5,
+      "data_jaccard" : 0.8,
+      "tables" : [ "product" ],
+      "sensitive" : false,
+      "tables_source" : "jpa"
+    },
+    "signals" : {
+      "avg_cluster_size" : 2.0,
+      "cluster_count" : 1,
+      "total_components" : 2
+    },
+    "rationale" : [ "📊 Métricas de Calidad: CBO promedio 0,5 (acoplamiento entre objetos), LCOM promedio 0,00 (cohesión de métodos: 0=alta, 1=baja)", "✅ Alta cohesión interna (85%) - componentes bien relacionados que trabajan juntos hacia un objetivo común", "✅ Bajo acoplamiento externo (0%) - buena independencia y facilidad de mantenimiento", "✅ CBO bajo (0,5) - acoplamiento entre clases controlado, fácil de mantener", "✅ LCOM bajo (0,00) - alta cohesión de métodos, clases con responsabilidad única bien definida", "⚠️ Tamaño muy pequeño (2 componentes) - considerar fusionar con otro módulo relacionado para evitar sobrefragmentación", "", "⛔ RAZONES POR LAS QUE ESTA DESCOMPOSICIÓN NO ES VIABLE:", "• Con solo 2 componente(s), no justifica crear un módulo separado. El overhead de gestionar un módulo adicional (interfaces, versionado, deployment) superaría los beneficios.", "", "💡 RECOMENDACIÓN: Mantener estos componentes en el monolito actual o reagrupar con otros componentes con los que compartan más funcionalidad y datos. Enfocarse primero en extraer módulos con viabilidad Alta o Media." ],
+    "recommended_actions" : [ "❌ NO implementar como microservicio en estado actual", "🔧 Requiere refactorización profunda o fusión con otros dominios", "💡 Evaluar si debe ser librería compartida o módulo interno" ],
+    "tables" : [ {
+      "name" : "PRODUCTS",
+      "component" : "Componente de Negocio",
+      "source" : "DEFAULT"
+    }, {
+      "name" : "product",
+      "component" : "Componente de Negocio",
+      "source" : "DEFAULT"
+    } ],
+    "legacy_entrypoint" : {
+      "type" : "internal",
+      "exposed_operations" : [ ],
+      "endpoints" : [ ],
+      "description" : "No se detectaron endpoints de entrada. Componente interno o de infraestructura."
+    }
+  } ],
+  "support_libraries" : [ {
+    "id" : 4,
+    "name" : "Infraestructura y Configuración Filtrada",
+    "clusters" : [ ],
+    "components" : [ "com.acme.erp.config.AppConfig" ]
+  } ],
+  "summary" : "ANÁLISIS DE ARQUITECTURA - COMPONENTES AGRUPADOS\n═════════════════════════════════════════════════\n\n📋 Módulos Identificados por Cohesión/Acoplamiento:\n───────────────────────────────────────────────────\n• Componente de Notification y Inventory → Clusters 0 (5 componentes)\n• Componente de Orderweb y Web → Clusters 1 (10 componentes)\n• Componente de Negocio → Clusters 2 (2 componentes)\n• Componente de Negocio → Clusters 3 (2 componentes)\n\n📚 Librerías de Soporte:\n────────────────────────\n• Infraestructura y Configuración Filtrada → Clusters \n\n📌 Análisis de Cohesión:\n────────────────────────\n✅ Alta cohesión: 0 módulo(s) - Componentes fuertemente relacionados\n⚠️ Media cohesión: 1 módulo(s) - Cohesión moderada\n❌ Baja cohesión: 3 módulo(s) - Componentes débilmente relacionados\n"
+}
