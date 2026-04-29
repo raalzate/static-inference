@@ -61,13 +61,25 @@ java -jar target/java-dependency-extractor.jar --mcp
 
 Ver [MCP.md](MCP.md) para documentación completa del servidor MCP, herramientas disponibles y configuración.
 
+#### Skill para Claude Code (consumer-side)
+
+Junto al MCP se distribuye un skill de Claude Code (`skills/static-inference-expert/`) que automatiza el flujo: invoca las herramientas MCP, aplica reglas de decisión sobre los atributos JSON (viabilidad, cohesión, acoplamiento, datos sensibles, layer, code_issues) y emite un reporte de extracción con evidencia citada. Incluye scripts batch (`triage-proposals.sh`, `risk-report.sh`) y un hook `PostToolUse` para reporte automático.
+
+Los proyectos que consumen el MCP pueden copiarlo a su `.claude/skills/`:
+
+```bash
+cp -R /path/to/static-inference/skills/static-inference-expert /your-project/.claude/skills/
+```
+
+Ver [skills/README.md](skills/README.md) y [skills/static-inference-expert/INSTALL.md](skills/static-inference-expert/INSTALL.md) para la guía completa de instalación.
+
 ### Archivos Generados
 
 La herramienta genera automáticamente **3 archivos JSON** especializados:
 
 1. **`output.json`** - Grafo completo de dependencias con todos los componentes.
 2. **`output_architecture.json`** - Propuesta consolidada de microservicios con clasificación de viabilidad.
-3. **`output_entrypoints.json`** - Contratos de API (OpenAPI) extraídos de controladores y listeners.
+3. **`output_entrypoints.json`** - Contratos de API (endpoints REST + listeners de mensajería) en formato propio (`endpoints[]` + `schemas{}`), no OpenAPI 3.0.
 
 ## 📋 Referencia de Salidas
 
@@ -83,14 +95,24 @@ Contiene el análisis exhaustivo de todos los componentes y sus relaciones:
       "layer": "Negocio",
       "tables_used": ["users"],
       "calls_out": ["com.example.UserRepository"],
-      "metrics": {
-         "cbo": 5,
-         "lcom": 1.2
-      }
+      "calls_in": [],
+      "sensitive_data": false,
+      "messaging_type": null,
+      "messaging_role": null,
+      "web_type": "spring-rest",
+      "web_role": "controller",
+      "cbo": 5,
+      "lcom": 0.3,
+      "code_issues": []
     }
-  ]
+  ],
+  "edges": [],
+  "api_contracts": [],
+  "meta": { "source": "spoon", "collected_at": "2026-04-29T12:00:00Z" }
 }
 ```
+
+> Los campos `cbo` y `lcom` van planos en cada componente, no anidados bajo `metrics`. La detección de lenguaje se hace vía `meta.source` (`spoon` para Java, `dotnet` para .NET).
 
 
 ### 2. Arquitectura Consolidada (`output_architecture.json`)
@@ -127,13 +149,19 @@ Propuesta final de agrupación lógica:
     }
   ],
   "support_libraries": [...],
-  "viability_summary": {
-    "alta": 2,
-    "media": 1,
-    "baja": 0
-  }
+  "project_metadata": {
+    "external_dependencies": { "...": "GAV → versión resuelta" },
+    "package_dependencies": { "...": "package → { components_count, depends_on_packages[] }" },
+    "total_components": 20,
+    "total_loc": 1450,
+    "components_with_secrets": ["..."],
+    "shared_domain": { "...": "..." }
+  },
+  "summary": "ANÁLISIS DE ARQUITECTURA - COMPONENTES AGRUPADOS\n..."
 }
 ```
+
+> El conteo `Alta/Media/Baja` se imprime dentro del `summary` (string pre-formateado en español, listo para mostrar). No existe un objeto `viability_summary` — derívalo agrupando `proposals[*].viability` si lo necesitas estructurado. `project_metadata.secrets_locations` (mapa `componentId → [file:line]`) sólo aparece cuando hay componentes con `sensitive_data == true`.
 
 **Clasificación de Viabilidad:**
 - **Alta (≥0.7)**: Listos para implementar
@@ -629,6 +657,8 @@ Los resultados de tests y reportes de analisis se publican como artifacts en cad
 - [MCP.md](MCP.md) - Servidor MCP: herramientas, configuracion e integracion con asistentes IA
 - [ALGORITHMS.md](ALGORITHMS.md) - Deep dive tecnico en algoritmos de consolidacion
 - [CONFIGURATION.md](CONFIGURATION.md) - Guia de configuracion y personalizacion
+- [skills/README.md](skills/README.md) - Skills distribuibles para Claude Code
+- [skills/static-inference-expert/INSTALL.md](skills/static-inference-expert/INSTALL.md) - Instalacion del skill consumer-side
 
 ## 🤝 Contribución
 
@@ -677,7 +707,17 @@ src/main/dotnet/DotNetAnalyzer/        # Analizador .NET (Roslyn)
 
 src/test/java/                         # Tests JUnit 5
 src/test/dotnet/                       # Tests xUnit
+
+skills/                                # Skills distribuibles para Claude Code
+└── static-inference-expert/           # Skill consumer-side del MCP
+    ├── SKILL.md                       # Manifest auto-cargado
+    ├── INSTALL.md                     # Guia de instalacion
+    ├── references/                    # decision-rules, json-schema, mcp-tools, build-setup
+    ├── scripts/                       # run-analysis, triage-proposals, risk-report
+    └── hooks/                         # PostToolUse hook para reporte automatico
+
 .github/workflows/ci.yml              # Pipeline CI/CD
-.mcp.json                             # Configuracion del servidor MCP
+.mcp.json                             # Configuracion activa del servidor MCP
+mcp-config.example.json               # Template de configuracion para consumers
 ```
 
