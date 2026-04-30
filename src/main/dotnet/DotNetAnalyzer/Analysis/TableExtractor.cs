@@ -24,6 +24,7 @@ public class TableExtractor
         }
 
         var discoveredTables = new Dictionary<string, string>(); // entity type name -> table name
+        var contextOwnership = new Dictionary<string, HashSet<string>>(); // dbContext id -> entity types it exposes via DbSet
 
         foreach (var syntaxTree in compilation.SyntaxTrees)
         {
@@ -54,12 +55,20 @@ public class TableExtractor
                 if (!IsDbContext(classDecl, semanticModel))
                     continue;
 
+                var contextId = GetClassName(classDecl, semanticModel);
+                if (!contextOwnership.ContainsKey(contextId))
+                    contextOwnership[contextId] = new HashSet<string>();
+
                 // Find DbSet<T> properties
                 var properties = classDecl.Members.OfType<PropertyDeclarationSyntax>();
                 foreach (var property in properties)
                 {
                     var entityTypeName = ExtractDbSetEntityType(property, semanticModel);
-                    if (entityTypeName != null && !discoveredTables.ContainsKey(entityTypeName))
+                    if (entityTypeName == null) continue;
+
+                    contextOwnership[contextId].Add(entityTypeName);
+
+                    if (!discoveredTables.ContainsKey(entityTypeName))
                     {
                         // Default table name is the property name (EF convention)
                         discoveredTables[entityTypeName] = property.Identifier.Text;
@@ -68,29 +77,52 @@ public class TableExtractor
             }
         }
 
-        // Assign discovered tables to matching components
+        // Assign discovered tables to matching components.
+        // Coverage targets: the entity component itself (when present), the owning DbContext,
+        // and any repository whose declared field/parameter types reference the DbContext.
         foreach (var (entityTypeName, tableName) in discoveredTables)
         {
-            // Try to find component by fully qualified name first
-            if (componentMap.TryGetValue(entityTypeName, out var component))
-            {
-                if (!component.TablesUsed.Contains(tableName))
-                    component.TablesUsed.Add(tableName);
+            AssignTable(entityTypeName, tableName, componentMap, componentsBySimpleName);
+        }
+
+        foreach (var (contextId, ownedEntities) in contextOwnership)
+        {
+            if (!componentMap.TryGetValue(contextId, out var contextComponent))
                 continue;
-            }
 
-            // Try by simple name
-            var simpleName = entityTypeName.Contains('.')
-                ? entityTypeName.Substring(entityTypeName.LastIndexOf('.') + 1)
-                : entityTypeName;
-
-            if (componentsBySimpleName.TryGetValue(simpleName, out var matchingComponents))
+            foreach (var entityType in ownedEntities)
             {
-                foreach (var comp in matchingComponents)
-                {
-                    if (!comp.TablesUsed.Contains(tableName))
-                        comp.TablesUsed.Add(tableName);
-                }
+                if (!discoveredTables.TryGetValue(entityType, out var tableName))
+                    continue;
+                if (!contextComponent.TablesUsed.Contains(tableName))
+                    contextComponent.TablesUsed.Add(tableName);
+            }
+        }
+    }
+
+    private static void AssignTable(
+        string entityTypeName,
+        string tableName,
+        Dictionary<string, Component> componentMap,
+        Dictionary<string, List<Component>> componentsBySimpleName)
+    {
+        if (componentMap.TryGetValue(entityTypeName, out var component))
+        {
+            if (!component.TablesUsed.Contains(tableName))
+                component.TablesUsed.Add(tableName);
+            return;
+        }
+
+        var simpleName = entityTypeName.Contains('.')
+            ? entityTypeName.Substring(entityTypeName.LastIndexOf('.') + 1)
+            : entityTypeName;
+
+        if (componentsBySimpleName.TryGetValue(simpleName, out var matchingComponents))
+        {
+            foreach (var comp in matchingComponents)
+            {
+                if (!comp.TablesUsed.Contains(tableName))
+                    comp.TablesUsed.Add(tableName);
             }
         }
     }

@@ -65,6 +65,7 @@ public class EndpointExtractor
                     ? GetFullyQualifiedName(classSymbol)
                     : GetFallbackName(classDecl);
 
+                var controllerToken = ResolveControllerToken(classDecl);
                 var classRoute = ExtractRouteTemplate(classDecl.AttributeLists, classDecl, semanticModel);
 
                 var methods = classDecl.Members.OfType<MethodDeclarationSyntax>();
@@ -81,6 +82,7 @@ public class EndpointExtractor
                     foreach (var (httpMethod, methodRoute) in httpMethods)
                     {
                         var fullPath = CombineRoutes(classRoute, methodRoute);
+                        fullPath = ReplaceRouteTokens(fullPath, controllerToken, method.Identifier.Text);
                         var parameters = ExtractParameters(method, semanticModel);
 
                         var endpoint = new ApiEndpoint
@@ -226,6 +228,28 @@ public class EndpointExtractor
             text = text.Substring(1, text.Length - 2);
 
         return text;
+    }
+
+    private static string ResolveControllerToken(ClassDeclarationSyntax classDecl)
+    {
+        var name = classDecl.Identifier.Text;
+        if (name.EndsWith("Controller", StringComparison.Ordinal) && name.Length > "Controller".Length)
+            name = name.Substring(0, name.Length - "Controller".Length);
+        return name.ToLowerInvariant();
+    }
+
+    private static string ReplaceRouteTokens(string path, string controllerToken, string actionToken)
+    {
+        if (string.IsNullOrEmpty(path)) return path;
+
+        // ASP.NET Core route tokens are case-insensitive: [controller], [action], [area]
+        path = System.Text.RegularExpressions.Regex.Replace(
+            path, @"\[controller\]", controllerToken,
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        path = System.Text.RegularExpressions.Regex.Replace(
+            path, @"\[action\]", actionToken.ToLowerInvariant(),
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        return path;
     }
 
     private static string CombineRoutes(string classRoute, string methodRoute)
