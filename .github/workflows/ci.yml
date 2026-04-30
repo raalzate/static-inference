@@ -183,20 +183,20 @@ jobs:
       - name: Build Java fat jar
         run: mvn -B -DskipTests clean package
 
-      - name: Publish .NET analyzer
-        run: |
-          dotnet publish src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj \
-            -c Release \
-            -o dist/dotnet-analyzer
-
-      - name: Stage distribution
+      - name: Stage distribution layout
         run: |
           mkdir -p dist/static-inference-${RELEASE_TAG}/java
           mkdir -p dist/static-inference-${RELEASE_TAG}/dotnet
           cp target/java-dependency-extractor.jar dist/static-inference-${RELEASE_TAG}/java/
-          cp -r dist/dotnet-analyzer/. dist/static-inference-${RELEASE_TAG}/dotnet/
           cp run-extractor.sh dist/static-inference-${RELEASE_TAG}/ 2>/dev/null || true
-          cp README.md CONFIGURATION.md ALGORITHMS.md dist/static-inference-${RELEASE_TAG}/ 2>/dev/null || true
+
+      - name: Publish .NET analyzer into dist
+        run: |
+          dotnet publish src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj \
+            -c Release \
+            -o "dist/static-inference-${RELEASE_TAG}/dotnet"
+          echo "--- dotnet dist contents ---"
+          ls -la "dist/static-inference-${RELEASE_TAG}/dotnet"
 
       - name: Create archives
         working-directory: dist
