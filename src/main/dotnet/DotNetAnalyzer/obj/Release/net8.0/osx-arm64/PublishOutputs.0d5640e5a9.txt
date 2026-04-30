@@ -1,2 +1,10 @@
 /Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/dotnet-analyzer.pdb
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/BuildHost-net472/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe.config
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/BuildHost-net472/Microsoft.CodeAnalysis.Workspaces.pdb
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/BuildHost-net472/Microsoft.CodeAnalysis.pdb
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/BuildHost-netcore/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.dll.config
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/BuildHost-netcore/Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.runtimeconfig.json
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/BuildHost-netcore/Microsoft.CodeAnalysis.Workspaces.pdb
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/BuildHost-netcore/Microsoft.CodeAnalysis.pdb
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/dotnet-analyzer.dll.config
 /Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/dotnet-analyzer

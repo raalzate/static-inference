@@ -141,12 +141,28 @@ jobs:
 
   # ─── Release distribution (main-merge or tag) ──────────────────
   release:
-    name: Build & Publish Distribution
+    name: Build & Publish Distribution (${{ matrix.rid }})
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-latest
     needs: [java-build-and-test, dotnet-build-and-test]
     permissions:
       contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: linux-x64
+            archive: tar.gz
+            ext: ''
+          - rid: osx-arm64
+            archive: tar.gz
+            ext: ''
+          - rid: osx-x64
+            archive: tar.gz
+            ext: ''
+          - rid: win-x64
+            archive: zip
+            ext: '.exe'
 
     steps:
       - uses: actions/checkout@v4
@@ -164,9 +180,12 @@ jobs:
             TAG="main-${GITHUB_RUN_NUMBER}-${SHORT_SHA}"
             PRERELEASE=true
           fi
+          DIST_NAME="static-inference-${TAG}-${{ matrix.rid }}"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           echo "prerelease=${PRERELEASE}" >> "$GITHUB_OUTPUT"
+          echo "dist_name=${DIST_NAME}" >> "$GITHUB_OUTPUT"
           echo "RELEASE_TAG=${TAG}" >> "$GITHUB_ENV"
+          echo "DIST_NAME=${DIST_NAME}" >> "$GITHUB_ENV"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -185,35 +204,103 @@ jobs:
 
       - name: Stage distribution layout
         run: |
-          mkdir -p dist/static-inference-${RELEASE_TAG}/java
-          mkdir -p dist/static-inference-${RELEASE_TAG}/dotnet
-          cp target/java-dependency-extractor.jar dist/static-inference-${RELEASE_TAG}/java/
-          cp run-extractor.sh dist/static-inference-${RELEASE_TAG}/ 2>/dev/null || true
-          cp run-extractor.ps1 dist/static-inference-${RELEASE_TAG}/ 2>/dev/null || true
+          mkdir -p "dist/${DIST_NAME}/bin"
+          cp target/java-dependency-extractor.jar "dist/${DIST_NAME}/bin/"
 
-      - name: Publish .NET analyzer into dist
+      - name: Publish .NET analyzer (self-contained, single-file)
         run: |
           dotnet publish src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj \
             -c Release \
-            -o "dist/static-inference-${RELEASE_TAG}/dotnet"
-          echo "--- dotnet dist contents ---"
-          ls -la "dist/static-inference-${RELEASE_TAG}/dotnet"
+            -r ${{ matrix.rid }} \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -p:EnableCompressionInSingleFile=true \
+            -p:DebugType=None \
+            -p:DebugSymbols=false \
+            -o "dist/${DIST_NAME}/bin"
+          echo "--- bin contents ---"
+          ls -la "dist/${DIST_NAME}/bin"
 
-      - name: Create archives
+      - name: Generate README.md
+        run: |
+          BIN_DOTNET="bin/dotnet-analyzer${{ matrix.ext }}"
+          cat > "dist/${DIST_NAME}/README.md" <<EOF
+          # static-inference ${RELEASE_TAG}
+
+          Static-analysis toolkit that infers microservice dependencies from Java
+          and .NET source code. Build target: \`${{ matrix.rid }}\`.
+
+          ## Contents
+
+          - \`bin/java-dependency-extractor.jar\` — Java analyzer (Spoon-based fat jar)
+          - \`${BIN_DOTNET}\` — .NET analyzer (self-contained single-file binary; .NET runtime bundled)
+
+          ## Requirements
+
+          - Java analyzer: **JRE/JDK 17+**
+          - .NET analyzer: **none** — runtime is bundled inside the binary.
+
+          ## Usage
+
+          ### Analyze a Java project
+
+          \`\`\`bash
+          java -jar bin/java-dependency-extractor.jar <project-path> <output-file>
+          \`\`\`
+
+          Example:
+
+          \`\`\`bash
+          java -jar bin/java-dependency-extractor.jar ./my-spring-app graph.json
+          \`\`\`
+
+          Generated files:
+          - \`graph.json\` — full dependency graph
+          - \`graph_architecture.json\` — proposed microservice split
+          - \`output_web.json\` — web components (when detected)
+
+          ### Analyze a .NET project
+
+          The .NET analyzer writes the dependency graph to **stdout** — redirect
+          it to a file.
+
+          \`\`\`bash
+          ./${BIN_DOTNET} <path-to-.sln-or-.csproj-or-folder> > graph.json
+          \`\`\`
+
+          Example:
+
+          \`\`\`bash
+          ./${BIN_DOTNET} ./dotnet-ecommerce > output.json
+          \`\`\`
+
+          ## Verification
+
+          \`\`\`bash
+          sha256sum -c checksums.sha256
+          \`\`\`
+          EOF
+
+      - name: Create archive
         working-directory: dist
         run: |
-          tar -czf static-inference-${RELEASE_TAG}.tar.gz static-inference-${RELEASE_TAG}
-          zip -r static-inference-${RELEASE_TAG}.zip static-inference-${RELEASE_TAG}
-          sha256sum static-inference-${RELEASE_TAG}.tar.gz static-inference-${RELEASE_TAG}.zip > checksums.sha256
+          chmod +x "${DIST_NAME}/bin/dotnet-analyzer${{ matrix.ext }}" 2>/dev/null || true
+          if [[ "${{ matrix.archive }}" == "zip" ]]; then
+            zip -r "${DIST_NAME}.zip" "${DIST_NAME}"
+            sha256sum "${DIST_NAME}.zip" > "${DIST_NAME}.sha256"
+          else
+            tar -czf "${DIST_NAME}.tar.gz" "${DIST_NAME}"
+            sha256sum "${DIST_NAME}.tar.gz" > "${DIST_NAME}.sha256"
+          fi
 
       - name: Upload distribution artifact
         uses: actions/upload-artifact@v4
         with:
-          name: static-inference-${{ steps.rel.outputs.tag }}
+          name: ${{ steps.rel.outputs.dist_name }}
           path: |
-            dist/static-inference-${{ steps.rel.outputs.tag }}.tar.gz
-            dist/static-inference-${{ steps.rel.outputs.tag }}.zip
-            dist/checksums.sha256
+            dist/${{ steps.rel.outputs.dist_name }}.${{ matrix.archive }}
+            dist/${{ steps.rel.outputs.dist_name }}.sha256
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
@@ -222,7 +309,6 @@ jobs:
           name: ${{ steps.rel.outputs.tag }}
           prerelease: ${{ steps.rel.outputs.prerelease }}
           files: |
-            dist/static-inference-${{ steps.rel.outputs.tag }}.tar.gz
-            dist/static-inference-${{ steps.rel.outputs.tag }}.zip
-            dist/checksums.sha256
+            dist/${{ steps.rel.outputs.dist_name }}.${{ matrix.archive }}
+            dist/${{ steps.rel.outputs.dist_name }}.sha256
           generate_release_notes: true

@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>dotnet-analyzer</AssemblyName>
     <RootNamespace>DotNetAnalyzer</RootNamespace>
+    <RollForward>LatestMajor</RollForward>
   </PropertyGroup>
 
   <ItemGroup>
