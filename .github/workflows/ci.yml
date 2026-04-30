@@ -189,6 +189,7 @@ jobs:
           mkdir -p dist/static-inference-${RELEASE_TAG}/dotnet
           cp target/java-dependency-extractor.jar dist/static-inference-${RELEASE_TAG}/java/
           cp run-extractor.sh dist/static-inference-${RELEASE_TAG}/ 2>/dev/null || true
+          cp run-extractor.ps1 dist/static-inference-${RELEASE_TAG}/ 2>/dev/null || true
 
       - name: Publish .NET analyzer into dist
         run: |
