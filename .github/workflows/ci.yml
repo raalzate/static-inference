@@ -148,7 +148,7 @@ jobs:
     permissions:
       contents: write
     env:
-      VERSION: ${{ github.ref_name }}
+      RELEASE_TAG: ${{ github.ref_name }}
 
     steps:
       - uses: actions/checkout@v4
@@ -176,34 +176,34 @@ jobs:
 
       - name: Stage distribution
         run: |
-          mkdir -p dist/static-inference-${VERSION}/java
-          mkdir -p dist/static-inference-${VERSION}/dotnet
-          cp target/java-dependency-extractor.jar dist/static-inference-${VERSION}/java/
-          cp -r dist/dotnet-analyzer/. dist/static-inference-${VERSION}/dotnet/
-          cp run-extractor.sh dist/static-inference-${VERSION}/ 2>/dev/null || true
-          cp README.md CONFIGURATION.md ALGORITHMS.md dist/static-inference-${VERSION}/ 2>/dev/null || true
+          mkdir -p dist/static-inference-${RELEASE_TAG}/java
+          mkdir -p dist/static-inference-${RELEASE_TAG}/dotnet
+          cp target/java-dependency-extractor.jar dist/static-inference-${RELEASE_TAG}/java/
+          cp -r dist/dotnet-analyzer/. dist/static-inference-${RELEASE_TAG}/dotnet/
+          cp run-extractor.sh dist/static-inference-${RELEASE_TAG}/ 2>/dev/null || true
+          cp README.md CONFIGURATION.md ALGORITHMS.md dist/static-inference-${RELEASE_TAG}/ 2>/dev/null || true
 
       - name: Create archives
         working-directory: dist
         run: |
-          tar -czf static-inference-${VERSION}.tar.gz static-inference-${VERSION}
-          zip -r static-inference-${VERSION}.zip static-inference-${VERSION}
-          sha256sum static-inference-${VERSION}.tar.gz static-inference-${VERSION}.zip > checksums.sha256
+          tar -czf static-inference-${RELEASE_TAG}.tar.gz static-inference-${RELEASE_TAG}
+          zip -r static-inference-${RELEASE_TAG}.zip static-inference-${RELEASE_TAG}
+          sha256sum static-inference-${RELEASE_TAG}.tar.gz static-inference-${RELEASE_TAG}.zip > checksums.sha256
 
       - name: Upload distribution artifact
         uses: actions/upload-artifact@v4
         with:
-          name: static-inference-${{ env.VERSION }}
+          name: static-inference-${{ env.RELEASE_TAG }}
           path: |
-            dist/static-inference-${{ env.VERSION }}.tar.gz
-            dist/static-inference-${{ env.VERSION }}.zip
+            dist/static-inference-${{ env.RELEASE_TAG }}.tar.gz
+            dist/static-inference-${{ env.RELEASE_TAG }}.zip
             dist/checksums.sha256
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/static-inference-${{ env.VERSION }}.tar.gz
-            dist/static-inference-${{ env.VERSION }}.zip
+            dist/static-inference-${{ env.RELEASE_TAG }}.tar.gz
+            dist/static-inference-${{ env.RELEASE_TAG }}.zip
             dist/checksums.sha256
           generate_release_notes: true
