@@ -45,7 +45,7 @@ public class SpoonLauncherFactory {
         } else {
             logger.info("Using no-classpath mode for reliable analysis");
             launcher.getEnvironment().setNoClasspath(true);
-            launcher.getEnvironment().setComplianceLevel(8);
+            launcher.getEnvironment().setComplianceLevel(17);
         }
         
         return launcher;
