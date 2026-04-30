@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("dotnet-analyzer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+854d1505e6f6ad01bfd70ce4d57ff91d321d858f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+19d926f0cf6b834397233407049e024ab2395af3")]
 [assembly: System.Reflection.AssemblyProductAttribute("dotnet-analyzer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("dotnet-analyzer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
