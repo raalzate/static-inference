@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>NominaDestajo</RootNamespace>
+    <AssemblyName>NominaDestajo</AssemblyName>
+    <UserSecretsId>nomin430-dev-secrets</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- EF Core 8 + SQL Server -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.*" PrivateAssets="all" />
+
+    <!-- CQRS + MediatR -->
+    <PackageReference Include="MediatR" Version="12.*" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.*" />
+
+    <!-- Auth JWT -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.*" />
+
+    <!-- Swagger -->
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.*" />
+
+    <!-- Excel export (observaciones) -->
+    <PackageReference Include="ClosedXML" Version="0.102.*" />
+
+    <!-- Health checks -->
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="8.*" />
+
+    <!-- Validación -->
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.*" />
+
+    <!-- Logging estructurado -->
+    <PackageReference Include="Serilog.AspNetCore" Version="8.*" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.*" />
+  </ItemGroup>
+
+
+</Project>

@@ -1,0 +1,105 @@
+{
+  "endpoints" : [ {
+    "id" : "POST /api/nomina/destajo/liquidar",
+    "path" : "/api/nomina/destajo/liquidar",
+    "method" : "POST",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "request",
+      "in" : "body",
+      "type" : "EjecutarLiquidacionRequest",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "NominaDestajo.Api.Controllers.NominaDestajoController"
+  }, {
+    "id" : "GET /api/nomina/destajo/{cia}/{sucursal}/{ano}/{periodo}",
+    "path" : "/api/nomina/destajo/{cia}/{sucursal}/{ano}/{periodo}",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "subper",
+      "in" : "query",
+      "type" : "string?",
+      "required" : false
+    }, {
+      "name" : "empleado",
+      "in" : "query",
+      "type" : "string?",
+      "required" : false
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "NominaDestajo.Api.Controllers.NominaDestajoController"
+  }, {
+    "id" : "GET /api/nomina/destajo/{cia}/{sucursal}/{ano}/{periodo}/{subper}/observaciones/export",
+    "path" : "/api/nomina/destajo/{cia}/{sucursal}/{ano}/{periodo}/{subper}/observaciones/export",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "semana",
+      "in" : "query",
+      "type" : "string",
+      "required" : false
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "NominaDestajo.Api.Controllers.NominaDestajoController"
+  }, {
+    "id" : "GET /api/nomina/destajo/verificar-acumulados",
+    "path" : "/api/nomina/destajo/verificar-acumulados",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "cia",
+      "in" : "query",
+      "type" : "string",
+      "required" : true
+    }, {
+      "name" : "sucursal",
+      "in" : "query",
+      "type" : "string",
+      "required" : true
+    }, {
+      "name" : "ano",
+      "in" : "query",
+      "type" : "string",
+      "required" : true
+    }, {
+      "name" : "periodo",
+      "in" : "query",
+      "type" : "string",
+      "required" : true
+    }, {
+      "name" : "subper",
+      "in" : "query",
+      "type" : "string",
+      "required" : true
+    }, {
+      "name" : "secIni",
+      "in" : "query",
+      "type" : "string",
+      "required" : true
+    }, {
+      "name" : "empIni",
+      "in" : "query",
+      "type" : "string",
+      "required" : true
+    }, {
+      "name" : "secFin",
+      "in" : "query",
+      "type" : "string",
+      "required" : true
+    }, {
+      "name" : "empFin",
+      "in" : "query",
+      "type" : "string",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "NominaDestajo.Api.Controllers.NominaDestajoController"
+  } ],
+  "schemas" : { }
+}

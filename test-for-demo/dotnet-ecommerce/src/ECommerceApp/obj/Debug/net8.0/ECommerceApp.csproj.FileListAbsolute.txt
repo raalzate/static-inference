@@ -1,0 +1,8 @@
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/test-for-demo/dotnet-ecommerce/src/ECommerceApp/obj/Debug/net8.0/ECommerceApp.csproj.AssemblyReference.cache
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/test-for-demo/dotnet-ecommerce/src/ECommerceApp/obj/Debug/net8.0/rpswa.dswa.cache.json
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/test-for-demo/dotnet-ecommerce/src/ECommerceApp/obj/Debug/net8.0/ECommerceApp.GeneratedMSBuildEditorConfig.editorconfig
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/test-for-demo/dotnet-ecommerce/src/ECommerceApp/obj/Debug/net8.0/ECommerceApp.AssemblyInfoInputs.cache
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/test-for-demo/dotnet-ecommerce/src/ECommerceApp/obj/Debug/net8.0/ECommerceApp.AssemblyInfo.cs
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/test-for-demo/dotnet-ecommerce/src/ECommerceApp/obj/Debug/net8.0/ECommerceApp.csproj.CoreCompileInputs.cache
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/test-for-demo/dotnet-ecommerce/src/ECommerceApp/obj/Debug/net8.0/ECommerceApp.MvcApplicationPartsAssemblyInfo.cache
+/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/test-for-demo/dotnet-ecommerce/src/ECommerceApp/obj/Debug/net8.0/ECommerceApp.sourcelink.json

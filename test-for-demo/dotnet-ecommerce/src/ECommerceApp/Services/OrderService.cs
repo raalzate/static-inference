@@ -37,38 +37,87 @@ public class OrderService : IOrderService
         return order == null ? null : MapToDto(order);
     }
 
+    // CC = 18 — god method grew over 3 sprints without refactor
     public async Task<OrderDto> PlaceOrderAsync(CreateOrderDto dto)
     {
-        var items = new List<OrderItem>();
-        decimal total = 0;
-
-        foreach (var item in dto.Items)
+        try
         {
-            var product = await _productRepository.GetByIdAsync(item.ProductId)
-                ?? throw new KeyNotFoundException($"Product {item.ProductId} not found");
+            if (dto.Items == null || !dto.Items.Any())
+                throw new ArgumentException("Order must contain at least one item");
 
-            items.Add(new OrderItem
+            var items = new List<OrderItem>();
+            decimal total = 0;
+            bool hasLowStockItem = false;
+
+            foreach (var item in dto.Items)
             {
-                ProductId = item.ProductId,
-                Quantity = item.Quantity,
-                UnitPrice = product.Price
-            });
-            total += product.Price * item.Quantity;
+                var product = await _productRepository.GetByIdAsync(item.ProductId);
+                if (product == null)
+                {
+                    Console.WriteLine($"[WARN] Product {item.ProductId} not found, skipping");
+                    continue;
+                }
+
+                if (product.Stock < item.Quantity)
+                    throw new InvalidOperationException($"Insufficient stock for product {product.Name}");
+
+                if (product.Stock < 5)
+                    hasLowStockItem = true;
+
+                items.Add(new OrderItem
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    UnitPrice = product.Price
+                });
+                total += product.Price * item.Quantity;
+            }
+
+            decimal discount = 0;
+            if (total > 10000 && dto.CustomerId > 0)
+                discount = total * 0.15m;
+            else if (total > 5000)
+                discount = total * 0.10m;
+            else if (total > 1000)
+                discount = total * 0.05m;
+            else if (total > 500 && items.Count >= 3)
+                discount = total * 0.02m;
+
+            if (discount > 0 && dto.CustomerId > 0)
+            {
+                Console.WriteLine($"[DISCOUNT] Customer {dto.CustomerId} gets {discount:C} off");
+                total -= discount;
+            }
+
+            bool isFraudSuspect = dto.Items.Count > 20 || total > 50000;
+            if (isFraudSuspect)
+            {
+                Console.WriteLine($"[FRAUD] Suspicious order from customer {dto.CustomerId}, flagging for review");
+                throw new InvalidOperationException("Order flagged for fraud review");
+            }
+
+            var order = new Order
+            {
+                CustomerId = dto.CustomerId,
+                Items = items,
+                Total = total
+            };
+
+            var created = await _orderRepository.CreateAsync(order);
+
+            if (hasLowStockItem)
+                NotifyWarehouseAsync(created.Id, "LOW_STOCK_ALERT");
+
+            var ordersTopic = _configuration["Messaging:OrderPlacedTopic"];
+            await _publishEndpoint.Publish(new { OrderId = created.Id, created.Total, created.CustomerId, Discount = discount });
+
+            return MapToDto(created);
         }
-
-        var order = new Order
+        catch (Exception ex)
         {
-            CustomerId = dto.CustomerId,
-            Items = items,
-            Total = total
-        };
-
-        var created = await _orderRepository.CreateAsync(order);
-
-        var ordersTopic = _configuration["Messaging:OrderPlacedTopic"];
-        await _publishEndpoint.Publish(new { OrderId = created.Id, created.Total, created.CustomerId });
-
-        return MapToDto(created);
+            Console.WriteLine($"[ERROR] PlaceOrder failed: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task CancelOrderAsync(int orderId)
@@ -81,6 +130,20 @@ public class OrderService : IOrderService
     {
         await _orderRepository.UpdateStatusAsync(orderId, OrderStatus.Shipped);
         await _publishEndpoint.Publish(new { OrderId = orderId, Status = "Shipped" });
+    }
+
+    // async void: fire-and-forget sin manejo de errores observable
+    private async void NotifyWarehouseAsync(int orderId, string action)
+    {
+        try
+        {
+            Console.WriteLine($"[WAREHOUSE] Notifying for order {orderId}: {action}");
+            await _publishEndpoint.Publish(new { OrderId = orderId, Action = action, Timestamp = DateTime.UtcNow });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[WAREHOUSE] Notification failed silently: {ex.Message}");
+        }
     }
 
     private static OrderDto MapToDto(Order o) =>

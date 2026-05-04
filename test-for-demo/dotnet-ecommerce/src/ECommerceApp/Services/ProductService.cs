@@ -34,23 +34,56 @@ public class ProductService : IProductService
         return product == null ? null : MapToDto(product);
     }
 
+    // CC = 12 — validaciones acumuladas sin extraer a validator
     public async Task<ProductDto> CreateProductAsync(CreateProductDto dto)
     {
-        var product = new Product
+        if (dto.Price <= 0)
+            throw new ArgumentException("Price must be greater than zero");
+
+        if (dto.Stock < 0)
+            throw new ArgumentException("Stock cannot be negative");
+
+        if (string.IsNullOrEmpty(dto.Name))
+            throw new ArgumentException("Product name is required");
+
+        if (dto.Name.Length > 200 || dto.Name.Length < 2)
+            throw new ArgumentException("Product name must be between 2 and 200 characters");
+
+        if (dto.CategoryId <= 0)
+            throw new ArgumentException("Valid category is required");
+
+        if (dto.Price > 10000)
+            Console.WriteLine($"[WARN] High-value product being created: {dto.Name} at {dto.Price:C}");
+
+        if (dto.Stock > 10000 && dto.CategoryId != 1)
+            throw new ArgumentException("Stock exceeding 10000 is only allowed for category 1 (bulk goods)");
+
+        if (string.IsNullOrEmpty(dto.Description))
+            dto = dto with { Description = $"No description provided for {dto.Name}" };
+
+        try
         {
-            Name = dto.Name,
-            Description = dto.Description,
-            Price = dto.Price,
-            Stock = dto.Stock,
-            CategoryId = dto.CategoryId
-        };
+            var product = new Product
+            {
+                Name = dto.Name,
+                Description = dto.Description,
+                Price = dto.Price,
+                Stock = dto.Stock,
+                CategoryId = dto.CategoryId
+            };
 
-        var created = await _productRepository.CreateAsync(product);
+            var created = await _productRepository.CreateAsync(product);
 
-        var catalogTopic = _configuration["Messaging:ProductCreatedTopic"];
-        await _publishEndpoint.Publish(new { ProductId = created.Id, created.Name, created.Price });
+            var catalogTopic = _configuration["Messaging:ProductCreatedTopic"];
+            await _publishEndpoint.Publish(new { ProductId = created.Id, created.Name, created.Price });
 
-        return MapToDto(created);
+            return MapToDto(created);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] Failed to create product '{dto.Name}': {ex.Message}");
+            throw;
+        }
     }
 
     public async Task UpdateProductAsync(int id, CreateProductDto dto)

@@ -1,0 +1,109 @@
+{
+  "endpoints" : [ {
+    "id" : "GET /api/products",
+    "path" : "/api/products",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "ECommerceApp.Controllers.ProductsController"
+  }, {
+    "id" : "GET /api/products/{id}",
+    "path" : "/api/products/{id}",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "ECommerceApp.Controllers.ProductsController"
+  }, {
+    "id" : "POST /api/products",
+    "path" : "/api/products",
+    "method" : "POST",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "dto",
+      "in" : "body",
+      "type" : "CreateProductDto",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "ECommerceApp.Controllers.ProductsController"
+  }, {
+    "id" : "PUT /api/products/{id}",
+    "path" : "/api/products/{id}",
+    "method" : "PUT",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "dto",
+      "in" : "body",
+      "type" : "CreateProductDto",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "ECommerceApp.Controllers.ProductsController"
+  }, {
+    "id" : "DELETE /api/products/{id}",
+    "path" : "/api/products/{id}",
+    "method" : "DELETE",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "ECommerceApp.Controllers.ProductsController"
+  }, {
+    "id" : "GET /api/orders",
+    "path" : "/api/orders",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "ECommerceApp.Controllers.OrdersController"
+  }, {
+    "id" : "GET /api/orders/{id}",
+    "path" : "/api/orders/{id}",
+    "method" : "GET",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "ECommerceApp.Controllers.OrdersController"
+  }, {
+    "id" : "POST /api/orders",
+    "path" : "/api/orders",
+    "method" : "POST",
+    "description" : null,
+    "parameters" : [ {
+      "name" : "dto",
+      "in" : "body",
+      "type" : "CreateOrderDto",
+      "required" : true
+    } ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "ECommerceApp.Controllers.OrdersController"
+  }, {
+    "id" : "POST /api/orders/{id}/cancel",
+    "path" : "/api/orders/{id}/cancel",
+    "method" : "POST",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "ECommerceApp.Controllers.OrdersController"
+  }, {
+    "id" : "POST /api/orders/{id}/ship",
+    "path" : "/api/orders/{id}/ship",
+    "method" : "POST",
+    "description" : null,
+    "parameters" : [ ],
+    "request_body_schema" : null,
+    "response_schema" : "Task<IActionResult>",
+    "component_id" : "ECommerceApp.Controllers.OrdersController"
+  } ],
+  "schemas" : { }
+}
