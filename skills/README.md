@@ -1,11 +1,12 @@
 # Skills
 
-Distributable Claude Code skills shipped with the `static-inference` analyzer.
+Distributable agent skills shipped with the `static-inference` analyzer. One skill per supported AI agent — same analysis logic, agent-specific install paths and MCP config format.
 
-Consumers of the MCP can copy these folders into their own project's `.claude/skills/` directory.
+| Skill | Agent | Install path | MCP config |
+|-------|-------|-------------|------------|
+| [static-inference-expert-claude](./static-inference-expert-claude) | Claude Code | `.claude/skills/` | `.mcp.json` |
+| [static-inference-expert-kiro](./static-inference-expert-kiro) | Kiro | `.kiro/skills/` | `.kiro/settings/mcp.json` |
 
-| Skill | Purpose |
-|-------|---------|
-| [static-inference-expert](./static-inference-expert) | Drives end-to-end project analysis through the MCP, applies decision rules tied to JSON attributes (viability, cohesion, coupling, sensitive_data, code_issues), and emits an evidence-backed extraction report. Includes batch scripts (`triage-proposals.sh`, `risk-report.sh`) and a `PostToolUse` hook for auto-reporting. |
+Both skills drive end-to-end project analysis through the MCP, apply the same decision rules tied to JSON attributes (viability, cohesion, coupling, sensitive_data, code_issues, layer, tables_used), and emit an evidence-backed extraction report. Batch scripts (`triage-proposals.sh`, `risk-report.sh`) are identical across both.
 
-See each skill's `INSTALL.md` for setup steps.
+See each skill's `INSTALL.md` for agent-specific setup steps.

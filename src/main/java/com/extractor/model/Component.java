@@ -89,6 +89,12 @@ public class Component {
     @JsonProperty("lcom")
     private Double lcom; // Lack of Cohesion in Methods (LCOM-HS: 0=high cohesion, 1=low cohesion)
 
+    @JsonProperty("complexity_max")
+    private Integer complexityMax; // Max cyclomatic complexity across all methods
+
+    @JsonProperty("complexity_avg")
+    private Double complexityAvg; // Average cyclomatic complexity across all methods
+
     public Component() {
         this.files = new ArrayList<>();
         this.tablesUsed = new ArrayList<>();
@@ -360,6 +366,22 @@ public class Component {
 
     public void setLcom(Double lcom) {
         this.lcom = lcom;
+    }
+
+    public Integer getComplexityMax() {
+        return complexityMax;
+    }
+
+    public void setComplexityMax(Integer complexityMax) {
+        this.complexityMax = complexityMax;
+    }
+
+    public Double getComplexityAvg() {
+        return complexityAvg;
+    }
+
+    public void setComplexityAvg(Double complexityAvg) {
+        this.complexityAvg = complexityAvg;
     }
 
     /**

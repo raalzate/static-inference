@@ -106,7 +106,31 @@ Inline subset of the entrypoints file. Use `output_entrypoints.json` as the cano
 | `rationale` | string[] | Pre-formatted rationale lines (Spanish, with emoji prefixes) |
 | `recommended_actions` | string[] | Suggested next steps (Spanish) |
 | `tables` | string[] | Same as `metrics.tables` (denormalized) |
-| `legacy_entrypoint` | object\|null | Bridge contract if extraction proceeds |
+| `legacy_entrypoint` | object\|null | Entry point the legacy monolith exposes for this proposal. Null when type is `"internal"`. See sub-fields below. |
+
+### `legacy_entrypoint` sub-fields
+
+Source: `LegacyEntrypoint.java`. Built by `MicroserviceRecommendationEngine.buildLegacyEntrypoint()`.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `type` | string | `"rest"` \| `"messaging"` \| `"service"` \| `"internal"` — see type semantics below |
+| `primary_entry_class` | string\|null | FQCN of the main controller / listener / service. Null for `"internal"` |
+| `exposed_operations` | string[] | Human-readable operation summaries, e.g. `"POST /cuentas/crearCuenta"`. Empty for non-REST types |
+| `messaging_channels` | string[]\|null | Queue / topic names. Only populated for `"messaging"` type |
+| `endpoints` | object[] | Full `ApiEndpoint` descriptors — same shape as `output_entrypoints.json#endpoints[*]`. Only populated for `"rest"` type |
+| `description` | string\|null | Free-text explanation |
+
+**`type` semantics:**
+
+| Value | Meaning | Populated fields |
+|-------|---------|-----------------|
+| `rest` | Entry via HTTP controllers | `primary_entry_class`, `exposed_operations`, `endpoints` |
+| `messaging` | Entry via message listeners | `primary_entry_class`, `messaging_channels` |
+| `service` | Entry via service interface, no REST/messaging | `primary_entry_class` |
+| `internal` | No external entry point detected | none (all null/empty) |
+
+**Cross-file join:** `legacy_entrypoint.endpoints[*].component_id` joins to `output.json#components[*].id` and to `output_entrypoints.json#endpoints[*].component_id`. Use `output_entrypoints.json` as the canonical source for full endpoint detail; `legacy_entrypoint.endpoints` is a pre-filtered subset scoped to this proposal's components.
 
 ### Viability scoring
 

@@ -24,23 +24,25 @@ Add a `.mcp.json` at the consumer project root:
 }
 ```
 
-The JAR path must be absolute. The analyzer repo ships a `mcp-config.example.json` template.
+The JAR path must be absolute. The analyzer repo ships `mcp-config.example.json` at the root as a copy-paste template — edit just the JAR path.
 
 ## Where does the JAR come from?
 
-It is built once in the `static-inference` analyzer repo:
+It is built once in the `static-inference` analyzer repo (use `mvnw` if `mvn` is not on PATH):
 
 ```bash
 # in the static-inference repo, not in the consumer project
-mvn clean package -DskipTests
+./mvnw clean package -DskipTests
+# or: mvn clean package -DskipTests
 # produces target/java-dependency-extractor.jar
+#     and  target/java-dependency-extractor-1.0.0.jar (versioned copy, same content)
 ```
 
 Consumer projects do NOT build the analyzer themselves. They consume the JAR. Common distribution patterns:
 
-- Copy the JAR into a shared location (`/opt/static-inference/`, `~/.local/share/static-inference/`).
+- Copy `target/java-dependency-extractor.jar` (and `target/dotnet-analyzer` if needed) to a shared location (`/opt/static-inference/`, `~/.local/share/static-inference/`).
 - Pin to a Git release artifact or internal Nexus/Artifactory.
-- Symlink from a developer workstation's checkout (`ln -s /path/to/repo/target/...`).
+- Symlink from a developer workstation's checkout (`ln -s /path/to/repo/target/java-dependency-extractor.jar`).
 
 ## Java prerequisites
 

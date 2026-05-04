@@ -110,6 +110,40 @@ if weight > 10:
 
 Reasoning: 10 warnings ≈ 3 errors of damage, both indicate stabilization is needed before service split. Keep INFO out of the score (mostly stylistic).
 
+## R12 — Cyclomatic complexity gate
+
+Reads `components[c].complexity_max` (integer, emitted since analyzer v2.1). If the field is absent (`null`), skip this rule — old output files are unaffected.
+
+```
+cc_critical := [
+    c for c in proposal.components
+    if components[c].complexity_max is not null
+    and components[c].complexity_max > 15
+]
+
+cc_warning := [
+    c for c in proposal.components
+    if components[c].complexity_max is not null
+    and 10 < components[c].complexity_max <= 15
+]
+```
+
+R12 never blocks extraction — it mandates a refactor recommendation alongside the extraction proposal:
+
+| Range | Action |
+|-------|--------|
+| `complexity_max > 15` | Recommend extraction **+** mandatory prereq refactor task (CRITICAL) |
+| `10 < complexity_max ≤ 15` | Recommend extraction **+** refactor recommended before cutover (WARNING) |
+| `complexity_max ≤ 10` | Clean — no action |
+| `complexity_max = null` | Skip — output predates analyzer v2.1 |
+
+For each offender in `cc_critical` or `cc_warning`, the report must include:
+- `component_id`, `complexity_max`, `complexity_avg`
+- The specific method(s) from `code_issues[pattern=HIGH_CYCLOMATIC_COMPLEXITY]`: method name, line, CC value
+- A concrete refactor task: *"Descomponer `<method>` (CC=<n>) en métodos privados cohesivos antes del cutover"*
+
+Rationale: high CC signals untestable complexity at a service boundary. Extraction is still the right direction — but shipping a god method into a distributed service multiplies the risk. The refactor is a prerequisite to a safe cutover, not to the extraction decision itself.
+
 ## R7 — Entrypoint coverage
 
 ```
@@ -120,6 +154,32 @@ listeners := { c for c in proposal.components
 if |endpoints| == 0 AND |listeners| == 0:
     reclassify as shared_library
     do not propose as microservice
+```
+
+**Shortcut:** if `proposal.legacy_entrypoint` is present and `type != "internal"`, the analyzer already resolved coverage — skip the manual join above and read directly from `legacy_entrypoint`:
+- `type == "rest"` → use `legacy_entrypoint.exposed_operations` as the endpoint list summary
+- `type == "messaging"` → use `legacy_entrypoint.messaging_channels`
+- `type == "service"` → counts as covered (internal service interface)
+- `type == "internal"` → no coverage; apply `shared_library` reclassification as above
+
+## R11 — Entrypoint-type alignment
+
+```
+if legacy_entrypoint.type == "internal":
+    reclassify as shared_library
+    do not emit external-API contract section in report
+
+if legacy_entrypoint.type == "messaging":
+    report must list legacy_entrypoint.messaging_channels
+    migration step must include channel ownership transfer
+
+if legacy_entrypoint.type == "rest":
+    migration contract = legacy_entrypoint.exposed_operations
+    report must list all endpoints from legacy_entrypoint.endpoints
+    flag any endpoint where request_body_schema or response_schema is null → "schema gap"
+
+if legacy_entrypoint is null AND viability == "Alta":
+    treat as "internal" — apply R7 manual join before deciding
 ```
 
 ## R8 — Size sanity

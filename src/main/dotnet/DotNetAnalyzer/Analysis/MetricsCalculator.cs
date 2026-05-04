@@ -58,6 +58,43 @@ public class MetricsCalculator
 
                 // LOC: count non-blank non-comment lines (re-calculate for accuracy)
                 component.Loc = CountNonBlankNonCommentLines(typeDecl);
+
+                // CC: cyclomatic complexity per method
+                var methods = typeDecl.Members.OfType<MethodDeclarationSyntax>().ToList();
+                if (methods.Count > 0)
+                {
+                    var ccValues = new List<int>();
+                    foreach (var method in methods)
+                    {
+                        int cc = CalculateMethodCc(method);
+                        ccValues.Add(cc);
+
+                        if (cc > 15)
+                        {
+                            component.CodeIssues.Add(new CodeIssue
+                            {
+                                Rule = "HIGH_CYCLOMATIC_COMPLEXITY",
+                                Type = "CODE_STYLE",
+                                Severity = "ERROR",
+                                Message = $"Method '{method.Identifier.Text}' cyclomatic complexity {cc} exceeds 15",
+                                Line = method.GetLocation().GetLineSpan().StartLinePosition.Line + 1
+                            });
+                        }
+                        else if (cc > 10)
+                        {
+                            component.CodeIssues.Add(new CodeIssue
+                            {
+                                Rule = "HIGH_CYCLOMATIC_COMPLEXITY",
+                                Type = "CODE_STYLE",
+                                Severity = "WARNING",
+                                Message = $"Method '{method.Identifier.Text}' cyclomatic complexity {cc} exceeds 10",
+                                Line = method.GetLocation().GetLineSpan().StartLinePosition.Line + 1
+                            });
+                        }
+                    }
+                    component.ComplexityMax = ccValues.Max();
+                    component.ComplexityAvg = ccValues.Average();
+                }
             }
         }
     }
@@ -254,6 +291,26 @@ public class MetricsCalculator
         }
 
         return count;
+    }
+
+    private static int CalculateMethodCc(MethodDeclarationSyntax method)
+    {
+        int cc = 1;
+        cc += method.DescendantNodes().OfType<IfStatementSyntax>().Count();
+        cc += method.DescendantNodes().OfType<WhileStatementSyntax>().Count();
+        cc += method.DescendantNodes().OfType<ForStatementSyntax>().Count();
+        cc += method.DescendantNodes().OfType<ForEachStatementSyntax>().Count();
+        cc += method.DescendantNodes().OfType<CatchClauseSyntax>().Count();
+        cc += method.DescendantNodes().OfType<ConditionalExpressionSyntax>().Count();
+        // Traditional switch cases (non-default)
+        cc += method.DescendantNodes().OfType<CaseSwitchLabelSyntax>().Count();
+        // Switch expression arms (C# 8+)
+        cc += method.DescendantNodes().OfType<SwitchExpressionArmSyntax>().Count();
+        // Logical operators
+        cc += method.DescendantNodes()
+            .OfType<BinaryExpressionSyntax>()
+            .Count(b => b.IsKind(SyntaxKind.LogicalAndExpression) || b.IsKind(SyntaxKind.LogicalOrExpression));
+        return cc;
     }
 
     private static bool IsSystemType(string typeName)

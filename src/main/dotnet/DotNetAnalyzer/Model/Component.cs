@@ -79,6 +79,12 @@ public class Component
     [JsonPropertyName("lcom")]
     public double? Lcom { get; set; }
 
+    [JsonPropertyName("complexity_max")]
+    public int? ComplexityMax { get; set; }
+
+    [JsonPropertyName("complexity_avg")]
+    public double? ComplexityAvg { get; set; }
+
     public Component()
     {
         Files = new List<string>();

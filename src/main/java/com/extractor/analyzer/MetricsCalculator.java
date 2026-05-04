@@ -202,6 +202,44 @@ public class MetricsCalculator {
     }
     
     /**
+     * Calculate cyclomatic complexity (McCabe) for a single method.
+     * CC = 1 + decision points (if, loops, cases, catch, ternary, &&, ||).
+     */
+    public static int calculateMethodCC(CtMethod<?> method) {
+        if (method.getBody() == null) {
+            return 1;
+        }
+
+        int cc = 1;
+        cc += method.getBody().getElements(new TypeFilter<>(CtIf.class)).size();
+        cc += method.getBody().getElements(new TypeFilter<>(CtFor.class)).size();
+        cc += method.getBody().getElements(new TypeFilter<>(CtForEach.class)).size();
+        cc += method.getBody().getElements(new TypeFilter<>(CtWhile.class)).size();
+        cc += method.getBody().getElements(new TypeFilter<>(CtDo.class)).size();
+        cc += method.getBody().getElements(new TypeFilter<>(CtCatch.class)).size();
+        cc += method.getBody().getElements(new TypeFilter<>(CtConditional.class)).size();
+
+        // Non-default switch cases
+        List<CtCase<?>> cases = method.getBody().getElements(new TypeFilter<>(CtCase.class));
+        for (CtCase<?> ctCase : cases) {
+            if (ctCase.getCaseExpressions() != null && !ctCase.getCaseExpressions().isEmpty()) {
+                cc++;
+            }
+        }
+
+        // Logical operators (each && or || adds a branch)
+        List<CtBinaryOperator<?>> binaryOps = method.getBody().getElements(new TypeFilter<>(CtBinaryOperator.class));
+        for (CtBinaryOperator<?> op : binaryOps) {
+            BinaryOperatorKind kind = op.getKind();
+            if (kind == BinaryOperatorKind.AND || kind == BinaryOperatorKind.OR) {
+                cc++;
+            }
+        }
+
+        return cc;
+    }
+
+    /**
      * Check if a method is a simple getter or setter.
      * Improved heuristic: checks not just name but also body simplicity.
      */

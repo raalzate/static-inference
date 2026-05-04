@@ -22,6 +22,9 @@ cd static-inference
 # Compilar el proyecto Java
 mvn clean compile
 
+# Empaqueta el proyecto Java
+mvn clean package
+
 # Build .NET analyzer (required for .NET project analysis)
 dotnet publish src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj \
   -c Release -r osx-arm64 --self-contained -p:PublishSingleFile=true -o target
@@ -63,15 +66,15 @@ Ver [MCP.md](MCP.md) para documentación completa del servidor MCP, herramientas
 
 #### Skill para Claude Code (consumer-side)
 
-Junto al MCP se distribuye un skill de Claude Code (`skills/static-inference-expert/`) que automatiza el flujo: invoca las herramientas MCP, aplica reglas de decisión sobre los atributos JSON (viabilidad, cohesión, acoplamiento, datos sensibles, layer, code_issues) y emite un reporte de extracción con evidencia citada. Incluye scripts batch (`triage-proposals.sh`, `risk-report.sh`) y un hook `PostToolUse` para reporte automático.
+Junto al MCP se distribuye un skill de Claude Code (`skills/static-inference-expert-claude/`) que automatiza el flujo: invoca las herramientas MCP, aplica reglas de decisión sobre los atributos JSON (viabilidad, cohesión, acoplamiento, datos sensibles, layer, code_issues) y emite un reporte de extracción con evidencia citada. Incluye scripts batch (`triage-proposals.sh`, `risk-report.sh`) y un hook `PostToolUse` para reporte automático.
 
 Los proyectos que consumen el MCP pueden copiarlo a su `.claude/skills/`:
 
 ```bash
-cp -R /path/to/static-inference/skills/static-inference-expert /your-project/.claude/skills/
+cp -R /path/to/static-inference/skills/static-inference-expert-claude /your-project/.claude/skills/
 ```
 
-Ver [skills/README.md](skills/README.md) y [skills/static-inference-expert/INSTALL.md](skills/static-inference-expert/INSTALL.md) para la guía completa de instalación.
+Ver [skills/README.md](skills/README.md) y [skills/static-inference-expert-claude/INSTALL.md](skills/static-inference-expert-claude/INSTALL.md) para la guía completa de instalación.
 
 ### Archivos Generados
 
@@ -145,7 +148,28 @@ Propuesta final de agrupación lógica:
         "✅ Definir API pública con contratos claros",
         "✅ Asignar base de datos exclusiva",
         "✅ Implementar patrones de resiliencia"
-      ]
+      ],
+      "tables": [
+        { "name": "item", "component": "ItemRepo", "source": "DEFAULT" }
+      ],
+      "legacy_entrypoint": {
+        "type": "rest",
+        "primary_entry_class": "com.example.ItemController",
+        "exposed_operations": ["GET /items", "POST /items", "DELETE /items/{id}"],
+        "endpoints": [
+          {
+            "id": "ItemController.getItems",
+            "path": "/items",
+            "method": "GET",
+            "parameters": [],
+            "request_body_schema": null,
+            "response_schema": "Item",
+            "component_id": "com.example.ItemController"
+          }
+        ],
+        "messaging_channels": null,
+        "description": null
+      }
     }
   ],
   "support_libraries": [...],
@@ -173,6 +197,19 @@ Propuesta final de agrupación lógica:
 - `external_coupling`: Ratio de llamadas externas vs totales
 - `data_jaccard`: Similitud de tablas compartidas (0-1)
 - `internal_edge_density`: Densidad de conexiones internas
+
+**`legacy_entrypoint`** (objeto o `null`): punto de entrada que el monolito expone para esta propuesta. Generado por `MicroserviceRecommendationEngine`.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `type` | string | `"rest"` · `"messaging"` · `"service"` · `"internal"` |
+| `primary_entry_class` | string\|null | FQCN del controlador / listener / servicio principal |
+| `exposed_operations` | string[] | Resumen legible de operaciones, ej. `"POST /items"` |
+| `endpoints` | object[] | Descriptores completos de endpoints REST (misma forma que `output_entrypoints.json`). Solo para `type=rest` |
+| `messaging_channels` | string[]\|null | Colas / topics. Solo para `type=messaging` |
+| `description` | string\|null | Explicación libre |
+
+Cuando `type == "internal"` no hay punto de entrada externo — la propuesta es una librería compartida, no un servicio.
 
 ### 3. Contratos de API (`output_entrypoints.json`)
 
@@ -658,7 +695,7 @@ Los resultados de tests y reportes de analisis se publican como artifacts en cad
 - [ALGORITHMS.md](ALGORITHMS.md) - Deep dive tecnico en algoritmos de consolidacion
 - [CONFIGURATION.md](CONFIGURATION.md) - Guia de configuracion y personalizacion
 - [skills/README.md](skills/README.md) - Skills distribuibles para Claude Code
-- [skills/static-inference-expert/INSTALL.md](skills/static-inference-expert/INSTALL.md) - Instalacion del skill consumer-side
+- [skills/static-inference-expert-claude/INSTALL.md](skills/static-inference-expert-claude/INSTALL.md) - Instalacion del skill consumer-side
 
 ## 🤝 Contribución
 
@@ -708,11 +745,11 @@ src/main/dotnet/DotNetAnalyzer/        # Analizador .NET (Roslyn)
 src/test/java/                         # Tests JUnit 5
 src/test/dotnet/                       # Tests xUnit
 
-skills/                                # Skills distribuibles para Claude Code
-└── static-inference-expert/           # Skill consumer-side del MCP
-    ├── SKILL.md                       # Manifest auto-cargado
-    ├── INSTALL.md                     # Guia de instalacion
-    ├── references/                    # decision-rules, json-schema, mcp-tools, build-setup
+skills/                                # Skills distribuibles (Claude Code + Kiro)
+├── static-inference-expert-claude/    # Skill consumer-side para Claude Code
+│   ├── SKILL.md                       # Manifest auto-cargado
+│   ├── INSTALL.md                     # Guia de instalacion
+│   ├── references/                    # decision-rules, json-schema, mcp-tools, build-setup
     ├── scripts/                       # run-analysis, triage-proposals, risk-report
     └── hooks/                         # PostToolUse hook para reporte automatico
 

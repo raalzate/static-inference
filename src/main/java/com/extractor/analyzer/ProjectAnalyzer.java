@@ -987,20 +987,54 @@ public class ProjectAnalyzer {
     }
 
     /**
-     * Calculate code quality metrics (CBO and LCOM) for a type.
+     * Calculate code quality metrics (CBO, LCOM, CC) for a type.
      */
     private void calculateMetrics(CtType<?> type, Component component) {
         try {
-            // Calculate CBO (Coupling Between Objects)
             int cbo = MetricsCalculator.calculateCBO(type);
             component.setCbo(cbo);
 
-            // Calculate LCOM (Lack of Cohesion in Methods)
             Double lcom = MetricsCalculator.calculateLCOM(type);
             component.setLcom(lcom);
 
-            logger.debug("Metrics for {}: CBO={}, LCOM={}",
-                    type.getQualifiedName(), cbo, lcom != null ? String.format("%.2f", lcom) : "N/A");
+            // Cyclomatic complexity per method
+            Collection<CtMethod<?>> methods = type.getMethods();
+            if (!methods.isEmpty()) {
+                int max = 0;
+                int sum = 0;
+                for (CtMethod<?> method : methods) {
+                    int cc = MetricsCalculator.calculateMethodCC(method);
+                    sum += cc;
+                    if (cc > max) max = cc;
+
+                    if (cc > 15) {
+                        int line = method.getPosition().isValidPosition() ? method.getPosition().getLine() : 0;
+                        component.addCodeIssue(CodeIssue.builder()
+                                .type(CodeIssue.Type.CODE_STYLE)
+                                .severity(CodeIssue.Severity.CRITICAL)
+                                .message("Method '" + method.getSimpleName() + "' cyclomatic complexity " + cc + " exceeds 15")
+                                .pattern("HIGH_CYCLOMATIC_COMPLEXITY")
+                                .line(line)
+                                .build());
+                    } else if (cc > 10) {
+                        int line = method.getPosition().isValidPosition() ? method.getPosition().getLine() : 0;
+                        component.addCodeIssue(CodeIssue.builder()
+                                .type(CodeIssue.Type.CODE_STYLE)
+                                .severity(CodeIssue.Severity.WARNING)
+                                .message("Method '" + method.getSimpleName() + "' cyclomatic complexity " + cc + " exceeds 10")
+                                .pattern("HIGH_CYCLOMATIC_COMPLEXITY")
+                                .line(line)
+                                .build());
+                    }
+                }
+                component.setComplexityMax(max);
+                component.setComplexityAvg((double) sum / methods.size());
+            }
+
+            logger.debug("Metrics for {}: CBO={}, LCOM={}, CC_MAX={}",
+                    type.getQualifiedName(), cbo,
+                    lcom != null ? String.format("%.2f", lcom) : "N/A",
+                    component.getComplexityMax());
         } catch (Exception e) {
             logger.warn("Failed to calculate metrics for {}: {}", type.getQualifiedName(), e.getMessage());
         }
