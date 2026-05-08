@@ -1,13 +1,18 @@
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using DotNetAnalyzer.Model;
+using CSharpSyntax = Microsoft.CodeAnalysis.CSharp.Syntax;
+using VbSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace DotNetAnalyzer.Analysis;
 
 /// <summary>
 /// Pass 3: Analyzes dependency injection patterns in .NET projects.
-/// Detects constructor injection, interface implementations, and IServiceCollection registrations.
+/// Detects:
+///   - constructor injection through interface-typed parameters (C# and VB),
+///   - interface implementations via INamedTypeSymbol.Interfaces (language-agnostic),
+///   - IServiceCollection service registrations (C# generic syntax only — VB
+///     ASP.NET Core projects are out of the legacy desktop scope and do not
+///     typically use this pattern).
 /// </summary>
 public class DependencyInjectionAnalyzer
 {
@@ -21,13 +26,18 @@ public class DependencyInjectionAnalyzer
     public List<Edge> Analyze(Compilation compilation, List<Component> components)
     {
         var knownComponents = new HashSet<string>(components.Select(c => c.Id));
-        var interfaceComponents = new HashSet<string>(
-            components.Where(c => c.IsInterface).Select(c => c.Id));
         var edgeMap = new Dictionary<string, Edge>();
 
+        // Pass 3b — language-agnostic. Walk all named types via GlobalNamespace
+        // and inspect INamedTypeSymbol.Interfaces. Done once for the compilation,
+        // independent of syntax trees.
+        AnalyzeInterfaceImplementationsViaSymbols(compilation, knownComponents, edgeMap);
+
+        // Passes 3a (constructor injection) and 3c (service registrations) are
+        // syntax-driven and dispatched per-language.
         foreach (var syntaxTree in compilation.SyntaxTrees)
         {
-            SemanticModel? semanticModel = null;
+            SemanticModel? semanticModel;
             try
             {
                 semanticModel = compilation.GetSemanticModel(syntaxTree);
@@ -42,32 +52,78 @@ public class DependencyInjectionAnalyzer
 
             var root = syntaxTree.GetRoot();
 
-            // Pass 3a: Constructor injection — interface-typed constructor params
-            AnalyzeConstructorInjection(root, semanticModel, knownComponents, interfaceComponents, edgeMap);
-
-            // Pass 3b: Interface implementations — class : IInterface pattern
-            AnalyzeInterfaceImplementations(root, semanticModel, knownComponents, edgeMap);
-
-            // Pass 3c: IServiceCollection registrations — AddScoped/AddTransient/AddSingleton<I, T>
-            AnalyzeServiceRegistrations(root, semanticModel, knownComponents, edgeMap);
+            if (compilation.Language == LanguageNames.CSharp)
+            {
+                AnalyzeConstructorInjectionCSharp(root, semanticModel, knownComponents, edgeMap);
+                AnalyzeServiceRegistrationsCSharp(root, semanticModel, knownComponents, edgeMap);
+            }
+            else if (compilation.Language == LanguageNames.VisualBasic)
+            {
+                AnalyzeConstructorInjectionVb(root, semanticModel, knownComponents, edgeMap);
+                // Service registrations (AddScoped<,>) is C#-only in this scope.
+            }
         }
 
         return edgeMap.Values.ToList();
     }
 
-    private static void AnalyzeConstructorInjection(
+    // ─── Pass 3b — language-agnostic via GlobalNamespace ─────────────────────
+
+    private static void AnalyzeInterfaceImplementationsViaSymbols(
+        Compilation compilation,
+        HashSet<string> knownComponents,
+        Dictionary<string, Edge> edgeMap)
+    {
+        foreach (var typeSymbol in EnumerateNamedTypes(compilation.Assembly.GlobalNamespace))
+        {
+            if (typeSymbol.TypeKind != TypeKind.Class && typeSymbol.TypeKind != TypeKind.Struct)
+                continue;
+
+            if (typeSymbol.DeclaringSyntaxReferences.IsDefaultOrEmpty)
+                continue;
+
+            var classId = GetFullyQualifiedName(typeSymbol);
+            if (!knownComponents.Contains(classId))
+                continue;
+
+            foreach (var iface in typeSymbol.Interfaces)
+            {
+                var ifaceId = GetFullyQualifiedName(iface);
+                if (!knownComponents.Contains(ifaceId))
+                    continue;
+
+                AddOrIncrementEdge(edgeMap, classId, ifaceId, "implements");
+            }
+        }
+    }
+
+    private static IEnumerable<INamedTypeSymbol> EnumerateNamedTypes(INamespaceSymbol ns)
+    {
+        foreach (var type in ns.GetTypeMembers())
+        {
+            yield return type;
+            foreach (var nested in type.GetTypeMembers())
+                yield return nested;
+        }
+        foreach (var sub in ns.GetNamespaceMembers())
+        foreach (var t in EnumerateNamedTypes(sub))
+            yield return t;
+    }
+
+    // ─── Pass 3a — constructor injection (C# walker) ──────────────────────────
+
+    private static void AnalyzeConstructorInjectionCSharp(
         SyntaxNode root,
         SemanticModel semanticModel,
         HashSet<string> knownComponents,
-        HashSet<string> interfaceComponents,
         Dictionary<string, Edge> edgeMap)
     {
-        var constructors = root.DescendantNodes().OfType<ConstructorDeclarationSyntax>();
+        var constructors = root.DescendantNodes().OfType<CSharpSyntax.ConstructorDeclarationSyntax>();
 
         foreach (var constructor in constructors)
         {
             var containingType = constructor.Ancestors()
-                .OfType<TypeDeclarationSyntax>()
+                .OfType<CSharpSyntax.TypeDeclarationSyntax>()
                 .FirstOrDefault();
 
             if (containingType == null)
@@ -86,77 +142,72 @@ public class DependencyInjectionAnalyzer
                 if (parameter.Type == null)
                     continue;
 
-                var typeInfo = semanticModel.GetTypeInfo(parameter.Type);
-                var paramType = typeInfo.Type as INamedTypeSymbol;
-                if (paramType == null)
-                    continue;
-
-                // Only create injection edges for interface-typed parameters
-                if (paramType.TypeKind != TypeKind.Interface)
-                    continue;
-
-                var paramTypeId = GetFullyQualifiedName(paramType);
-                if (!knownComponents.Contains(paramTypeId))
-                    continue;
-
-                if (containerId == paramTypeId)
-                    continue;
-
-                AddOrIncrementEdge(edgeMap, containerId, paramTypeId, "injection");
+                var paramType = semanticModel.GetTypeInfo(parameter.Type).Type as INamedTypeSymbol;
+                AddInjectionIfInterfaceKnown(paramType, containerId, knownComponents, edgeMap);
             }
         }
     }
 
-    private static void AnalyzeInterfaceImplementations(
+    // ─── Pass 3a — constructor injection (VB walker) ──────────────────────────
+
+    private static void AnalyzeConstructorInjectionVb(
         SyntaxNode root,
         SemanticModel semanticModel,
         HashSet<string> knownComponents,
         Dictionary<string, Edge> edgeMap)
     {
-        var classDeclarations = root.DescendantNodes().OfType<ClassDeclarationSyntax>();
+        var constructors = root.DescendantNodes().OfType<VbSyntax.ConstructorBlockSyntax>();
 
-        foreach (var classDecl in classDeclarations)
+        foreach (var constructor in constructors)
         {
-            var classSymbol = semanticModel.GetDeclaredSymbol(classDecl) as INamedTypeSymbol;
-            if (classSymbol == null)
+            var containingType = constructor.Ancestors()
+                .OfType<VbSyntax.TypeBlockSyntax>()
+                .FirstOrDefault();
+
+            if (containingType == null)
                 continue;
 
-            var classId = GetFullyQualifiedName(classSymbol);
-            if (!knownComponents.Contains(classId))
+            var containingSymbol = semanticModel.GetDeclaredSymbol(containingType) as INamedTypeSymbol;
+            if (containingSymbol == null)
                 continue;
 
-            foreach (var iface in classSymbol.Interfaces)
+            var containerId = GetFullyQualifiedName(containingSymbol);
+            if (!knownComponents.Contains(containerId))
+                continue;
+
+            var parameterList = constructor.SubNewStatement?.ParameterList;
+            if (parameterList == null)
+                continue;
+
+            foreach (var parameter in parameterList.Parameters)
             {
-                var ifaceId = GetFullyQualifiedName(iface);
-
-                // Only create edge if the interface is a known component
-                if (!knownComponents.Contains(ifaceId))
+                var typeSyntax = parameter.AsClause?.Type;
+                if (typeSyntax == null)
                     continue;
 
-                AddOrIncrementEdge(edgeMap, classId, ifaceId, "implements");
+                var paramType = semanticModel.GetTypeInfo(typeSyntax).Type as INamedTypeSymbol;
+                AddInjectionIfInterfaceKnown(paramType, containerId, knownComponents, edgeMap);
             }
         }
     }
 
-    private static void AnalyzeServiceRegistrations(
+    // ─── Pass 3c — IServiceCollection registrations (C# only) ─────────────────
+
+    private static void AnalyzeServiceRegistrationsCSharp(
         SyntaxNode root,
         SemanticModel semanticModel,
         HashSet<string> knownComponents,
         Dictionary<string, Edge> edgeMap)
     {
-        var invocations = root.DescendantNodes().OfType<InvocationExpressionSyntax>();
+        var invocations = root.DescendantNodes().OfType<CSharpSyntax.InvocationExpressionSyntax>();
 
         foreach (var invocation in invocations)
         {
-            // Match pattern: services.AddScoped<IService, Implementation>()
-            // or services.AddTransient<IService, Implementation>()
-            // or services.AddSingleton<IService, Implementation>()
-
             string? methodName = null;
 
-            if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
+            if (invocation.Expression is CSharpSyntax.MemberAccessExpressionSyntax memberAccess)
             {
-                methodName = memberAccess.Name is GenericNameSyntax genericName
+                methodName = memberAccess.Name is CSharpSyntax.GenericNameSyntax genericName
                     ? genericName.Identifier.Text
                     : memberAccess.Name.Identifier.Text;
             }
@@ -164,7 +215,6 @@ public class DependencyInjectionAnalyzer
             if (methodName == null || !RegistrationMethods.Contains(methodName))
                 continue;
 
-            // Try to resolve via semantic model for accurate type resolution
             var symbolInfo = semanticModel.GetSymbolInfo(invocation);
             var methodSymbol = symbolInfo.Symbol as IMethodSymbol
                 ?? symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault();
@@ -181,7 +231,6 @@ public class DependencyInjectionAnalyzer
 
                     if (knownComponents.Contains(serviceId) && knownComponents.Contains(implId))
                     {
-                        // Edge from implementation to interface (implementation registers as service)
                         AddOrIncrementEdge(edgeMap, implId, serviceId, "registration");
                     }
 
@@ -189,19 +238,15 @@ public class DependencyInjectionAnalyzer
                 }
             }
 
-            // Fallback: parse type arguments from syntax when semantic model cannot resolve
-            if (invocation.Expression is MemberAccessExpressionSyntax ma
-                && ma.Name is GenericNameSyntax gns
+            if (invocation.Expression is CSharpSyntax.MemberAccessExpressionSyntax ma
+                && ma.Name is CSharpSyntax.GenericNameSyntax gns
                 && gns.TypeArgumentList.Arguments.Count == 2)
             {
                 var serviceTypeSyntax = gns.TypeArgumentList.Arguments[0];
                 var implTypeSyntax = gns.TypeArgumentList.Arguments[1];
 
-                var serviceTypeInfo = semanticModel.GetTypeInfo(serviceTypeSyntax);
-                var implTypeInfo = semanticModel.GetTypeInfo(implTypeSyntax);
-
-                var serviceSymbol = serviceTypeInfo.Type as INamedTypeSymbol;
-                var implSymbol = implTypeInfo.Type as INamedTypeSymbol;
+                var serviceSymbol = semanticModel.GetTypeInfo(serviceTypeSyntax).Type as INamedTypeSymbol;
+                var implSymbol = semanticModel.GetTypeInfo(implTypeSyntax).Type as INamedTypeSymbol;
 
                 if (serviceSymbol != null && implSymbol != null)
                 {
@@ -215,6 +260,31 @@ public class DependencyInjectionAnalyzer
                 }
             }
         }
+    }
+
+    // ─── Shared helpers ───────────────────────────────────────────────────────
+
+    private static void AddInjectionIfInterfaceKnown(
+        INamedTypeSymbol? paramType,
+        string containerId,
+        HashSet<string> knownComponents,
+        Dictionary<string, Edge> edgeMap)
+    {
+        if (paramType == null)
+            return;
+
+        // Only create injection edges for interface-typed parameters
+        if (paramType.TypeKind != TypeKind.Interface)
+            return;
+
+        var paramTypeId = GetFullyQualifiedName(paramType);
+        if (!knownComponents.Contains(paramTypeId))
+            return;
+
+        if (containerId == paramTypeId)
+            return;
+
+        AddOrIncrementEdge(edgeMap, containerId, paramTypeId, "injection");
     }
 
     private static void AddOrIncrementEdge(
