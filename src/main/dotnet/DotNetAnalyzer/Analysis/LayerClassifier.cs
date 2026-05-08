@@ -8,9 +8,26 @@ namespace DotNetAnalyzer.Analysis;
 /// </summary>
 public class LayerClassifier
 {
-    private static readonly string[] ControllerAnnotations =
+    /// <summary>
+    /// Annotations that mark a component as a real HTTP controller.
+    /// Names align with the canonical .NET attribute simple-names emitted
+    /// by TypeAnalyzer.ExtractAnnotations (sin sufijo "Attribute").
+    /// </summary>
+    private static readonly string[] HttpControllerAnnotations =
     {
-        "ApiController", "Controller", "Route",
+        "ApiController",
+        "Route",
+        "HttpGet", "HttpPost", "HttpPut", "HttpDelete", "HttpPatch",
+    };
+
+    /// <summary>
+    /// Base class simple-names that mark a component as an HTTP controller
+    /// via inheritance (ASP.NET Core).
+    /// </summary>
+    private static readonly string[] HttpControllerBaseTypes =
+    {
+        "ControllerBase",
+        "Controller",
     };
 
     private static readonly string[] ControllerNameSuffixes =
@@ -26,6 +43,8 @@ public class LayerClassifier
     private static readonly string[] DataNameSuffixes =
     {
         "Repository", "Data", "Dao",
+        // VB legacy AmigosPlus-like data access objects (FR-021 acceptance #3).
+        "Adapter",
     };
 
     private static readonly string[] DataBaseTypes =
@@ -55,16 +74,26 @@ public class LayerClassifier
         var simpleName = ExtractSimpleName(component.Id);
         var annotations = component.Annotations ?? new List<string>();
 
-        // Priority 1: Check annotations for controller attributes
-        if (HasAnyAnnotation(annotations, ControllerAnnotations))
+        // Priority 1: HTTP controller — confirmed by attribute or by extending
+        // ControllerBase/Controller. The Controller suffix alone is NOT enough:
+        // VB legacy projects (AmigosPlus-like) name business facades "*Controller"
+        // without any HTTP surface area (FR-020, FR-021).
+        bool isHttpController =
+            HasAnyAnnotation(annotations, HttpControllerAnnotations)
+            || ExtendsAny(component.Extends, HttpControllerBaseTypes);
+
+        if (isHttpController)
         {
             return "Controlador";
         }
 
-        // Priority 2: Check name suffixes for controller
+        // Priority 2: Controller suffix without HTTP markers → Negocio.
+        // Falls through to standard business / data / shared rules so that
+        // a class named "OrderController" with no HTTP markers and no other
+        // matching suffix lands in "Negocio" (the closest semantic match).
         if (EndsWithAny(simpleName, ControllerNameSuffixes))
         {
-            return "Controlador";
+            return "Negocio";
         }
 
         // Priority 3: Check for data layer — DbContext base type
@@ -124,6 +153,30 @@ public class LayerClassifier
         foreach (var pattern in patterns)
         {
             if (name.Contains(pattern, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Returns true if <paramref name="extends"/> is non-empty and matches one
+    /// of the target simple-names (case-insensitive). The match is permissive:
+    /// it accepts both bare simple-names ("ControllerBase") and qualified names
+    /// ("Microsoft.AspNetCore.Mvc.ControllerBase").
+    /// </summary>
+    private static bool ExtendsAny(string? extends, string[] targets)
+    {
+        if (string.IsNullOrEmpty(extends))
+            return false;
+
+        var simpleName = extends!;
+        var lastDot = simpleName.LastIndexOf('.');
+        if (lastDot >= 0 && lastDot < simpleName.Length - 1)
+            simpleName = simpleName.Substring(lastDot + 1);
+
+        foreach (var t in targets)
+        {
+            if (string.Equals(simpleName, t, StringComparison.OrdinalIgnoreCase))
                 return true;
         }
         return false;

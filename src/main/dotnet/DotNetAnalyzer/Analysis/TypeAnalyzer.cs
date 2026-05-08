@@ -129,6 +129,19 @@ public class TypeAnalyzer
         foreach (var reference in symbol.DeclaringSyntaxReferences)
         {
             var node = reference.GetSyntax();
+
+            // VB INamedTypeSymbol references point at the head statement
+            // (ClassStatementSyntax / ModuleStatementSyntax / etc.) which is
+            // a single line. Walk up to the enclosing BlockSyntax so we count
+            // the full type body. C# references already point at the full
+            // ClassDeclarationSyntax, so this no-ops for C#.
+            if (node.SyntaxTree.Options.Language == LanguageNames.VisualBasic
+                && node.Parent != null
+                && node.Parent.GetType().Name.EndsWith("BlockSyntax", StringComparison.Ordinal))
+            {
+                node = node.Parent;
+            }
+
             total += CountNonBlankNonCommentLines(node);
         }
         return total;
