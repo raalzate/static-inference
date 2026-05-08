@@ -7,7 +7,11 @@ try
     if (args.Length != 1)
     {
         Console.Error.WriteLine("Usage: dotnet-analyzer <path>");
-        Console.Error.WriteLine("  <path>  Path to a .sln, .csproj file or project directory");
+        Console.Error.WriteLine("  <path>  Path to a .sln, .csproj, .vbproj file, or project directory");
+        Console.Error.WriteLine();
+        Console.Error.WriteLine("Notes for VB.NET legacy projects:");
+        Console.Error.WriteLine("  - Full fidelity requires Windows + Visual Studio Build Tools 2019/2022 with VB workload.");
+        Console.Error.WriteLine("  - On other OS, an Adhoc Roslyn fallback is used (reduced semantic resolution).");
         return 1;
     }
 
