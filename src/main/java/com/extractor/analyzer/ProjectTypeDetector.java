@@ -49,7 +49,8 @@ public class ProjectTypeDetector {
 
     private boolean hasDotnetMarkers(Path projectRoot) {
         return hasFileWithExtension(projectRoot, "*.sln")
-                || hasFileWithExtension(projectRoot, "*.csproj");
+                || hasFileWithExtension(projectRoot, "*.csproj")
+                || hasFileWithExtension(projectRoot, "*.vbproj");
     }
 
     private boolean hasFileWithExtension(Path directory, String glob) {
