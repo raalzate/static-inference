@@ -41,6 +41,8 @@ Hallazgos que condicionan el diseño:
 - **Rationale**: Mandato del plan; soporta 2020-12 y usa Jackson (ya presente). Scope `test` ⇒ no entra en el fat JAR (principio VI, FR-021).
 - **Alternatives**: `everit-json-schema` (sin 2020-12); `json-sKema` (menos maduro).
 
+**Addendum (implement, 2026-10-07)**: `com.networknt:json-schema-validator` **3.0.0** ya llega al classpath como dependencia transitiva *compile* del SDK MCP (`mcp-json-jackson3`). Declararlo con `scope test` (1.5.x) lo elimina del runtime del fat JAR por mediación de Maven (nearest wins + scope de la declaración directa), rompiendo el SDK MCP. Por tanto **no se declara**: los tests usan la 3.0.0 transitiva (API `SchemaRegistry`/`Schema`, basada en Jackson 3 — se valida a partir del texto JSON). Resultado: cero dependencias nuevas en el `pom.xml` para validación; la lista runtime resuelta es idéntica a la línea base (`baseline-deps.txt`).
+
 ### D3. Validador .NET: `JsonSchema.Net` (solo en el proyecto de tests)
 
 - **Decision**: paquete `JsonSchema.Net` (json-everything) en `DotNetAnalyzer.Tests.csproj` únicamente.

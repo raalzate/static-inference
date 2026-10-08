@@ -21,6 +21,7 @@
         <jackson-annotations.version>2.20</jackson-annotations.version>
         <lombok.version>1.18.38</lombok.version>
         <slf4j.version>2.0.9</slf4j.version>
+        <cucumber.version>7.14.0</cucumber.version>
     </properties>
 
     <dependencies>
@@ -94,6 +95,29 @@
             <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- 005-json-schema-contract: BDD runner (test scope only, Constitution VI).
+             The JSON Schema validator (com.networknt:json-schema-validator 3.0.0) is NOT declared here:
+             it already reaches the classpath transitively through the MCP SDK, and declaring it with
+             scope test would strip it from the fat JAR runtime (see research.md D2 addendum). -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>1.10.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -128,6 +152,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <schema.dir>${project.basedir}/schema</schema.dir>
+                        <features.dir>${project.basedir}/specs/005-json-schema-contract/tests/features</features.dir>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
 
             <!-- Maven Assembly Plugin for creating executable jar -->

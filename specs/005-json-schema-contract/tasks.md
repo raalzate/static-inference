@@ -23,11 +23,11 @@ description: "Task list for 005-json-schema-contract"
 
 **Purpose**: dependencias de test/dev y estructura de `schema/`
 
-- [ ] T001 Añadir excepción `!specs/005-json-schema-contract/` en `.gitignore` para que los `.feature` viajen con el código (research D11)
-- [ ] T002 [P] Añadir dependencias de test en `pom.xml`: `com.networknt:json-schema-validator` 1.5.x, `io.cucumber:cucumber-java`, `io.cucumber:cucumber-junit-platform-engine`, `org.junit.platform:junit-platform-suite` (todas `<scope>test</scope>`); configurar surefire `systemPropertyVariables` `schema.dir=${project.basedir}/schema` y `features.dir=${project.basedir}/specs/005-json-schema-contract/tests/features`
-- [ ] T003 [P] Añadir `JsonSchema.Net` a `src/test/dotnet/DotNetAnalyzer.Tests/DotNetAnalyzer.Tests.csproj` (solo proyecto de tests)
-- [ ] T004 [P] Crear paquete `schema/package.json` (`"private": true`, `@static-inference/schema`, devDependencies `json-schema-to-typescript`, `json-schema-to-zod`, `zod`, `tsx`, `typescript`; scripts `generate`, `check`, `test`), `schema/tsconfig.json`, `schema/README.md` y `schema/VERSION` con `1.0.0`
-- [ ] T005 Registrar las dependencias en `mvn dependency:tree` y `dotnet list package` como línea base (guardar salida en `specs/005-json-schema-contract/baseline-deps.txt`) antes de cualquier cambio de producción [TS-043]
+- [x] T001 Añadir excepción `!specs/005-json-schema-contract/` en `.gitignore` para que los `.feature` viajen con el código (research D11) — _N/A (moot): specs/ is fully versioned since 3fb9958; instead .gitignore gained exceptions for schema fixtures/v1.1.0 baselines (output*.json) and ignores schema/node_modules_
+- [x] T002 [P] Añadir dependencias de test en `pom.xml`: `com.networknt:json-schema-validator` 1.5.x, `io.cucumber:cucumber-java`, `io.cucumber:cucumber-junit-platform-engine`, `org.junit.platform:junit-platform-suite` (todas `<scope>test</scope>`); configurar surefire `systemPropertyVariables` `schema.dir=${project.basedir}/schema` y `features.dir=${project.basedir}/specs/005-json-schema-contract/tests/features` — _networknt NOT declared: 3.0.0 already arrives transitively (compile) via MCP SDK; a test-scoped declaration would strip it from the fat JAR (research D2 addendum). Cucumber 7.14.0 + junit-platform-suite 1.10.0 (aligned with JUnit 5.10.0)_
+- [x] T003 [P] Añadir `JsonSchema.Net` a `src/test/dotnet/DotNetAnalyzer.Tests/DotNetAnalyzer.Tests.csproj` (solo proyecto de tests) — _JsonSchema.Net 7.4.0_
+- [x] T004 [P] Crear paquete `schema/package.json` (`"private": true`, `@static-inference/schema`, devDependencies `json-schema-to-typescript`, `json-schema-to-zod`, `zod`, `tsx`, `typescript`; scripts `generate`, `check`, `test`), `schema/tsconfig.json`, `schema/README.md` y `schema/VERSION` con `1.0.0` — _+ @apidevtools/json-schema-ref-parser (dereference for json-schema-to-zod); versions pinned_
+- [x] T005 Registrar las dependencias en `mvn dependency:tree` y `dotnet list package` como línea base (guardar salida en `specs/005-json-schema-contract/baseline-deps.txt`) antes de cualquier cambio de producción [TS-043]
 
 ---
 

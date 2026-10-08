@@ -1,0 +1,25 @@
+{
+  "name": "@static-inference/schema",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Formal JSON Schema 2020-12 contract of Static Inference outputs, with generated TypeScript types and zod validators.",
+  "type": "module",
+  "main": "generated/index.ts",
+  "types": "generated/index.ts",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "generate": "node gen/generate.mjs",
+    "check": "node --import tsx gen/check.mjs",
+    "test": "node --import tsx --test test/"
+  },
+  "devDependencies": {
+    "@apidevtools/json-schema-ref-parser": "11.9.3",
+    "json-schema-to-typescript": "15.0.4",
+    "json-schema-to-zod": "2.8.1",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "zod": "3.25.76"
+  }
+}
