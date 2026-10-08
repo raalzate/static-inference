@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static-inference.dev/schema/1.0.0/mcp/get_component_metrics.response.schema.json",
+  "title": "GetComponentMetricsResponse",
+  "description": "Successful get_component_metrics response: a single Component (no meta).",
+  "$ref": "../common.schema.json#/$defs/Component"
+}

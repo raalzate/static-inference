@@ -1,17 +1,24 @@
 package com.extractor.integration;
 
+import com.extractor.MicroserviceInferenceMain;
+import com.extractor.mcp.McpCalls;
 import com.extractor.mcp.tools.AnalyzeProjectTool;
+import com.extractor.schema.DemoOutputs;
+import com.extractor.schema.SchemaRegistry;
 import com.extractor.service.AnalysisResult;
 import com.extractor.service.AnalysisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -90,5 +97,36 @@ class CliMcpParityTest {
             // We verify the flag detection logic indirectly through the --mcp routing
             assertTrue("--mcp".equals("--mcp"), "Flag routing is correct");
         });
+    }
+
+    /**
+     * [005 TS-024] FR-014: CLI artifacts and MCP responses are both valid against the contract and equivalent.
+     */
+    @Test
+    @Tag("schema-contract")
+    @DisplayName("TS-024: CLI artifacts and MCP responses are valid against the contract and equivalent")
+    void cliAndMcpOutputsSatisfyContractAndAreEquivalent() throws Exception {
+        Path demo = DemoOutputs.projectDir("java-standar");
+        Path cliOut = tempDir.resolve("cli-contract");
+        Files.createDirectories(cliOut);
+        MicroserviceInferenceMain.main(new String[] {demo.toString(), cliOut.resolve("output.json").toString()});
+
+        McpCalls mcp = new McpCalls(service);
+        Map<String, String[]> pairs = Map.of(
+                "get_dependency_graph", new String[] {"output.json", SchemaRegistry.DEPENDENCY_GRAPH},
+                "get_architecture_proposal", new String[] {"output_architecture.json", SchemaRegistry.ARCHITECTURE},
+                "get_api_contracts", new String[] {"output_entrypoints.json", SchemaRegistry.ENTRYPOINTS});
+        ObjectMapper mapper = new ObjectMapper();
+        for (Map.Entry<String, String[]> pair : pairs.entrySet()) {
+            String cliJson = Files.readString(cliOut.resolve(pair.getValue()[0]));
+            McpCalls.Response response = mcp.call(pair.getKey(), Map.of("projectPath", demo.toString()));
+            assertFalse(response.error(), response.text());
+
+            assertEquals(List.of(), SchemaRegistry.get().validate(pair.getValue()[1], cliJson), "CLI " + pair.getKey());
+            assertEquals(List.of(), SchemaRegistry.get().validate("mcp/" + pair.getKey() + ".response",
+                    response.text()), "MCP " + pair.getKey());
+            assertEquals(mapper.readTree(cliJson), mapper.readTree(response.text()),
+                    "CLI and MCP must be equivalent for " + pair.getKey());
+        }
     }
 }

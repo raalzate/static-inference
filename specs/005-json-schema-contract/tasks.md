@@ -107,15 +107,15 @@ description: "Task list for 005-json-schema-contract"
 
 ### Tests for User Story 3 (escribir primero, deben FALLAR)
 
-- [ ] T033 [P] [US3] Step definitions MCP en `src/test/java/com/extractor/bdd/McpResponsesSteps.java` (invoca handlers `*Tool.handle` como `McpServerContractTest`) [TS-022, TS-023, TS-024, TS-025, TS-026, TS-027]
-- [ ] T034 [P] [US3] Test JUnit `src/test/java/com/extractor/schema/McpResponsesContractTest.java` (5 tools, `minViability` Alta/Media/Baja, forma de `analyze_project` y `get_component_metrics` sin `meta`) [TS-022, TS-023, TS-026, TS-027]
-- [ ] T035 [US3] Extender `src/test/java/com/extractor/integration/CliMcpParityTest.java`: validar cada artefacto CLI y cada respuesta MCP contra su contrato además de la equivalencia existente (`@Tag("schema-contract")`) [TS-024]
+- [x] T033 [P] [US3] Step definitions MCP en `src/test/java/com/extractor/bdd/McpResponsesSteps.java` (invoca handlers `*Tool.handle` como `McpServerContractTest`) [TS-022, TS-023, TS-024, TS-025, TS-026, TS-027] — _handlers invoked through McpServerMain.createToolSpecs via test helper com.extractor.mcp.McpCalls_
+- [x] T034 [P] [US3] Test JUnit `src/test/java/com/extractor/schema/McpResponsesContractTest.java` (5 tools, `minViability` Alta/Media/Baja, forma de `analyze_project` y `get_component_metrics` sin `meta`) [TS-022, TS-023, TS-026, TS-027]
+- [x] T035 [US3] Extender `src/test/java/com/extractor/integration/CliMcpParityTest.java`: validar cada artefacto CLI y cada respuesta MCP contra su contrato además de la equivalencia existente (`@Tag("schema-contract")`) [TS-024]
 
 ### Implementation for User Story 3
 
-- [ ] T036 [P] [US3] Crear `schema/1.0.0/mcp/get_dependency_graph.response.schema.json`, `get_architecture_proposal.response.schema.json`, `get_api_contracts.response.schema.json`, `get_component_metrics.response.schema.json` como `$ref` puros a documentos/definición `Component` [TS-022, TS-025]
-- [ ] T037 [P] [US3] Crear `schema/1.0.0/mcp/analyze_project.response.schema.json` (camelCase, cerrado, `filesGenerated` con 3 elementos) [TS-022, TS-026]
-- [ ] T038 [US3] Ejecutar T033–T035 hasta verde sin tocar adaptadores MCP (principio II) [TS-022, TS-023, TS-024, TS-025, TS-026, TS-027]
+- [x] T036 [P] [US3] Crear `schema/1.0.0/mcp/get_dependency_graph.response.schema.json`, `get_architecture_proposal.response.schema.json`, `get_api_contracts.response.schema.json`, `get_component_metrics.response.schema.json` como `$ref` puros a documentos/definición `Component` [TS-022, TS-025]
+- [x] T037 [P] [US3] Crear `schema/1.0.0/mcp/analyze_project.response.schema.json` (camelCase, cerrado, `filesGenerated` con 3 elementos) [TS-022, TS-026]
+- [x] T038 [US3] Ejecutar T033–T035 hasta verde sin tocar adaptadores MCP (principio II) [TS-022, TS-023, TS-024, TS-025, TS-026, TS-027] — _no MCP adapter changed_
 
 **Checkpoint**: CLI y MCP verificablemente equivalentes contra el contrato.
 

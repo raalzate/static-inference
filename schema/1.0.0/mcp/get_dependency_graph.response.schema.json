@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static-inference.dev/schema/1.0.0/mcp/get_dependency_graph.response.schema.json",
+  "title": "GetDependencyGraphResponse",
+  "description": "Successful get_dependency_graph response: the dependency graph document.",
+  "$ref": "../dependency-graph.schema.json"
+}
