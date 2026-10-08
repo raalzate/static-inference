@@ -24,4 +24,6 @@ defaults:
 | `acceptance` | `...acceptance == 'true'` | JDK 17, .NET 8.0.x, Node 20 | `make build`; `DEVARCH_E2E=true make test-acceptance` | no |
 | `release` | push a `main` con `engine-*` o tag `dev-arch-v*` | JDK 17, .NET 8.0.x | `make build-engine`; matriz `linux-x64, osx-arm64, osx-x64, win-x64`, `--self-contained false`; artefacto `dev-arch-engine-<tag>-<rid>` | — |
 
+Cada job de área (`engine-java`, `engine-dotnet`, `web`, `schema`, `acceptance`) declara `timeout-minutes: 20` (SC-009).
+
 Reglas de filtro (relativas a `apps/dev-arch/`): ver `data-model.md` → CiJob. Un cambio en `schema/**` activa `schema`, `engine-java`, `engine-dotnet` y `web`. Un cambio fuera de `apps/dev-arch/**` no dispara el workflow.

@@ -8,6 +8,9 @@ export type EngineResolution =
   | { kind: 'not-built'; jarPath: string; message: string };
 
 export function resolveEngine(env: NodeJS.ProcessEnv, cwd: string, exists: (p: string) => boolean): EngineResolution;
+
+/** Pure: command executed by /api/analyze (no shell). */
+export function buildEngineCommand(r: { javaBin: string; jarPath: string }, projectRoot: string, outputFile = 'output.json'): { file: string; args: string[] };
 ```
 
 | Caso | Entrada | Resultado |

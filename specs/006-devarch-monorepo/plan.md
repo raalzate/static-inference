@@ -10,7 +10,7 @@ Importar Static Inference con historia (`git subtree add`, sin squash) en `apps/
 ## Technical Context
 
 **Language/Version**: Java 17 (motor, Maven 3.9 / `mvnw`), C# .NET 8 (`dotnet-analyzer`, compilable con SDK ≥ 8), TypeScript 5 / Node ≥ 20 (web Next.js 15.3.8, paquete `schema`, pruebas de aceptación), Bash + GNU Make (orquestación), YAML GitHub Actions
-**Primary Dependencies**: existentes (Spoon, Jackson, MCP SDK Java, Roslyn, Next.js, Genkit); **nuevas solo dev/CI**: `@cucumber/cucumber` 11.x (raíz del producto), `tsx` 4.x (ya usado en `schema/`, se iza a la raíz), `dorny/paths-filter@v3` (CI)
+**Primary Dependencies**: existentes (Spoon, Jackson, MCP SDK Java, Roslyn, Next.js, Genkit); **nuevas solo dev/CI**: `@cucumber/cucumber` 11.x, `yaml` 2.x y `picomatch` 4.x (raíz del producto, solo para step definitions de aceptación: leer el workflow y evaluar filtros de rutas), `tsx` 4.x (ya usado en `schema/`, se iza a la raíz), `dorny/paths-filter@v3` (CI)
 **Storage**: archivos en git; artefactos generados en `engine/target/`, `web/.next/`, `web/engine-dist/` (ignorados)
 **Testing**: JUnit 5 + Cucumber-JVM (motor, existentes), xUnit (`Category!=Corpus`), `node:test` + `tsx` (schema y web unitarias), Cucumber-JS (aceptación 006; escenarios `@slow` con `DEVARCH_E2E=true`)
 **Target Platform**: macOS / Linux para desarrollo y CI (`ubuntu-latest`); release multiplataforma del motor sin cambios de matriz
@@ -138,7 +138,7 @@ apps/dev-arch/
     test-for-demo/
   web/                                  # desde apps/dev-arch (src, docs, configs)
     package.json                        # version = VERSION; dep @static-inference/schema; script test
-    src/server/engine/engine-path.ts    # NUEVO
+    src/server/engine/engine-path.ts    # NUEVO: resolveEngine + buildEngineCommand (puras)
     src/server/engine/engine-path.test.ts  src/app/api/analyze/route.test.ts   # NUEVOS
     src/app/api/analyze/route.ts        # usa engine-path + execFile
     engine-dist/                        # generado (ignorado)
