@@ -21,7 +21,7 @@ import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PUBLISH_QUIET_P
  * Not tagged {@code schema-contract} on purpose: {@code schema-check} runs the JUnit contract tests with
  * {@code -Dgroups=schema-contract}, and the schema-check scenarios themselves invoke {@code schema-check}.
  */
-@Suite
+@Suite(failIfNoTests = false)
 @SuiteDisplayName("005-json-schema-contract BDD scenarios")
 @IncludeEngines("cucumber")
 @SelectDirectories("specs/005-json-schema-contract/tests/features")

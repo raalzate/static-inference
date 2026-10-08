@@ -24,10 +24,10 @@ public final class BaselineArtifacts {
     private BaselineArtifacts() {
     }
 
-    /** Loads the three baseline artifacts with the repository root restored. */
+    /** Loads the three baseline artifacts with the placeholder replaced by the hermetic demo root. */
     public static Map<String, String> load(String project) throws IOException {
         Path dir = DemoOutputs.repoRoot().resolve("src/test/resources/baseline-v1.1.0").resolve(project);
-        String repo = DemoOutputs.repoRoot().toString();
+        String repo = DemoOutputs.demoRoot().toString();
         Map<String, String> out = new LinkedHashMap<>();
         for (String artifact : List.of(DemoOutputs.GRAPH, DemoOutputs.ARCHITECTURE, DemoOutputs.ENTRYPOINTS)) {
             out.put(artifact, Files.readString(dir.resolve(artifact), StandardCharsets.UTF_8)

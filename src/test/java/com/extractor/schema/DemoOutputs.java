@@ -80,9 +80,94 @@ public final class DemoOutputs {
         return SchemaRegistry.get().repoRoot();
     }
 
-    /** Absolute path of {@code test-for-demo/<project>}. */
+    /**
+     * Root of the hermetic demo copies ({@code target/schema-demo}): it plays the role of the repository root
+     * for the {@code ${REPO}} placeholder of the v1.1.0 baselines.
+     */
+    public static Path demoRoot() {
+        return repoRoot().resolve("target").resolve("schema-demo");
+    }
+
+    /**
+     * Absolute path of a hermetic copy of {@code test-for-demo/<project>} holding only the files tracked by git
+     * (build outputs such as {@code target/}, {@code obj/} or previous {@code output*.json} left in the working
+     * tree would otherwise change the analysis). Created once per JVM.
+     */
     public static Path projectDir(String project) {
-        return repoRoot().resolve("test-for-demo").resolve(project);
+        return COPIES.computeIfAbsent(project, DemoOutputs::copyTracked);
+    }
+
+    private static final Map<String, Path> COPIES = new ConcurrentHashMap<>();
+
+    private static Path copyTracked(String project) {
+        Path source = repoRoot().resolve("test-for-demo").resolve(project);
+        Path target = demoRoot().resolve("test-for-demo").resolve(project);
+        try {
+            deleteRecursively(target);
+            List<String> files = trackedFiles("test-for-demo/" + project);
+            if (files.isEmpty()) {
+                throw new IllegalStateException("no git-tracked files under " + source);
+            }
+            for (String file : files) {
+                Path from = repoRoot().resolve(file);
+                if (Files.isRegularFile(from)) {
+                    Path to = demoRoot().resolve(file);
+                    Files.createDirectories(to.getParent());
+                    Files.copy(from, to, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            return target;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    private static List<String> trackedFiles(String relativeDir) throws IOException {
+        Process process = new ProcessBuilder("git", "ls-files", "-z", "--", relativeDir)
+                .directory(repoRoot().toFile()).redirectErrorStream(false).start();
+        process.getOutputStream().close();
+        String out = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        process.getErrorStream().transferTo(java.io.OutputStream.nullOutputStream());
+        try {
+            if (process.waitFor() != 0) {
+                return filesWithoutBuildOutputs(relativeDir); // not a git checkout (e.g. a plain copy)
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(e);
+        }
+        return out.isEmpty() ? List.of() : List.of(out.split("\u0000"));
+    }
+
+    /** Fallback outside git: every file except the build outputs ignored by .gitignore. */
+    private static List<String> filesWithoutBuildOutputs(String relativeDir) throws IOException {
+        java.util.Set<String> skippedDirs = java.util.Set.of("target", "obj", "bin", ".si-output");
+        try (java.util.stream.Stream<Path> walk = Files.walk(repoRoot().resolve(relativeDir))) {
+            return walk.filter(Files::isRegularFile)
+                    .filter(p -> {
+                        for (Path part : repoRoot().resolve(relativeDir).relativize(p)) {
+                            if (skippedDirs.contains(part.toString())) {
+                                return false;
+                            }
+                        }
+                        String name = p.getFileName().toString();
+                        return !name.equals(".DS_Store") && !name.matches("output(_architecture|_entrypoints|_layers|_web)?\\.json");
+                    })
+                    .map(p -> repoRoot().relativize(p).toString().replace('\\', '/'))
+                    .sorted()
+                    .toList();
+        }
+    }
+
+    private static void deleteRecursively(Path dir) throws IOException {
+        if (!Files.exists(dir)) {
+            return;
+        }
+        try (java.util.stream.Stream<Path> walk = Files.walk(dir)) {
+            for (Path p : walk.sorted(java.util.Comparator.reverseOrder()).toList()) {
+                Files.delete(p);
+            }
+        }
     }
 
     /** True when the project is a .NET demo project. */

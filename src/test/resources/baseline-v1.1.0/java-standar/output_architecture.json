@@ -70,11 +70,6 @@
     "components_with_secrets" : 0,
     "shared_domain" : "banco_hexagonal.pruebatecnica",
     "secrets_locations" : [ {
-      "path" : "target/classes/application.yml",
-      "line" : 25,
-      "kind" : "JDBC_PASSWORD",
-      "redacted" : true
-    }, {
       "path" : "docker-compose.yml",
       "line" : 25,
       "kind" : "JDBC_PASSWORD",

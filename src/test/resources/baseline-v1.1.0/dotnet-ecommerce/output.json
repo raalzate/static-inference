@@ -1048,7 +1048,7 @@
     "schemas" : { }
   },
   "meta" : {
-    "source" : "roslyn-fallback",
+    "source" : "roslyn",
     "microservice_candidates" : { },
     "dependency_accuracy" : null,
     "decomposition_accuracy" : null
