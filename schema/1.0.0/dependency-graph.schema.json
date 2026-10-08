@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static-inference.dev/schema/1.0.0/dependency-graph.schema.json",
+  "title": "DependencyGraph",
+  "description": "Dependency graph (output.json; MCP get_dependency_graph).",
+  "type": "object",
+  "properties": {
+    "components": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Component"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Edge"
+      }
+    },
+    "api_contracts": {
+      "$ref": "common.schema.json#/$defs/ApiContracts",
+      "description": "Embedded API contracts; meta is optional here (the raw .NET graph does not emit it)."
+    },
+    "meta": {
+      "$ref": "common.schema.json#/$defs/GraphMeta"
+    }
+  },
+  "required": [
+    "components",
+    "edges",
+    "api_contracts",
+    "meta"
+  ],
+  "additionalProperties": false
+}

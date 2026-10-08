@@ -66,7 +66,7 @@ description: "Task list for 005-json-schema-contract"
 - [x] T018 [US2] Añadir `meta` (primer campo) a `src/main/java/com/extractor/inference/ConsolidatedArchitecture.java` (depende de T016)
 - [x] T019 [US2] Propagar/verificar versión en `src/main/java/com/extractor/analyzer/DotNetBridgeAnalyzer.java`: warning `dotnet-analyzer schema_version X != engine Y` en `AnalysisResult.warnings` y fijar `SchemaVersion.CURRENT` (depende de T017) [TS-021] — _bridge exposes warnings via LanguageAnalyzer#getWarnings (default empty); AnalysisService merges them into AnalysisResult.warnings_
 - [x] T020 [P] [US2] Crear `src/main/dotnet/DotNetAnalyzer/Model/SchemaVersion.cs` (`Current = "1.0.0"`) y añadir `Meta.SchemaVersion` con `[JsonPropertyName("schema_version")]` y `[JsonPropertyOrder]` tras `source` en `src/main/dotnet/DotNetAnalyzer/Model/DependencyGraph.cs`
-- [ ] T021 [US2] Verificar que T012–T015 pasan y que la suite existente Java y .NET sigue verde [TS-044]
+- [x] T021 [US2] Verificar que T012–T015 pasan y que la suite existente Java y .NET sigue verde [TS-044] — _Java 171/171 (excluding not-yet-implemented US3+ scenarios), .NET 156/156_
 
 **Checkpoint**: versión presente; salidas byte-idénticas a v1.1.0 salvo los campos nuevos.
 
@@ -80,20 +80,20 @@ description: "Task list for 005-json-schema-contract"
 
 ### Tests for User Story 1 (escribir primero, deben FALLAR)
 
-- [ ] T022 [P] [US1] Step definitions de documentos en `src/test/java/com/extractor/bdd/ContractDocumentsSteps.java` (mutaciones por JSON Pointer, aserción de ruta/campo en el error) [TS-001, TS-002, TS-004, TS-005, TS-006, TS-007, TS-008, TS-009, TS-010, TS-011, TS-012]
-- [ ] T023 [P] [US1] Test JUnit `src/test/java/com/extractor/schema/SchemaDocumentsContractTest.java` (parametrizado por los 6 proyectos demo; escribe muestras en `target/schema-samples/`) [TS-001, TS-002]
-- [ ] T024 [P] [US1] Test JUnit `src/test/java/com/extractor/schema/SchemaNegativeContractTest.java` (campo requerido eliminado, catálogo cerrado, propiedad desconocida, mapas dinámicos, valores abiertos, `roslyn-fallback`, grafo vacío, `legacy_entrypoint` nulo/ausente/`internal`) [TS-004, TS-005, TS-006, TS-007, TS-008, TS-009, TS-011, TS-012]
-- [ ] T025 [P] [US1] Test xUnit `src/test/dotnet/DotNetAnalyzer.Tests/SchemaContract/GraphSchemaContractTests.cs`: grafo crudo de `SampleProject`, `CodeIssuesSample` y `VbLegacy` (omite nulos) válido; escribe muestras en `target/schema-samples/dotnet/` [TS-003]
-- [ ] T026 [P] [US1] Step definition `@requires-dotnet` que ejecuta `dotnet-analyzer` sobre el fixture `SampleProject` y valida stdout en `src/test/java/com/extractor/bdd/DotNetRawSteps.java` [TS-003, TS-015]
+- [x] T022 [P] [US1] Step definitions de documentos en `src/test/java/com/extractor/bdd/ContractDocumentsSteps.java` (mutaciones por JSON Pointer, aserción de ruta/campo en el error) [TS-001, TS-002, TS-004, TS-005, TS-006, TS-007, TS-008, TS-009, TS-010, TS-011, TS-012]
+- [x] T023 [P] [US1] Test JUnit `src/test/java/com/extractor/schema/SchemaDocumentsContractTest.java` (parametrizado por los 6 proyectos demo; escribe muestras en `target/schema-samples/`) [TS-001, TS-002]
+- [x] T024 [P] [US1] Test JUnit `src/test/java/com/extractor/schema/SchemaNegativeContractTest.java` (campo requerido eliminado, catálogo cerrado, propiedad desconocida, mapas dinámicos, valores abiertos, `roslyn-fallback`, grafo vacío, `legacy_entrypoint` nulo/ausente/`internal`) [TS-004, TS-005, TS-006, TS-007, TS-008, TS-009, TS-011, TS-012]
+- [x] T025 [P] [US1] Test xUnit `src/test/dotnet/DotNetAnalyzer.Tests/SchemaContract/GraphSchemaContractTests.cs`: grafo crudo de `SampleProject`, `CodeIssuesSample` y `VbLegacy` (omite nulos) válido; escribe muestras en `target/schema-samples/dotnet/` [TS-003]
+- [x] T026 [P] [US1] Step definition `@requires-dotnet` que ejecuta `dotnet-analyzer` sobre el fixture `SampleProject` y valida stdout en `src/test/java/com/extractor/bdd/DotNetRawSteps.java` [TS-003, TS-015] — _file landed with the US2 commit (shared by TS-015)_
 
 ### Implementation for User Story 1
 
-- [ ] T027 [US1] Completar `$defs` en `schema/1.0.0/common.schema.json` según data-model.md (incluye [TS-016, TS-018]): `SchemaVersion` (`const 1.0.0`), `DocumentMeta`, `GraphMeta`, `Component` (`interface` con `deprecated: true`), `PackageGroup`, `CodeIssue`, `Edge` (patrón compuesto), `ApiContracts`, `ApiEndpoint`, `Parameter`, `ApiSchema`, `ApiSchemaProperty` — objetos cerrados, anulables opcionales, catálogos de FR-005 [TS-004, TS-005, TS-006, TS-007, TS-008, TS-009, TS-010]
-- [ ] T028 [US1] Añadir a `schema/1.0.0/common.schema.json` los `$defs` de arquitectura: `ProjectMetadata`, `PackageDependencyInfo`, `SecretLocation`, `Proposal`, `ProposalMetrics`, `ProposalSignals`, `ProposalTable`, `LegacyEntrypoint`, `SupportLibrary` (depende de T027) [TS-005, TS-012]
-- [ ] T029 [P] [US1] Crear `schema/1.0.0/dependency-graph.schema.json` (raíz cerrada; `api_contracts.meta` opcional) (depende de T027) [TS-001, TS-002, TS-003, TS-011]
-- [ ] T030 [P] [US1] Crear `schema/1.0.0/architecture.schema.json` (`meta` requerido) (depende de T028) [TS-001, TS-002, TS-012]
-- [ ] T031 [P] [US1] Crear `schema/1.0.0/entrypoints.schema.json` (`EntrypointsDocument` = `allOf` + `meta` requerido + `unevaluatedProperties: false`) (depende de T027) [TS-001, TS-002]
-- [ ] T032 [US1] Ejecutar T022–T026 hasta verde; ajustar **esquemas** (nunca las aserciones) ante falsos negativos y documentar en research.md cualquier campo real no previsto [TS-001, TS-002, TS-003, TS-004, TS-005, TS-006, TS-007, TS-008, TS-009, TS-010, TS-011, TS-012]
+- [x] T027 [US1] Completar `$defs` en `schema/1.0.0/common.schema.json` según data-model.md (incluye [TS-016, TS-018]): `SchemaVersion` (`const 1.0.0`), `DocumentMeta`, `GraphMeta`, `Component` (`interface` con `deprecated: true`), `PackageGroup`, `CodeIssue`, `Edge` (patrón compuesto), `ApiContracts`, `ApiEndpoint`, `Parameter`, `ApiSchema`, `ApiSchemaProperty` — objetos cerrados, anulables opcionales, catálogos de FR-005 [TS-004, TS-005, TS-006, TS-007, TS-008, TS-009, TS-010]
+- [x] T028 [US1] Añadir a `schema/1.0.0/common.schema.json` los `$defs` de arquitectura: `ProjectMetadata`, `PackageDependencyInfo`, `SecretLocation`, `Proposal`, `ProposalMetrics`, `ProposalSignals`, `ProposalTable`, `LegacyEntrypoint`, `SupportLibrary` (depende de T027) [TS-005, TS-012]
+- [x] T029 [P] [US1] Crear `schema/1.0.0/dependency-graph.schema.json` (raíz cerrada; `api_contracts.meta` opcional) (depende de T027) [TS-001, TS-002, TS-003, TS-011]
+- [x] T030 [P] [US1] Crear `schema/1.0.0/architecture.schema.json` (`meta` requerido) (depende de T028) [TS-001, TS-002, TS-012]
+- [x] T031 [P] [US1] Crear `schema/1.0.0/entrypoints.schema.json` (`EntrypointsDocument` = `allOf` + `meta` requerido + `unevaluatedProperties: false`) (depende de T027) [TS-001, TS-002]
+- [x] T032 [US1] Ejecutar T022–T026 hasta verde; ajustar **esquemas** (nunca las aserciones) ante falsos negativos y documentar en research.md cualquier campo real no previsto [TS-001, TS-002, TS-003, TS-004, TS-005, TS-006, TS-007, TS-008, TS-009, TS-010, TS-011, TS-012] — _schema-only adjustments; findings E13-E17 documented in research.md (response_schema optional, nullable numeric ranges via anyOf for networknt 3.0.0)_
 
 **Checkpoint**: MVP — contrato formal validando salidas reales Java y .NET.
 

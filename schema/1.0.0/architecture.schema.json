@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static-inference.dev/schema/1.0.0/architecture.schema.json",
+  "title": "ConsolidatedArchitecture",
+  "description": "Consolidated architecture proposal (output_architecture.json; MCP get_architecture_proposal).",
+  "type": "object",
+  "properties": {
+    "meta": {
+      "$ref": "common.schema.json#/$defs/DocumentMeta"
+    },
+    "project_metadata": {
+      "$ref": "common.schema.json#/$defs/ProjectMetadata"
+    },
+    "proposals": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Proposal"
+      }
+    },
+    "support_libraries": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/SupportLibrary"
+      }
+    },
+    "summary": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "meta",
+    "project_metadata",
+    "proposals",
+    "support_libraries",
+    "summary"
+  ],
+  "additionalProperties": false
+}

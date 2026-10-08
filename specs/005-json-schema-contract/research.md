@@ -27,6 +27,18 @@ Hallazgos que condicionan el diseño:
 | E12 | `test-for-demo/dotnet-unstructured` se detecta como Java (`meta.source=spoon`) y produce un grafo vacío | Grafo vacío debe ser válido; la detección es un hallazgo fuera de alcance (Fase 4) |
 | E11 | No existe `Makefile` en la raíz; CI (`.github/workflows/ci.yml`) tiene jobs Java y .NET separados, sin Node | `schema-check` como script + Makefile; nuevo job CI con Node 20 |
 
+### Hallazgos durante la implementación (T032)
+
+| # | Hallazgo | Decisión en el esquema 1.0.0 |
+|---|----------|------------------------------|
+| E13 | `ApiEndpoint.response_schema` es `string?` en .NET y el analizador omite nulos: un endpoint .NET sin respuesta no emite la propiedad | `response_schema` es **opcional** y anulable (data-model lo daba como requerido) |
+| E14 | El modelo .NET declara `PackageGroup {group, artifact, version}` (forma distinta a la Java `{package_name, components, count}`), pero ningún pase lo puebla: `package_dependencies` siempre es `[]` en .NET | El contrato describe la forma Java (la única emitida); divergencia latente anotada para Fase 4 |
+| E15 | .NET serializa `double` enteros sin decimales (`"complexity_avg": 1`) | `complexity_avg`/`lcom` tipados `number` (aceptan enteros) |
+| E16 | `com.networknt:json-schema-validator` 3.0.0 falla al cargar `minimum`/`maximum` junto a `"type": [T, "null"]` (`Could not load validator minimum`) | Los numéricos anulables con rango se expresan como `anyOf: [{type: T, minimum…}, {type: null}]` (semánticamente idéntico) |
+| E17 | `edges[*].type` incluye valores compuestos con orden variable (`call,injection-field,use`) y tipos .NET (`interface-impl`, `repository`, `use,relation`) | Cubiertos por el patrón abierto `^[a-z][a-z-]*(,[a-z][a-z-]*)*$` |
+
+Todas las salidas de los 6 proyectos demo (3 artefactos c/u) y el grafo crudo .NET de `SampleProject`, `CodeIssuesSample` y `VbLegacy` validan sin errores.
+
 ## Decisiones
 
 ### D1. Dialecto: JSON Schema draft 2020-12

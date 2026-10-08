@@ -109,7 +109,7 @@ Fuente de verdad: `schema/VERSION`. Réplicas que `schema-check` compara: `$id` 
 | `path` | string | R |
 | `method` | string (valores abiertos: verbos HTTP, `STRUTS_ACTION`, `LISTENER`, `WEBSERVICE`, `KAFKA_LISTEN`…) | R |
 | `parameters` | Parameter[] | R |
-| `response_schema` | string? | R en output actual; anulable |
+| `response_schema` | string? | O (.NET omite nulos — research E13) |
 | `component_id` | string | R |
 | `description` | string? | O |
 | `request_body_schema` | string? | O |
