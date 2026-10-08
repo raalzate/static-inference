@@ -35,12 +35,12 @@ description: "Task list for 005-json-schema-contract"
 
 **Purpose**: infraestructura de validación y línea base v1.1.0 que usan todas las historias
 
-- [ ] T006 Capturar artefactos de línea base v1.1.0 (JAR actual, sin cambios) para `java-standar` y `dotnet-ecommerce` en `src/test/resources/baseline-v1.1.0/<proyecto>/` con la raíz del repo normalizada a `${REPO}` [TS-020]
-- [ ] T007 [P] Crear utilidad de test `src/test/java/com/extractor/schema/SchemaRegistry.java`: mapea `https://static-inference.dev/schema/1.0.0/` → `schema/1.0.0/`, expone `validate(kind, JsonNode)` con errores que incluyen JSON Pointer y nombre del campo
-- [ ] T008 [P] Crear utilidad de test `src/test/java/com/extractor/schema/DemoOutputs.java`: ejecuta `AnalysisService` sobre `test-for-demo/<proyecto>`, serializa los 3 artefactos con el mismo `ObjectMapper` del CLI y los escribe también en `target/schema-samples/java/<proyecto>/`
-- [ ] T009 [P] Crear utilidad de test `src/test/dotnet/DotNetAnalyzer.Tests/SchemaContract/SchemaRegistry.cs` (búsqueda ascendente de `schema/VERSION`, mismo mapeo de `$id`)
-- [ ] T010 Crear runner Cucumber `src/test/java/com/extractor/bdd/RunSchemaContractFeaturesTest.java` (`@Suite`, `@IncludeEngines("cucumber")`, features desde `features.dir`, glue `com.extractor.bdd`, tag `schema-contract`) y `src/test/java/com/extractor/bdd/ToolAvailability.java` (detección de `dotnet`/`node` para `@requires-dotnet`/`@requires-node`)
-- [ ] T011 Crear esqueleto `schema/1.0.0/common.schema.json` con `$schema` 2020-12, `$id` y `$defs` vacíos tipados por nombre (sin reglas aún) para que los registros resuelvan referencias
+- [x] T006 Capturar artefactos de línea base v1.1.0 (JAR actual, sin cambios) para `java-standar` y `dotnet-ecommerce` en `src/test/resources/baseline-v1.1.0/<proyecto>/` con la raíz del repo normalizada a `${REPO}` [TS-020] — _captured with the v1.1.0 JAR + self-contained dotnet-analyzer (absolute project path)_
+- [x] T007 [P] Crear utilidad de test `src/test/java/com/extractor/schema/SchemaRegistry.java`: mapea `https://static-inference.dev/schema/1.0.0/` → `schema/1.0.0/`, expone `validate(kind, JsonNode)` con errores que incluyen JSON Pointer y nombre del campo — _uses networknt 3.0.0 (transitive), format assertions on, JSON Pointer paths_
+- [x] T008 [P] Crear utilidad de test `src/test/java/com/extractor/schema/DemoOutputs.java`: ejecuta `AnalysisService` sobre `test-for-demo/<proyecto>`, serializa los 3 artefactos con el mismo `ObjectMapper` del CLI y los escribe también en `target/schema-samples/java/<proyecto>/`
+- [x] T009 [P] Crear utilidad de test `src/test/dotnet/DotNetAnalyzer.Tests/SchemaContract/SchemaRegistry.cs` (búsqueda ascendente de `schema/VERSION`, mismo mapeo de `$id`) — _class ContractSchemas (avoids clash with Json.Schema.SchemaRegistry)_
+- [x] T010 Crear runner Cucumber `src/test/java/com/extractor/bdd/RunSchemaContractFeaturesTest.java` (`@Suite`, `@IncludeEngines("cucumber")`, features desde `features.dir`, glue `com.extractor.bdd`, tag `schema-contract`) y `src/test/java/com/extractor/bdd/ToolAvailability.java` (detección de `dotnet`/`node` para `@requires-dotnet`/`@requires-node`) — _runner not tagged schema-contract (avoids recursion with schema-check); schema-check e2e scenarios gated by SCHEMA_CHECK_E2E_
+- [x] T011 Crear esqueleto `schema/1.0.0/common.schema.json` con `$schema` 2020-12, `$id` y `$defs` vacíos tipados por nombre (sin reglas aún) para que los registros resuelvan referencias
 
 **Checkpoint**: validadores y runner listos; línea base capturada.
 

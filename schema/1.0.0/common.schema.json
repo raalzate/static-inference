@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static-inference.dev/schema/1.0.0/common.schema.json",
+  "title": "StaticInferenceCommon",
+  "description": "Shared definitions of the Static Inference output contract (skeleton, rules pending).",
+  "$defs": {
+    "SchemaVersion": { "title": "SchemaVersion" },
+    "DocumentMeta": { "title": "DocumentMeta" },
+    "GraphMeta": { "title": "GraphMeta" },
+    "Component": { "title": "Component" },
+    "PackageGroup": { "title": "PackageGroup" },
+    "CodeIssue": { "title": "CodeIssue" },
+    "Edge": { "title": "Edge" },
+    "ApiContracts": { "title": "ApiContracts" },
+    "ApiEndpoint": { "title": "ApiEndpoint" },
+    "Parameter": { "title": "Parameter" },
+    "ApiSchema": { "title": "ApiSchema" },
+    "ApiSchemaProperty": { "title": "ApiSchemaProperty" },
+    "ProjectMetadata": { "title": "ProjectMetadata" },
+    "PackageDependencyInfo": { "title": "PackageDependencyInfo" },
+    "SecretLocation": { "title": "SecretLocation" },
+    "Proposal": { "title": "Proposal" },
+    "ProposalMetrics": { "title": "ProposalMetrics" },
+    "ProposalSignals": { "title": "ProposalSignals" },
+    "ProposalTable": { "title": "ProposalTable" },
+    "LegacyEntrypoint": { "title": "LegacyEntrypoint" },
+    "SupportLibrary": { "title": "SupportLibrary" }
+  }
+}
