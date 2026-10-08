@@ -8,5 +8,7 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["generated/**/*.ts", "test/**/*.ts"]
+  "include": [
+    "generated/**/*.ts"
+  ]
 }

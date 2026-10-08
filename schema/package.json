@@ -12,12 +12,13 @@
   "scripts": {
     "generate": "node gen/generate.mjs",
     "check": "node --import tsx gen/check.mjs",
-    "test": "node --import tsx --test test/"
+    "test": "node --import tsx --test test/*.test.ts"
   },
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "11.9.3",
     "json-schema-to-typescript": "15.0.4",
     "json-schema-to-zod": "2.8.1",
+    "prettier": "3.9.9",
     "tsx": "4.23.15",
     "typescript": "5.9.3",
     "zod": "3.25.76"

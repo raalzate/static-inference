@@ -129,15 +129,15 @@ description: "Task list for 005-json-schema-contract"
 
 ### Tests for User Story 4 (escribir primero, deben FALLAR)
 
-- [ ] T039 [P] [US4] Copiar salidas reales normalizadas a `schema/fixtures/valid/{java-standar,dotnet-ecommerce}/` y `schema/fixtures/valid/mcp/analyze_project.json`; crear `schema/fixtures/invalid/{graph-missing-component-id,graph-layer-out-of-catalogue,graph-unknown-property,graph-missing-schema-version,architecture-bad-viability}.json` [TS-029, TS-030]
-- [ ] T040 [P] [US4] Escribir `schema/test/validators.test.ts` (`node:test`): cobertura de tipos/validadores, fixtures válidas/ inválidas con ruta, muestras de `target/schema-samples/`, determinismo de regeneración, banner "generated — do not edit" [TS-028, TS-029, TS-030, TS-031, TS-032, TS-033]
-- [ ] T041 [P] [US4] Step definitions `@requires-node` en `src/test/java/com/extractor/bdd/GeneratedTypesSteps.java` que delegan en `npm --prefix schema test`/`run check` [TS-028, TS-029, TS-030, TS-031, TS-032, TS-033]
+- [x] T039 [P] [US4] Copiar salidas reales normalizadas a `schema/fixtures/valid/{java-standar,dotnet-ecommerce}/` y `schema/fixtures/valid/mcp/analyze_project.json`; crear `schema/fixtures/invalid/{graph-missing-component-id,graph-layer-out-of-catalogue,graph-unknown-property,graph-missing-schema-version,architecture-bad-viability}.json` [TS-029, TS-030]
+- [x] T040 [P] [US4] Escribir `schema/test/validators.test.ts` (`node:test`): cobertura de tipos/validadores, fixtures válidas/ inválidas con ruta, muestras de `target/schema-samples/`, determinismo de regeneración, banner "generated — do not edit" [TS-028, TS-029, TS-030, TS-031, TS-032, TS-033]
+- [x] T041 [P] [US4] Step definitions `@requires-node` en `src/test/java/com/extractor/bdd/GeneratedTypesSteps.java` que delegan en `npm --prefix schema test`/`run check` [TS-028, TS-029, TS-030, TS-031, TS-032, TS-033] — _+ ProcessRunner helper_
 
 ### Implementation for User Story 4
 
-- [ ] T042 [US4] Implementar `schema/gen/generate.mjs`: `json-schema-to-typescript` → `schema/generated/types.ts`, `json-schema-to-zod` → `schema/generated/validators.ts` con `parseDependencyGraph`, `parseConsolidatedArchitecture`, `parseEntrypointsDocument`, `parseAnalyzeProjectResponse`, `parseComponent`; `schema/generated/index.ts`; orden estable, banner sin fecha, `\n` final [TS-028, TS-032, TS-033]
-- [ ] T043 [US4] Implementar `schema/gen/check.mjs`: regenera a tmp y compara con `generated/`, valida `fixtures/valid` (aceptar), `fixtures/invalid` (rechazar), `../target/schema-samples/**`, coherencia `VERSION`↔`$id`, modo `--file/--kind` (contracts/schema-package.md) [TS-029, TS-030, TS-031, TS-032]
-- [ ] T044 [US4] Ejecutar `npm --prefix schema run generate` y commitear `schema/generated/` + `schema/package-lock.json`; T039–T041 en verde [TS-028, TS-029, TS-030, TS-031, TS-032, TS-033]
+- [x] T042 [US4] Implementar `schema/gen/generate.mjs`: `json-schema-to-typescript` → `schema/generated/types.ts`, `json-schema-to-zod` → `schema/generated/validators.ts` con `parseDependencyGraph`, `parseConsolidatedArchitecture`, `parseEntrypointsDocument`, `parseAnalyzeProjectResponse`, `parseComponent`; `schema/generated/index.ts`; orden estable, banner sin fecha, `\n` final [TS-028, TS-032, TS-033] — _single-pass dereference (shared types declared once), MCP  roots emitted as type aliases, validators formatted with prettier 3.9.9 (pinned devDependency)_
+- [x] T043 [US4] Implementar `schema/gen/check.mjs`: regenera a tmp y compara con `generated/`, valida `fixtures/valid` (aceptar), `fixtures/invalid` (rechazar), `../target/schema-samples/**`, coherencia `VERSION`↔`$id`, modo `--file/--kind` (contracts/schema-package.md) [TS-029, TS-030, TS-031, TS-032] — _+ --samples-only mode_
+- [x] T044 [US4] Ejecutar `npm --prefix schema run generate` y commitear `schema/generated/` + `schema/package-lock.json`; T039–T041 en verde [TS-028, TS-029, TS-030, TS-031, TS-032, TS-033]
 
 **Checkpoint**: consumidor tipado listo para Fase 2.
 

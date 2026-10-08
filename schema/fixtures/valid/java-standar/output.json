@@ -1,0 +1,1549 @@
+{
+  "components" : [ {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.PruebaTecnica",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/PruebaTecnica.java" ],
+    "loc" : 5,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Compartida",
+    "calls_out" : [ ],
+    "calls_in" : [ ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "SpringBootApplication" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework.boot:spring-boot-starter-web" ],
+    "package_dependencies" : [ ],
+    "code_issues" : [ ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 1,
+    "lcom" : null,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : true,
+    "id" : "banco_hexagonal.pruebatecnica.application.Port.In.AccountUseCase",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/application/Port/In/AccountUseCase.java" ],
+    "loc" : 10,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Negocio",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Model.Account" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ ],
+    "is_interface" : true,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Account" ],
+      "count" : 1
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Port\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 11,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 1,
+    "lcom" : null,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : true,
+    "id" : "banco_hexagonal.pruebatecnica.application.Port.In.ClientUseCase",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/application/Port/In/ClientUseCase.java" ],
+    "loc" : 7,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Negocio",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Model.Client" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ ],
+    "is_interface" : true,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Client" ],
+      "count" : 1
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Port\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 11,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 1,
+    "lcom" : null,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : true,
+    "id" : "banco_hexagonal.pruebatecnica.application.Port.In.MovementUseCase",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/application/Port/In/MovementUseCase.java" ],
+    "loc" : 4,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Negocio",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Model.Movement" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ ],
+    "is_interface" : true,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Movement" ],
+      "count" : 1
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Port\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 12,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 1,
+    "lcom" : null,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : true,
+    "id" : "banco_hexagonal.pruebatecnica.application.Port.In.ReportUseCase",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/application/Port/In/ReportUseCase.java" ],
+    "loc" : 3,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Negocio",
+    "calls_out" : [ ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ReportController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ ],
+    "is_interface" : true,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Port\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 14,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 0,
+    "lcom" : null,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.application.service.AccountService",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/application/service/AccountService.java" ],
+    "loc" : 55,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Negocio",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException", "banco_hexagonal.pruebatecnica.domain.Model.Account", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "Override", "Service" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Exception",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Account" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence",
+      "components" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa" ],
+      "count" : 2
+    } ],
+    "code_issues" : [ ],
+    "extends" : null,
+    "implements" : [ "banco_hexagonal.pruebatecnica.application.Port.In.AccountUseCase" ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 5,
+    "lcom" : 0.5,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.application.service.ClientService",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/application/service/ClientService.java" ],
+    "loc" : 39,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Negocio",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException", "banco_hexagonal.pruebatecnica.domain.Model.Client", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "Override", "Service" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Exception",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Client" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence",
+      "components" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa" ],
+      "count" : 1
+    } ],
+    "code_issues" : [ ],
+    "extends" : null,
+    "implements" : [ "banco_hexagonal.pruebatecnica.application.Port.In.ClientUseCase" ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 4,
+    "lcom" : 0.0,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.application.service.MovementService",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/application/service/MovementService.java" ],
+    "loc" : 37,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Negocio",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException", "banco_hexagonal.pruebatecnica.domain.Exception.SaldoInsuficienteException", "banco_hexagonal.pruebatecnica.domain.Model.Movement", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "Override", "Service" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Exception",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException", "banco_hexagonal.pruebatecnica.domain.Exception.SaldoInsuficienteException" ],
+      "count" : 2
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Movement" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence",
+      "components" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa" ],
+      "count" : 2
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Comparison with hardcoded String literal: \"RETIRO\". Consider using a constant.",
+      "line" : 33,
+      "pattern" : "hardcoded_string_comparison"
+    } ],
+    "extends" : null,
+    "implements" : [ "banco_hexagonal.pruebatecnica.application.Port.In.MovementUseCase" ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 6,
+    "lcom" : 0.0,
+    "complexity_max" : 3,
+    "complexity_avg" : 2.0
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.application.service.ReportService",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/application/service/ReportService.java" ],
+    "loc" : 26,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Negocio",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ReportController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "Override", "Service" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Exception",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence",
+      "components" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa" ],
+      "count" : 3
+    } ],
+    "code_issues" : [ ],
+    "extends" : null,
+    "implements" : [ "banco_hexagonal.pruebatecnica.application.Port.In.ReportUseCase" ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 6,
+    "lcom" : null,
+    "complexity_max" : 2,
+    "complexity_avg" : 2.0
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.config.GlobalExceptionHandler",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/config/GlobalExceptionHandler.java" ],
+    "loc" : 23,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Compartida",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException", "banco_hexagonal.pruebatecnica.domain.Exception.SaldoInsuficienteException" ],
+    "calls_in" : [ ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "ControllerAdvice", "ExceptionHandler" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Exception",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException", "banco_hexagonal.pruebatecnica.domain.Exception.SaldoInsuficienteException" ],
+      "count" : 2
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Comparison with hardcoded String literal: \"llave duplicada\". Consider using a constant.",
+      "line" : 37,
+      "pattern" : "hardcoded_string_comparison"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 4,
+    "lcom" : null,
+    "complexity_max" : 3,
+    "complexity_avg" : 1.6666666666666667
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/domain/Exception/EntidadNoEncontradaException.java" ],
+    "loc" : 5,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Dominio",
+    "calls_out" : [ ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.application.service.AccountService", "banco_hexagonal.pruebatecnica.application.service.ClientService", "banco_hexagonal.pruebatecnica.application.service.MovementService", "banco_hexagonal.pruebatecnica.application.service.ReportService", "banco_hexagonal.pruebatecnica.config.GlobalExceptionHandler" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Exception\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 11,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : "java.lang.RuntimeException",
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 0,
+    "lcom" : null,
+    "complexity_max" : null,
+    "complexity_avg" : null
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.domain.Exception.SaldoInsuficienteException",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/domain/Exception/SaldoInsuficienteException.java" ],
+    "loc" : 5,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Dominio",
+    "calls_out" : [ ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.application.service.MovementService", "banco_hexagonal.pruebatecnica.config.GlobalExceptionHandler" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Exception\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 11,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : "java.lang.RuntimeException",
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 0,
+    "lcom" : null,
+    "complexity_max" : null,
+    "complexity_avg" : null
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.domain.Model.Account",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/domain/Model/Account.java" ],
+    "loc" : 14,
+    "tables_used" : [ "account", "accounts" ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Persistencia",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Model.Client" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.application.Port.In.AccountUseCase", "banco_hexagonal.pruebatecnica.application.service.AccountService", "banco_hexagonal.pruebatecnica.domain.Model.Movement", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "AllArgsConstructor", "Builder", "Data", "Entity", "NoArgsConstructor", "Table" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Model\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 17,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 1,
+    "lcom" : null,
+    "complexity_max" : null,
+    "complexity_avg" : null
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.domain.Model.Client",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/domain/Model/Client.java" ],
+    "loc" : 12,
+    "tables_used" : [ "client", "clients" ],
+    "sensitive_data" : true,
+    "domain" : null,
+    "layer" : "Persistencia",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Model.Person" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.application.Port.In.ClientUseCase", "banco_hexagonal.pruebatecnica.application.service.ClientService", "banco_hexagonal.pruebatecnica.domain.Model.Account", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "AllArgsConstructor", "Builder", "Data", "Entity", "EqualsAndHashCode", "NoArgsConstructor", "Table" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Model\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 19,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : "banco_hexagonal.pruebatecnica.domain.Model.Person",
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 1,
+    "lcom" : null,
+    "complexity_max" : null,
+    "complexity_avg" : null
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.domain.Model.Movement",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/domain/Model/Movement.java" ],
+    "loc" : 14,
+    "tables_used" : [ "movement", "movements" ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Persistencia",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Model.Account" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.application.Port.In.MovementUseCase", "banco_hexagonal.pruebatecnica.application.service.MovementService", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper.MovementMapper", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "AllArgsConstructor", "Builder", "Data", "Entity", "NoArgsConstructor", "Table" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Model\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 18,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 1,
+    "lcom" : null,
+    "complexity_max" : null,
+    "complexity_avg" : null
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.domain.Model.Person",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/domain/Model/Person.java" ],
+    "loc" : 9,
+    "tables_used" : [ ],
+    "sensitive_data" : true,
+    "domain" : null,
+    "layer" : "Dominio",
+    "calls_out" : [ ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.domain.Model.Client" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "Data", "MappedSuperclass" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "jakarta.persistence:jakarta.persistence-api" ],
+    "package_dependencies" : [ ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Model\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 13,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 0,
+    "lcom" : null,
+    "complexity_max" : null,
+    "complexity_avg" : null
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.AccountResponseDTO",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/infraestructure/Adapter/DTOs/AccountResponseDTO.java" ],
+    "loc" : 6,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Transferencia",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.ClientResponseDTO" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.MovementResponseDTO" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "Data" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Adapter\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 14,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 1,
+    "lcom" : null,
+    "complexity_max" : null,
+    "complexity_avg" : null
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.ClientResponseDTO",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/infraestructure/Adapter/DTOs/ClientResponseDTO.java" ],
+    "loc" : 5,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Transferencia",
+    "calls_out" : [ ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.AccountResponseDTO" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "Data" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Adapter\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 14,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 0,
+    "lcom" : null,
+    "complexity_max" : null,
+    "complexity_avg" : null
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.MovementResponseDTO",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/infraestructure/Adapter/DTOs/MovementResponseDTO.java" ],
+    "loc" : 8,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Transferencia",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.AccountResponseDTO" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper.MovementMapper" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "Data" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ ],
+    "package_dependencies" : [ ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Adapter\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 15,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 1,
+    "lcom" : null,
+    "complexity_max" : null,
+    "complexity_avg" : null
+  }, {
+    "interface" : true,
+    "id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper.MovementMapper",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/infraestructure/Adapter/Mapper/MovementMapper.java" ],
+    "loc" : 7,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Persistencia",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Model.Movement", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.MovementResponseDTO" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "Mapper", "Mapping" ],
+    "is_interface" : true,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.mapstruct:mapstruct-processor:1.6.3" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Movement" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs",
+      "components" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.MovementResponseDTO" ],
+      "count" : 1
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Adapter\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 18,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 2,
+    "lcom" : null,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : true,
+    "id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/infraestructure/Adapter/Persistence/AccountRepositoryJpa.java" ],
+    "loc" : 8,
+    "tables_used" : [ "account" ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Persistencia",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Model.Account" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.application.service.AccountService", "banco_hexagonal.pruebatecnica.application.service.MovementService", "banco_hexagonal.pruebatecnica.application.service.ReportService" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "Query" ],
+    "is_interface" : true,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Account" ],
+      "count" : 1
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Adapter\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 15,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ "org.springframework.data.jpa.repository.JpaRepository" ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 1,
+    "lcom" : null,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : true,
+    "id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/infraestructure/Adapter/Persistence/ClientRepositoryJpa.java" ],
+    "loc" : 4,
+    "tables_used" : [ "client" ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Persistencia",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Model.Client" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.application.service.AccountService", "banco_hexagonal.pruebatecnica.application.service.ClientService", "banco_hexagonal.pruebatecnica.application.service.ReportService" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ ],
+    "is_interface" : true,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Client" ],
+      "count" : 1
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Adapter\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 11,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ "org.springframework.data.jpa.repository.JpaRepository" ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 1,
+    "lcom" : null,
+    "complexity_max" : null,
+    "complexity_avg" : null
+  }, {
+    "interface" : true,
+    "id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/infraestructure/Adapter/Persistence/MovementRepositoryJpa.java" ],
+    "loc" : 3,
+    "tables_used" : [ "movement" ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Persistencia",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.domain.Model.Account", "banco_hexagonal.pruebatecnica.domain.Model.Movement" ],
+    "calls_in" : [ "banco_hexagonal.pruebatecnica.application.service.MovementService", "banco_hexagonal.pruebatecnica.application.service.ReportService" ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ ],
+    "is_interface" : true,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Account", "banco_hexagonal.pruebatecnica.domain.Model.Movement" ],
+      "count" : 2
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Adapter\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 14,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ "org.springframework.data.jpa.repository.JpaRepository" ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 2,
+    "lcom" : null,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/infraestructure/Adapter/Web/AccountController.java" ],
+    "loc" : 48,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Controlador",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.application.Port.In.AccountUseCase", "banco_hexagonal.pruebatecnica.application.service.AccountService", "banco_hexagonal.pruebatecnica.domain.Model.Account" ],
+    "calls_in" : [ ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "DeleteMapping", "GetMapping", "PostMapping", "PutMapping", "RequestMapping", "RestController" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.application.Port.In",
+      "components" : [ "banco_hexagonal.pruebatecnica.application.Port.In.AccountUseCase" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.application.service",
+      "components" : [ "banco_hexagonal.pruebatecnica.application.service.AccountService" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Account" ],
+      "count" : 1
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Adapter\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 19,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 4,
+    "lcom" : 0.0,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/infraestructure/Adapter/Web/ClientController.java" ],
+    "loc" : 34,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Compartida",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.application.Port.In.ClientUseCase", "banco_hexagonal.pruebatecnica.application.service.ClientService", "banco_hexagonal.pruebatecnica.domain.Model.Client" ],
+    "calls_in" : [ ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "DeleteMapping", "GetMapping", "PostMapping", "PutMapping", "RequestMapping", "ResponseStatus", "RestController" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.application.Port.In",
+      "components" : [ "banco_hexagonal.pruebatecnica.application.Port.In.ClientUseCase" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.application.service",
+      "components" : [ "banco_hexagonal.pruebatecnica.application.service.ClientService" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Client" ],
+      "count" : 1
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Adapter\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 25,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 3,
+    "lcom" : 0.0,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/infraestructure/Adapter/Web/MovementController.java" ],
+    "loc" : 24,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Controlador",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.application.Port.In.MovementUseCase", "banco_hexagonal.pruebatecnica.application.service.MovementService", "banco_hexagonal.pruebatecnica.domain.Model.Movement", "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper.MovementMapper" ],
+    "calls_in" : [ ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "GetMapping", "PostMapping", "RequestMapping", "RestController" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.application.Port.In",
+      "components" : [ "banco_hexagonal.pruebatecnica.application.Port.In.MovementUseCase" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.application.service",
+      "components" : [ "banco_hexagonal.pruebatecnica.application.service.MovementService" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.domain.Model",
+      "components" : [ "banco_hexagonal.pruebatecnica.domain.Model.Movement" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper",
+      "components" : [ "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper.MovementMapper" ],
+      "count" : 1
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Adapter\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 26,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 4,
+    "lcom" : 0.5,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  }, {
+    "interface" : false,
+    "id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ReportController",
+    "files" : [ "test-for-demo/java-standar/src/main/java/banco_hexagonal/pruebatecnica/infraestructure/Adapter/Web/ReportController.java" ],
+    "loc" : 16,
+    "tables_used" : [ ],
+    "sensitive_data" : false,
+    "domain" : null,
+    "layer" : "Controlador",
+    "calls_out" : [ "banco_hexagonal.pruebatecnica.application.Port.In.ReportUseCase", "banco_hexagonal.pruebatecnica.application.service.ReportService" ],
+    "calls_in" : [ ],
+    "ejb_type" : null,
+    "uses_jndi" : false,
+    "annotations" : [ "GetMapping", "RequestMapping", "RestController" ],
+    "is_interface" : false,
+    "secrets_references" : [ ],
+    "external_dependencies" : [ "org.springframework:spring-web" ],
+    "package_dependencies" : [ {
+      "package_name" : "banco_hexagonal.pruebatecnica.application.Port.In",
+      "components" : [ "banco_hexagonal.pruebatecnica.application.Port.In.ReportUseCase" ],
+      "count" : 1
+    }, {
+      "package_name" : "banco_hexagonal.pruebatecnica.application.service",
+      "components" : [ "banco_hexagonal.pruebatecnica.application.service.ReportService" ],
+      "count" : 1
+    } ],
+    "code_issues" : [ {
+      "type" : "BUG_PATTERN",
+      "severity" : "INFO",
+      "message" : "Package name component \"Adapter\" is capitalized. Java convention recommends lowercase package names.",
+      "line" : 27,
+      "pattern" : "capitalized_package_name"
+    } ],
+    "extends" : null,
+    "implements" : [ ],
+    "messaging_type" : null,
+    "messaging_role" : null,
+    "web_type" : null,
+    "web_role" : null,
+    "cbo" : 2,
+    "lcom" : null,
+    "complexity_max" : 1,
+    "complexity_avg" : 1.0
+  } ],
+  "edges" : [ {
+    "from" : "banco_hexagonal.pruebatecnica.application.Port.In.AccountUseCase",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Account",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.Port.In.ClientUseCase",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Client",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.Port.In.MovementUseCase",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Movement",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.AccountService",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException",
+    "weight" : 4,
+    "type" : "call"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.AccountService",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Account",
+    "weight" : 2,
+    "type" : "call,use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.AccountService",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa",
+    "weight" : 9,
+    "type" : "call,use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.AccountService",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa",
+    "weight" : 7,
+    "type" : "use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.ClientService",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException",
+    "weight" : 3,
+    "type" : "call"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.ClientService",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Client",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.ClientService",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa",
+    "weight" : 7,
+    "type" : "use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.MovementService",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException",
+    "weight" : 2,
+    "type" : "call"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.MovementService",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Exception.SaldoInsuficienteException",
+    "weight" : 1,
+    "type" : "call"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.MovementService",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Movement",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.MovementService",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa",
+    "weight" : 9,
+    "type" : "call,use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.MovementService",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa",
+    "weight" : 8,
+    "type" : "call,use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.ReportService",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException",
+    "weight" : 1,
+    "type" : "call"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.ReportService",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa",
+    "weight" : 7,
+    "type" : "use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.ReportService",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa",
+    "weight" : 7,
+    "type" : "use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.application.service.ReportService",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa",
+    "weight" : 8,
+    "type" : "call,use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.config.GlobalExceptionHandler",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.config.GlobalExceptionHandler",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Exception.SaldoInsuficienteException",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.domain.Model.Account",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Client",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.domain.Model.Client",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Person",
+    "weight" : 1,
+    "type" : "call"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.domain.Model.Movement",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Account",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.AccountResponseDTO",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.ClientResponseDTO",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.MovementResponseDTO",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.AccountResponseDTO",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper.MovementMapper",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Movement",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper.MovementMapper",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.MovementResponseDTO",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Account",
+    "weight" : 7,
+    "type" : "repository"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Client",
+    "weight" : 7,
+    "type" : "repository"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Account",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Movement",
+    "weight" : 7,
+    "type" : "repository"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController",
+    "to" : "banco_hexagonal.pruebatecnica.application.Port.In.AccountUseCase",
+    "weight" : 14,
+    "type" : "call,use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController",
+    "to" : "banco_hexagonal.pruebatecnica.application.service.AccountService",
+    "weight" : 12,
+    "type" : "interface-impl"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Account",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController",
+    "to" : "banco_hexagonal.pruebatecnica.application.Port.In.ClientUseCase",
+    "weight" : 12,
+    "type" : "call,use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController",
+    "to" : "banco_hexagonal.pruebatecnica.application.service.ClientService",
+    "weight" : 12,
+    "type" : "interface-impl"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Client",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController",
+    "to" : "banco_hexagonal.pruebatecnica.application.Port.In.MovementUseCase",
+    "weight" : 9,
+    "type" : "call,use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController",
+    "to" : "banco_hexagonal.pruebatecnica.application.service.MovementService",
+    "weight" : 12,
+    "type" : "interface-impl"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController",
+    "to" : "banco_hexagonal.pruebatecnica.domain.Model.Movement",
+    "weight" : 1,
+    "type" : "use"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController",
+    "to" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper.MovementMapper",
+    "weight" : 8,
+    "type" : "call,use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ReportController",
+    "to" : "banco_hexagonal.pruebatecnica.application.Port.In.ReportUseCase",
+    "weight" : 8,
+    "type" : "call,use,injection-constructor"
+  }, {
+    "from" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ReportController",
+    "to" : "banco_hexagonal.pruebatecnica.application.service.ReportService",
+    "weight" : 12,
+    "type" : "interface-impl"
+  } ],
+  "api_contracts" : {
+    "meta" : {
+      "schema_version" : "1.0.0"
+    },
+    "endpoints" : [ {
+      "id" : "AccountController.createAccount",
+      "path" : "/cuentas/crearCuenta",
+      "method" : "POST",
+      "description" : null,
+      "parameters" : [ ],
+      "request_body_schema" : "Account",
+      "response_schema" : "Account",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+    }, {
+      "id" : "AccountController.deleteAccount",
+      "path" : "/cuentas/eliminarCuenta/accountNumber",
+      "method" : "DELETE",
+      "description" : null,
+      "parameters" : [ {
+        "name" : "accountNumber",
+        "in" : "path",
+        "type" : "Long",
+        "required" : true
+      } ],
+      "request_body_schema" : null,
+      "response_schema" : "Void",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+    }, {
+      "id" : "AccountController.getAccountByAccountNumber",
+      "path" : "/cuentas/obtenerCuentaPorNumeroCuenta",
+      "method" : "POST",
+      "description" : null,
+      "parameters" : [ ],
+      "request_body_schema" : "Account",
+      "response_schema" : "Account",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+    }, {
+      "id" : "AccountController.getAccountById",
+      "path" : "/cuentas/obtenerCuentaPorId/accountId",
+      "method" : "GET",
+      "description" : null,
+      "parameters" : [ {
+        "name" : "accountId",
+        "in" : "path",
+        "type" : "Long",
+        "required" : true
+      } ],
+      "request_body_schema" : null,
+      "response_schema" : "Account",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+    }, {
+      "id" : "AccountController.getAccountByNumberId",
+      "path" : "/cuentas/obtenerCuentaPorIdentificacion",
+      "method" : "POST",
+      "description" : null,
+      "parameters" : [ ],
+      "request_body_schema" : "Account",
+      "response_schema" : "List",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+    }, {
+      "id" : "AccountController.getAllAccounts",
+      "path" : "/cuentas/obtenerCuentas",
+      "method" : "GET",
+      "description" : null,
+      "parameters" : [ ],
+      "request_body_schema" : null,
+      "response_schema" : "List",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+    }, {
+      "id" : "AccountController.updateAccount",
+      "path" : "/cuentas/modificarCuenta/accountId",
+      "method" : "PUT",
+      "description" : null,
+      "parameters" : [ {
+        "name" : "accountId",
+        "in" : "path",
+        "type" : "Long",
+        "required" : true
+      } ],
+      "request_body_schema" : "Account",
+      "response_schema" : "Account",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+    }, {
+      "id" : "ClientController.createClient",
+      "path" : "/clientes/crearCliente",
+      "method" : "POST",
+      "description" : null,
+      "parameters" : [ ],
+      "request_body_schema" : "Client",
+      "response_schema" : "Client",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+    }, {
+      "id" : "ClientController.deleteClient",
+      "path" : "/clientes/eliminarCliente/id",
+      "method" : "DELETE",
+      "description" : null,
+      "parameters" : [ {
+        "name" : "id",
+        "in" : "path",
+        "type" : "Long",
+        "required" : true
+      } ],
+      "request_body_schema" : null,
+      "response_schema" : "Void",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+    }, {
+      "id" : "ClientController.getClientAll",
+      "path" : "/clientes",
+      "method" : "GET",
+      "description" : null,
+      "parameters" : [ ],
+      "request_body_schema" : null,
+      "response_schema" : "List",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+    }, {
+      "id" : "ClientController.getClientById",
+      "path" : "/clientes/obtenerClienteId/id",
+      "method" : "GET",
+      "description" : null,
+      "parameters" : [ {
+        "name" : "id",
+        "in" : "path",
+        "type" : "Long",
+        "required" : true
+      } ],
+      "request_body_schema" : null,
+      "response_schema" : "Client",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+    }, {
+      "id" : "ClientController.putClient",
+      "path" : "/clientes/actualizarCliente/id",
+      "method" : "PUT",
+      "description" : null,
+      "parameters" : [ {
+        "name" : "id",
+        "in" : "path",
+        "type" : "Long",
+        "required" : true
+      } ],
+      "request_body_schema" : "Client",
+      "response_schema" : "Client",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+    }, {
+      "id" : "MovementController.getAccountforDate",
+      "path" : "/movimientos/accountNumber",
+      "method" : "GET",
+      "description" : null,
+      "parameters" : [ {
+        "name" : "accountNumber",
+        "in" : "path",
+        "type" : "Long",
+        "required" : true
+      }, {
+        "name" : "/from",
+        "in" : "query",
+        "type" : "LocalDate",
+        "required" : true
+      }, {
+        "name" : "/to",
+        "in" : "query",
+        "type" : "LocalDate",
+        "required" : true
+      } ],
+      "request_body_schema" : null,
+      "response_schema" : "List",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController"
+    }, {
+      "id" : "MovementController.registerMovement",
+      "path" : "/movimientos/crearMovimiento",
+      "method" : "POST",
+      "description" : null,
+      "parameters" : [ ],
+      "request_body_schema" : "Movement",
+      "response_schema" : "Movement",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController"
+    }, {
+      "id" : "ReportController.generateReport",
+      "path" : "/reportes",
+      "method" : "GET",
+      "description" : null,
+      "parameters" : [ {
+        "name" : "/clientId",
+        "in" : "query",
+        "type" : "Long",
+        "required" : true
+      }, {
+        "name" : "/fecha",
+        "in" : "query",
+        "type" : "String",
+        "required" : true
+      } ],
+      "request_body_schema" : null,
+      "response_schema" : "Map",
+      "component_id" : "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ReportController"
+    } ],
+    "schemas" : {
+      "Account" : {
+        "type" : "object",
+        "properties" : {
+          "accountId" : {
+            "type" : "Long"
+          },
+          "accountNumber" : {
+            "type" : "Long"
+          },
+          "accountType" : {
+            "type" : "String"
+          },
+          "client" : {
+            "type" : "Client"
+          },
+          "initialBalance" : {
+            "type" : "Double"
+          },
+          "status" : {
+            "type" : "String"
+          }
+        }
+      },
+      "Client" : {
+        "type" : "object",
+        "properties" : {
+          "clientId" : {
+            "type" : "Long"
+          },
+          "email" : {
+            "type" : "String"
+          },
+          "password" : {
+            "type" : "String"
+          },
+          "status" : {
+            "type" : "String"
+          }
+        }
+      },
+      "List" : {
+        "type" : "object",
+        "properties" : { }
+      },
+      "Map" : {
+        "type" : "object",
+        "properties" : { }
+      },
+      "Movement" : {
+        "type" : "object",
+        "properties" : {
+          "account" : {
+            "type" : "Account"
+          },
+          "balance" : {
+            "type" : "Double"
+          },
+          "date" : {
+            "type" : "LocalDate"
+          },
+          "movementId" : {
+            "type" : "long"
+          },
+          "movementType" : {
+            "type" : "String"
+          },
+          "value" : {
+            "type" : "Double"
+          }
+        }
+      }
+    }
+  },
+  "meta" : {
+    "source" : "spoon",
+    "schema_version" : "1.0.0",
+    "microservice_candidates" : { },
+    "dependency_accuracy" : null,
+    "decomposition_accuracy" : null
+  }
+}

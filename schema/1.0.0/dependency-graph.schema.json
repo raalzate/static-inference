@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://static-inference.dev/schema/1.0.0/dependency-graph.schema.json",
   "title": "DependencyGraph",
-  "description": "Dependency graph (output.json; MCP get_dependency_graph).",
+  "description": "Dependency graph (output.json; MCP get_dependency_graph). api_contracts.meta is optional (the raw .NET graph does not emit it).",
   "type": "object",
   "properties": {
     "components": {
@@ -18,8 +18,7 @@
       }
     },
     "api_contracts": {
-      "$ref": "common.schema.json#/$defs/ApiContracts",
-      "description": "Embedded API contracts; meta is optional here (the raw .NET graph does not emit it)."
+      "$ref": "common.schema.json#/$defs/ApiContracts"
     },
     "meta": {
       "$ref": "common.schema.json#/$defs/GraphMeta"

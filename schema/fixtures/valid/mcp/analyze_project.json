@@ -1,0 +1,12 @@
+{
+  "componentCount": 27,
+  "edgeCount": 44,
+  "endpointCount": 15,
+  "filesGenerated": [
+    "out/output.json",
+    "out/output_architecture.json",
+    "out/output_entrypoints.json"
+  ],
+  "proposalCount": 2,
+  "summary": "ANÁLISIS DE ARQUITECTURA - COMPONENTES AGRUPADOS\n═════════════════════════════════════════════════\n\n📋 Módulos Identificados por Cohesión/Acoplamiento:\n───────────────────────────────────────────────────\n• Componente de Persistence y Globalexception → Clusters 0 (11 componentes)\n• Componente de Persistence y Web → Clusters 1, 2 (13 componentes)\n\n📚 Librerías de Soporte:\n────────────────────────\n• Infraestructura y Configuración Filtrada → Clusters \n\n📌 Análisis de Cohesión:\n────────────────────────\n✅ Alta cohesión: 0 módulo(s) - Componentes fuertemente relacionados\n⚠️ Media cohesión: 2 módulo(s) - Cohesión moderada\n❌ Baja cohesión: 0 módulo(s) - Componentes débilmente relacionados\n"
+}

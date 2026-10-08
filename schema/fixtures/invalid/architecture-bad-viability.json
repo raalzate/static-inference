@@ -1,0 +1,528 @@
+{
+  "meta": {
+    "schema_version": "1.0.0"
+  },
+  "project_metadata": {
+    "external_dependencies": {
+      "jakarta.persistence:jakarta.persistence-api": "jakarta.persistence:jakarta.persistence-api",
+      "org.junit.jupiter:junit-jupiter-api": "org.junit.jupiter:junit-jupiter-api",
+      "org.mapstruct:mapstruct": "org.mapstruct:mapstruct:1.6.3",
+      "org.mapstruct:mapstruct-processor": "org.mapstruct:mapstruct-processor:1.6.3",
+      "org.postgresql:postgresql": "org.postgresql:postgresql",
+      "org.projectlombok:lombok": "org.projectlombok:lombok",
+      "org.springframework.boot:spring-boot-starter-data-jpa": "org.springframework.boot:spring-boot-starter-data-jpa",
+      "org.springframework.boot:spring-boot-starter-test": "org.springframework.boot:spring-boot-starter-test",
+      "org.springframework.boot:spring-boot-starter-validation": "org.springframework.boot:spring-boot-starter-validation",
+      "org.springframework.boot:spring-boot-starter-web": "org.springframework.boot:spring-boot-starter-web",
+      "org.springframework:spring-web": "org.springframework:spring-web"
+    },
+    "package_dependencies": {
+      "banco_hexagonal.pruebatecnica": {
+        "components_count": 1,
+        "total_dependencies_out": 0,
+        "depends_on_packages": []
+      },
+      "banco_hexagonal.pruebatecnica.application.Port.In": {
+        "components_count": 4,
+        "total_dependencies_out": 3,
+        "depends_on_packages": [
+          "banco_hexagonal.pruebatecnica.domain.Model"
+        ]
+      },
+      "banco_hexagonal.pruebatecnica.application.service": {
+        "components_count": 4,
+        "total_dependencies_out": 16,
+        "depends_on_packages": [
+          "banco_hexagonal.pruebatecnica.domain.Exception",
+          "banco_hexagonal.pruebatecnica.domain.Model",
+          "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence"
+        ]
+      },
+      "banco_hexagonal.pruebatecnica.config": {
+        "components_count": 1,
+        "total_dependencies_out": 2,
+        "depends_on_packages": [
+          "banco_hexagonal.pruebatecnica.domain.Exception"
+        ]
+      },
+      "banco_hexagonal.pruebatecnica.domain.Exception": {
+        "components_count": 2,
+        "total_dependencies_out": 0,
+        "depends_on_packages": []
+      },
+      "banco_hexagonal.pruebatecnica.domain.Model": {
+        "components_count": 4,
+        "total_dependencies_out": 0,
+        "depends_on_packages": []
+      },
+      "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs": {
+        "components_count": 3,
+        "total_dependencies_out": 0,
+        "depends_on_packages": []
+      },
+      "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper": {
+        "components_count": 1,
+        "total_dependencies_out": 2,
+        "depends_on_packages": [
+          "banco_hexagonal.pruebatecnica.domain.Model",
+          "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs"
+        ]
+      },
+      "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence": {
+        "components_count": 3,
+        "total_dependencies_out": 4,
+        "depends_on_packages": [
+          "banco_hexagonal.pruebatecnica.domain.Model"
+        ]
+      },
+      "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web": {
+        "components_count": 4,
+        "total_dependencies_out": 12,
+        "depends_on_packages": [
+          "banco_hexagonal.pruebatecnica.application.Port.In",
+          "banco_hexagonal.pruebatecnica.application.service",
+          "banco_hexagonal.pruebatecnica.domain.Model",
+          "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper"
+        ]
+      }
+    },
+    "total_components": 27,
+    "total_loc": 431,
+    "components_with_secrets": 0,
+    "shared_domain": "banco_hexagonal.pruebatecnica",
+    "secrets_locations": [
+      {
+        "path": "target/classes/application.yml",
+        "line": 25,
+        "kind": "JDBC_PASSWORD",
+        "redacted": true
+      },
+      {
+        "path": "docker-compose.yml",
+        "line": 25,
+        "kind": "JDBC_PASSWORD",
+        "redacted": true
+      },
+      {
+        "path": "src/main/resources/application.yml",
+        "line": 25,
+        "kind": "JDBC_PASSWORD",
+        "redacted": true
+      }
+    ]
+  },
+  "proposals": [
+    {
+      "id": 0,
+      "name": "Componente de Persistence y Globalexception",
+      "viability": "Alta-Media",
+      "clusters": [
+        0
+      ],
+      "components": [
+        "banco_hexagonal.pruebatecnica.PruebaTecnica",
+        "banco_hexagonal.pruebatecnica.application.Port.In.AccountUseCase",
+        "banco_hexagonal.pruebatecnica.application.Port.In.ReportUseCase",
+        "banco_hexagonal.pruebatecnica.application.service.AccountService",
+        "banco_hexagonal.pruebatecnica.application.service.ReportService",
+        "banco_hexagonal.pruebatecnica.domain.Model.Account",
+        "banco_hexagonal.pruebatecnica.domain.Model.Person",
+        "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.AccountResponseDTO",
+        "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.AccountRepositoryJpa",
+        "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController",
+        "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ReportController"
+      ],
+      "metrics": {
+        "size": 11,
+        "cohesion_avg": 0.7692307692307693,
+        "external_coupling": 0.4117647058823529,
+        "internal_edge_density": 0.09090909090909091,
+        "data_jaccard": 0.8,
+        "tables": [
+          "account"
+        ],
+        "sensitive": true,
+        "tables_source": "jpa"
+      },
+      "signals": {
+        "avg_cluster_size": 14.0,
+        "cluster_count": 1,
+        "total_components": 14
+      },
+      "rationale": [
+        "📊 Métricas de Calidad: CBO promedio 1,9 (acoplamiento entre objetos), LCOM promedio 0,25 (cohesión de métodos: 0=alta, 1=baja)",
+        "⚠️ Cohesión moderada (56%) - componentes parcialmente relacionados; considerar refactorización para agrupar responsabilidades más claramente",
+        "✅ Bajo acoplamiento externo (26%) - buena independencia y facilidad de mantenimiento",
+        "✅ CBO bajo (1,9) - acoplamiento entre clases controlado, fácil de mantener",
+        "✅ LCOM bajo (0,25) - alta cohesión de métodos, clases con responsabilidad única bien definida",
+        "✅ Tamaño adecuado (14 componentes) - módulo de tamaño manejable"
+      ],
+      "recommended_actions": [
+        "🔧 Refactorizar para mejorar cohesión y reducir acoplamiento",
+        "🔧 Aplicar principios SOLID (SRP, DIP) para separación de responsabilidades",
+        "🔧 Considerar eventos asíncronos para reducir acoplamiento síncrono",
+        "📋 Re-evaluar después de refactorización"
+      ],
+      "tables": [
+        {
+          "name": "account",
+          "component": "Componente de Persistence y Globalexception",
+          "source": "DEFAULT"
+        },
+        {
+          "name": "accounts",
+          "component": "Componente de Persistence y Globalexception",
+          "source": "DEFAULT"
+        }
+      ],
+      "legacy_entrypoint": {
+        "type": "rest",
+        "primary_entry_class": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController",
+        "exposed_operations": [
+          "DELETE /cuentas/eliminarCuenta/accountNumber",
+          "GET /cuentas/obtenerCuentaPorId/accountId",
+          "GET /cuentas/obtenerCuentas",
+          "GET /reportes",
+          "POST /cuentas/crearCuenta",
+          "POST /cuentas/obtenerCuentaPorIdentificacion",
+          "POST /cuentas/obtenerCuentaPorNumeroCuenta",
+          "PUT /cuentas/modificarCuenta/accountId"
+        ],
+        "endpoints": [
+          {
+            "id": "AccountController.createAccount",
+            "path": "/cuentas/crearCuenta",
+            "method": "POST",
+            "description": null,
+            "parameters": [],
+            "request_body_schema": "Account",
+            "response_schema": "Account",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+          },
+          {
+            "id": "AccountController.deleteAccount",
+            "path": "/cuentas/eliminarCuenta/accountNumber",
+            "method": "DELETE",
+            "description": null,
+            "parameters": [
+              {
+                "name": "accountNumber",
+                "in": "path",
+                "type": "Long",
+                "required": true
+              }
+            ],
+            "request_body_schema": null,
+            "response_schema": "Void",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+          },
+          {
+            "id": "AccountController.getAccountByAccountNumber",
+            "path": "/cuentas/obtenerCuentaPorNumeroCuenta",
+            "method": "POST",
+            "description": null,
+            "parameters": [],
+            "request_body_schema": "Account",
+            "response_schema": "Account",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+          },
+          {
+            "id": "AccountController.getAccountById",
+            "path": "/cuentas/obtenerCuentaPorId/accountId",
+            "method": "GET",
+            "description": null,
+            "parameters": [
+              {
+                "name": "accountId",
+                "in": "path",
+                "type": "Long",
+                "required": true
+              }
+            ],
+            "request_body_schema": null,
+            "response_schema": "Account",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+          },
+          {
+            "id": "AccountController.getAccountByNumberId",
+            "path": "/cuentas/obtenerCuentaPorIdentificacion",
+            "method": "POST",
+            "description": null,
+            "parameters": [],
+            "request_body_schema": "Account",
+            "response_schema": "List",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+          },
+          {
+            "id": "AccountController.getAllAccounts",
+            "path": "/cuentas/obtenerCuentas",
+            "method": "GET",
+            "description": null,
+            "parameters": [],
+            "request_body_schema": null,
+            "response_schema": "List",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+          },
+          {
+            "id": "AccountController.updateAccount",
+            "path": "/cuentas/modificarCuenta/accountId",
+            "method": "PUT",
+            "description": null,
+            "parameters": [
+              {
+                "name": "accountId",
+                "in": "path",
+                "type": "Long",
+                "required": true
+              }
+            ],
+            "request_body_schema": "Account",
+            "response_schema": "Account",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.AccountController"
+          },
+          {
+            "id": "ReportController.generateReport",
+            "path": "/reportes",
+            "method": "GET",
+            "description": null,
+            "parameters": [
+              {
+                "name": "/clientId",
+                "in": "query",
+                "type": "Long",
+                "required": true
+              },
+              {
+                "name": "/fecha",
+                "in": "query",
+                "type": "String",
+                "required": true
+              }
+            ],
+            "request_body_schema": null,
+            "response_schema": "Map",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ReportController"
+          }
+        ],
+        "description": "Servicio expuesto vía REST en /cuentas/eliminarCuenta/accountNumber, /cuentas/obtenerCuentaPorId/accountId, /cuentas/obtenerCuentas. Entrada principal: AccountController."
+      }
+    },
+    {
+      "id": 1,
+      "name": "Componente de Persistence y Web",
+      "viability": "Media",
+      "clusters": [
+        1,
+        2
+      ],
+      "components": [
+        "banco_hexagonal.pruebatecnica.application.Port.In.ClientUseCase",
+        "banco_hexagonal.pruebatecnica.application.Port.In.MovementUseCase",
+        "banco_hexagonal.pruebatecnica.application.service.ClientService",
+        "banco_hexagonal.pruebatecnica.application.service.MovementService",
+        "banco_hexagonal.pruebatecnica.domain.Model.Client",
+        "banco_hexagonal.pruebatecnica.domain.Model.Movement",
+        "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.ClientResponseDTO",
+        "banco_hexagonal.pruebatecnica.infraestructure.Adapter.DTOs.MovementResponseDTO",
+        "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Mapper.MovementMapper",
+        "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.ClientRepositoryJpa",
+        "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Persistence.MovementRepositoryJpa",
+        "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController",
+        "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController"
+      ],
+      "metrics": {
+        "size": 13,
+        "cohesion_avg": 0.8327724358974359,
+        "external_coupling": 0.32,
+        "internal_edge_density": 0.10897435897435898,
+        "data_jaccard": 0.8,
+        "tables": [
+          "client",
+          "movement"
+        ],
+        "sensitive": true,
+        "tables_source": "jpa"
+      },
+      "signals": {
+        "avg_cluster_size": 6.5,
+        "cluster_count": 2,
+        "total_components": 13
+      },
+      "rationale": [
+        "📊 Métricas de Calidad: CBO promedio 2,1 (acoplamiento entre objetos), LCOM promedio 0,13 (cohesión de métodos: 0=alta, 1=baja)",
+        "⚠️ Cohesión moderada (62%) - componentes parcialmente relacionados; considerar refactorización para agrupar responsabilidades más claramente",
+        "⚠️ Acoplamiento moderado (32%) - algunas dependencias externas; considerar aplicar patrones como facades o abstracciones para reducir acoplamiento",
+        "✅ CBO bajo (2,1) - acoplamiento entre clases controlado, fácil de mantener",
+        "✅ LCOM bajo (0,13) - alta cohesión de métodos, clases con responsabilidad única bien definida",
+        "✅ Tamaño adecuado (13 componentes) - módulo de tamaño manejable"
+      ],
+      "recommended_actions": [
+        "🔧 Refactorizar para mejorar cohesión y reducir acoplamiento",
+        "🔧 Aplicar principios SOLID (SRP, DIP) para separación de responsabilidades",
+        "🔧 Considerar eventos asíncronos para reducir acoplamiento síncrono",
+        "📋 Re-evaluar después de refactorización"
+      ],
+      "tables": [
+        {
+          "name": "client",
+          "component": "Componente de Persistence y Web",
+          "source": "DEFAULT"
+        },
+        {
+          "name": "clients",
+          "component": "Componente de Persistence y Web",
+          "source": "DEFAULT"
+        },
+        {
+          "name": "movement",
+          "component": "Componente de Persistence y Web",
+          "source": "DEFAULT"
+        },
+        {
+          "name": "movements",
+          "component": "Componente de Persistence y Web",
+          "source": "DEFAULT"
+        }
+      ],
+      "legacy_entrypoint": {
+        "type": "rest",
+        "primary_entry_class": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController",
+        "exposed_operations": [
+          "DELETE /clientes/eliminarCliente/id",
+          "GET /clientes",
+          "GET /clientes/obtenerClienteId/id",
+          "GET /movimientos/accountNumber",
+          "POST /clientes/crearCliente",
+          "POST /movimientos/crearMovimiento",
+          "PUT /clientes/actualizarCliente/id"
+        ],
+        "endpoints": [
+          {
+            "id": "ClientController.createClient",
+            "path": "/clientes/crearCliente",
+            "method": "POST",
+            "description": null,
+            "parameters": [],
+            "request_body_schema": "Client",
+            "response_schema": "Client",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+          },
+          {
+            "id": "ClientController.deleteClient",
+            "path": "/clientes/eliminarCliente/id",
+            "method": "DELETE",
+            "description": null,
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "type": "Long",
+                "required": true
+              }
+            ],
+            "request_body_schema": null,
+            "response_schema": "Void",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+          },
+          {
+            "id": "ClientController.getClientAll",
+            "path": "/clientes",
+            "method": "GET",
+            "description": null,
+            "parameters": [],
+            "request_body_schema": null,
+            "response_schema": "List",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+          },
+          {
+            "id": "ClientController.getClientById",
+            "path": "/clientes/obtenerClienteId/id",
+            "method": "GET",
+            "description": null,
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "type": "Long",
+                "required": true
+              }
+            ],
+            "request_body_schema": null,
+            "response_schema": "Client",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+          },
+          {
+            "id": "ClientController.putClient",
+            "path": "/clientes/actualizarCliente/id",
+            "method": "PUT",
+            "description": null,
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "type": "Long",
+                "required": true
+              }
+            ],
+            "request_body_schema": "Client",
+            "response_schema": "Client",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.ClientController"
+          },
+          {
+            "id": "MovementController.getAccountforDate",
+            "path": "/movimientos/accountNumber",
+            "method": "GET",
+            "description": null,
+            "parameters": [
+              {
+                "name": "accountNumber",
+                "in": "path",
+                "type": "Long",
+                "required": true
+              },
+              {
+                "name": "/from",
+                "in": "query",
+                "type": "LocalDate",
+                "required": true
+              },
+              {
+                "name": "/to",
+                "in": "query",
+                "type": "LocalDate",
+                "required": true
+              }
+            ],
+            "request_body_schema": null,
+            "response_schema": "List",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController"
+          },
+          {
+            "id": "MovementController.registerMovement",
+            "path": "/movimientos/crearMovimiento",
+            "method": "POST",
+            "description": null,
+            "parameters": [],
+            "request_body_schema": "Movement",
+            "response_schema": "Movement",
+            "component_id": "banco_hexagonal.pruebatecnica.infraestructure.Adapter.Web.MovementController"
+          }
+        ],
+        "description": "Servicio expuesto vía REST en /clientes/eliminarCliente/id, /clientes, /clientes/obtenerClienteId/id. Entrada principal: ClientController."
+      }
+    }
+  ],
+  "support_libraries": [
+    {
+      "id": 2,
+      "name": "Infraestructura y Configuración Filtrada",
+      "clusters": [],
+      "components": [
+        "banco_hexagonal.pruebatecnica.config.GlobalExceptionHandler",
+        "banco_hexagonal.pruebatecnica.domain.Exception.EntidadNoEncontradaException",
+        "banco_hexagonal.pruebatecnica.domain.Exception.SaldoInsuficienteException"
+      ]
+    }
+  ],
+  "summary": "ANÁLISIS DE ARQUITECTURA - COMPONENTES AGRUPADOS\n═════════════════════════════════════════════════\n\n📋 Módulos Identificados por Cohesión/Acoplamiento:\n───────────────────────────────────────────────────\n• Componente de Persistence y Globalexception → Clusters 0 (11 componentes)\n• Componente de Persistence y Web → Clusters 1, 2 (13 componentes)\n\n📚 Librerías de Soporte:\n────────────────────────\n• Infraestructura y Configuración Filtrada → Clusters \n\n📌 Análisis de Cohesión:\n────────────────────────\n✅ Alta cohesión: 0 módulo(s) - Componentes fuertemente relacionados\n⚠️ Media cohesión: 2 módulo(s) - Cohesión moderada\n❌ Baja cohesión: 0 módulo(s) - Componentes débilmente relacionados\n"
+}
