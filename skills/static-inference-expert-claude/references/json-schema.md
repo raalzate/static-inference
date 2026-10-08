@@ -2,13 +2,15 @@
 
 Attribute catalog for the three JSON files emitted by `static-inference`. Verified against the analyzer source (`src/main/java/com/extractor`) and the demo outputs in `test-for-demo/`.
 
+> **Source of truth**: the formal contract is the JSON Schema 2020-12 package in `schema/1.0.0/` (version in `schema/VERSION`, policy in `docs/SCHEMA.md`). This page is a reading guide; if it ever disagrees with `schema/1.0.0/`, the schema wins. Every artifact declares the contract version in `meta.schema_version` (`"1.0.0"`).
+
 ## Output files
 
 | File | Origin | Top-level keys |
 |------|--------|----------------|
 | `output.json` | full dependency graph | `components`, `edges`, `api_contracts`, `meta` |
-| `output_architecture.json` | microservice proposals | `proposals`, `project_metadata`, `support_libraries`, `summary` |
-| `output_entrypoints.json` | API contracts | `endpoints`, `schemas` |
+| `output_architecture.json` | microservice proposals | `meta`, `project_metadata`, `proposals`, `support_libraries`, `summary` |
+| `output_entrypoints.json` | API contracts | `meta`, `endpoints`, `schemas` |
 
 ### Filename canonicality
 
@@ -41,12 +43,21 @@ The CLI entry point (`MicroserviceInferenceMain.java:68-75`) uses the user-suppl
 | `messaging_role` | string\|null | `producer` \| `consumer` |
 | `web_type` | string\|null | `spring-rest` \| `jaxrs` \| `struts` \| `servlet` \| `aspnet-mvc` \| `aspnet-core` |
 | `web_role` | string\|null | `controller` \| `action` \| `endpoint` |
-| `cbo` | int | Coupling Between Objects |
+| `cbo` | int\|null | Coupling Between Objects |
 | `lcom` | float\|null | Lack of Cohesion in Methods (0=high cohesion, 1=low) |
+| `complexity_avg` | float\|null | Average cyclomatic complexity of the component's methods |
+| `complexity_max` | int\|null | Maximum cyclomatic complexity of the component's methods |
 | `ejb_type` | string\|null | EJB stereotype if any |
 | `uses_jndi` | bool | JNDI lookup detected |
 | `annotations` | string[] | Source annotations |
-| `interface` / `is_interface` | bool | Interface flag (both keys are emitted, same value) |
+| `is_interface` | bool | Interface flag |
+| `interface` | bool | **Deprecated** duplicate of `is_interface` (Java engine only; the raw .NET analyzer omits it). Read `is_interface`. |
+
+The raw .NET analyzer omits properties whose value is null; the Java engine (and the .NET bridge) emit them as `null`. Treat absent and `null` the same.
+
+### `code_issues[*]`
+
+`{ type, severity, message, line, pattern }` — `type` ∈ `BUG_PATTERN` \| `CODE_STYLE` \| `SECURITY` \| `PERFORMANCE`; `severity` ∈ `INFO` \| `WARNING` \| `ERROR` \| `CRITICAL`; `pattern` is the rule id (open set); `line` is an int. There is no `rule` nor `location` field.
 
 ### `code_issues[*].severity`
 
@@ -64,7 +75,7 @@ Java (Spoon) currently never emits `ERROR`. Apply [decision-rules R6](./decision
 |-------|------|-------|
 | `from` | string | Component id |
 | `to` | string | Component id |
-| `type` | string | `calls` \| `extends` \| `implements` \| `uses` |
+| `type` | string | Open set, may be **composite** (comma separated, e.g. `call,use,injection-constructor`). Seen: `call`, `use`, `injection`, `injection-constructor`, `injection-field`, `implements`, `interface-impl`, `registration`, `repository`, `relation` |
 | `weight` | int | Frequency |
 
 ### `api_contracts`
@@ -75,11 +86,14 @@ Inline subset of the entrypoints file. Use `output_entrypoints.json` as the cano
 
 | Field | Notes |
 |-------|-------|
-| `source` | `spoon` (Java path) \| `dotnet` (Roslyn bridge). Use this to detect language, NOT a `language` key. |
+| `source` | `spoon` (Java) \| `roslyn` (.NET) \| `roslyn-fallback` (.NET, Adhoc workspace with reduced fidelity). Use this to detect language, NOT a `language` key. |
+| `schema_version` | Contract version (`"1.0.0"`), serialized right after `source` |
 | `collected_at` | ISO-8601 UTC timestamp. **Opt-in**: only present when `STATIC_INFERENCE_COLLECTED_AT=true`; omitted by default so output is deterministic |
 | `microservice_candidates` | map (often empty in graph; populated when the architecture stage runs inline) |
-| `dependency_accuracy` | float\|null — populated when ground truth is supplied (CLI has no flag for it; usually null) |
-| `decomposition_accuracy` | float\|null — same as above |
+| `dependency_accuracy` | object\|null — populated when ground truth is supplied (CLI has no flag for it; usually null) |
+| `decomposition_accuracy` | object\|null — same as above |
+
+`output_architecture.json` and `output_entrypoints.json` carry their own `meta: { schema_version }` as first key.
 
 ## File: `output_architecture.json`
 
@@ -99,14 +113,14 @@ Inline subset of the entrypoints file. Use `output_entrypoints.json` as the cano
 | `metrics.data_jaccard` | float | 0–1 (shared data ratio) |
 | `metrics.tables` | string[] | Aggregated tables |
 | `metrics.sensitive` | bool | Any component sensitive |
-| `metrics.tables_source` | string | `jpa` \| `sql-parse` \| `mixed` |
+| `metrics.tables_source` | string | Open set: `jpa` \| `orm` \| `sql-parse` \| `mixed` \| `none` |
 | `signals.avg_cluster_size` | float | |
 | `signals.cluster_count` | int | |
 | `signals.total_components` | int | |
 | `rationale` | string[] | Pre-formatted rationale lines (Spanish, with emoji prefixes) |
 | `recommended_actions` | string[] | Suggested next steps (Spanish) |
-| `tables` | string[] | Same as `metrics.tables` (denormalized) |
-| `legacy_entrypoint` | object\|null | Entry point the legacy monolith exposes for this proposal. Null when type is `"internal"`. See sub-fields below. |
+| `tables` | object[] | `[{ name, component, source }]` — table name, owning component id and detection source (optional key) |
+| `legacy_entrypoint` | object\|null | Entry point the legacy monolith exposes for this proposal (optional key; may be an object with only `type: "internal"`). See sub-fields below. |
 
 ### `legacy_entrypoint` sub-fields
 
@@ -155,13 +169,13 @@ May be `{}` or omit fields when there is nothing to report. Verified keys:
 | `package_dependencies` | map of `package` → `{ components_count, total_dependencies_out, depends_on_packages[] }` |
 | `total_components` | int |
 | `total_loc` | int |
-| `components_with_secrets` | string[] of component ids — only present when at least one component has `sensitive_data == true` |
-| `shared_domain` | object — cross-cutting concept aggregations |
-| `secrets_locations` | map of `componentId → [file:line, ...]` — **only present when secrets exist**. Absent in the dotnet-ecommerce demo. |
+| `components_with_secrets` | int — number of components referencing secrets |
+| `shared_domain` | string — name of the shared/cross-cutting domain (`"unknown"` when none) |
+| `secrets_locations` | list of `{ path, line, kind, redacted }` (value always redacted; `kind` e.g. `API_KEY`, `JDBC_PASSWORD`). Empty list when no secrets. |
 
 ### `support_libraries`
 
-Heuristic grouping of utility classes shared across proposals — typically a list of `{ name, components[] }`.
+Heuristic grouping of utility classes shared across proposals — a list of `{ id, name, clusters[], components[] }`.
 
 ### `summary`
 
@@ -169,7 +183,7 @@ String. Pre-formatted Spanish summary suitable for the MCP `analyze_project` res
 
 ## File: `output_entrypoints.json`
 
-Top-level keys: `endpoints`, `schemas`.
+Top-level keys: `meta`, `endpoints`, `schemas`.
 
 ### `endpoints[*]`
 
@@ -179,21 +193,21 @@ Top-level keys: `endpoints`, `schemas`.
 | `path` | URL path or messaging topic |
 | `method` | `GET` \| `POST` \| `PUT` \| `DELETE` \| `PATCH` \| `STRUTS_ACTION` \| `LISTENER` \| `WEBSERVICE` \| ... |
 | `description` | Optional human label |
-| `parameters` | `[{ name, type, required, source }]` |
-| `request_body_schema` | JSON Schema or null |
-| `response_schema` | JSON Schema or null |
+| `parameters` | `[{ name, in, type, required }]` (`in`: `path` \| `query` \| `header` \| `body`) |
+| `request_body_schema` | Schema name (key of `schemas`) or null |
+| `response_schema` | Schema name or null (may be absent in raw .NET output) |
 | `component_id` | Owning component (joins to `output.json#components`) |
 
 ### `schemas`
 
-JSON Schema definitions referenced by endpoint params/bodies. Indexed by schema name.
+Data schemas referenced by endpoint params/bodies, indexed by schema name: `{ type, properties: { <name>: { type } } }`.
 
 ## Cross-file joins
 
 | Need | Join |
 |------|------|
 | Endpoints owned by a proposal | `endpoints[*].component_id ∈ proposals[*].components` |
-| Secrets affecting a proposal | `project_metadata.secrets_locations[k] for k ∈ proposal.components` (fallback: scan `components[id].sensitive_data == true`) |
+| Secrets affecting a proposal | `components[id].secrets_references` / `sensitive_data` for `id ∈ proposal.components`; `project_metadata.secrets_locations[*].path` gives file locations |
 | Layer mix per proposal | `components[id].layer for id ∈ proposal.components` (treat `Datos` as `Persistencia`) |
 | Code-quality weight per proposal | `components[id].code_issues[*]` weighted per [R6](./decision-rules.md#r6--code-quality-weight) |
-| Detect language | `output.json#meta.source` == `spoon` (Java) or `dotnet` (Roslyn) |
+| Detect language | `output.json#meta.source` == `spoon` (Java) or `roslyn` / `roslyn-fallback` (.NET) |

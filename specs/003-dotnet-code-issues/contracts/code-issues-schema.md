@@ -1,5 +1,7 @@
 # CodeIssue Schema Contract
 
+> **OBSOLETO desde 005-json-schema-contract (2026-10-07).** Este documento ya no es normativo. La **fuente de verdad** del contrato de salida es `schema/1.0.0/` (JSON Schema 2020-12; versión en `schema/VERSION`; política y notas de migración en `docs/SCHEMA.md`). Divergencias conocidas de este texto frente al output real, resueltas en el contrato formal: `code_issues[*]` = `{type, severity, message, line, pattern}` (no `rule`/`location`); `meta.source` ∈ `spoon` \| `roslyn` \| `roslyn-fallback`; `meta.schema_version` obligatorio; `project_metadata.components_with_secrets` es entero, `secrets_locations` es lista de `{path, line, kind, redacted}` y `shared_domain` es texto; `proposals[*].tables` es lista de `{name, component, source}`; `edges[*].type` puede ser compuesto (`call,use,injection-constructor`); `complexity_avg`/`complexity_max` existen; `interface` está obsoleto (usar `is_interface`).
+
 Este documento define el schema canónico del campo `code_issues` en el output JSON del analizador .NET.
 
 ## Schema de CodeIssue

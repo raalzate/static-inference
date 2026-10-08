@@ -173,20 +173,20 @@ description: "Task list for 005-json-schema-contract"
 
 ### Tests for User Story 6 (escribir primero, deben FALLAR)
 
-- [ ] T051 [P] [US6] Step definitions en `src/test/java/com/extractor/bdd/GovernanceSteps.java`: tabla de clasificación y formato de nota de migración en `docs/SCHEMA.md`; los 7 temas en `skills/static-inference-expert-{claude,kiro}/references/json-schema.md`, `MCP.md` y contratos de specs 001/002/003 (si existen localmente); comparación de dependencias con `specs/005-json-schema-contract/baseline-deps.txt` [TS-040, TS-041, TS-042, TS-043]
+- [x] T051 [P] [US6] Step definitions en `src/test/java/com/extractor/bdd/GovernanceSteps.java`: tabla de clasificación y formato de nota de migración en `docs/SCHEMA.md`; los 7 temas en `skills/static-inference-expert-{claude,kiro}/references/json-schema.md`, `MCP.md` y contratos de specs 001/002/003 (si existen localmente); comparación de dependencias con `specs/005-json-schema-contract/baseline-deps.txt` [TS-040, TS-041, TS-042, TS-043] — _TS-044 runs pre-existing JUnit classes in-process + dotnet test (Category!=Corpus&!=SchemaContract); baseline-deps.txt gained [maven.direct.all] from 3fb9958_
 
 ### Implementation for User Story 6
 
-- [ ] T052 [P] [US6] Escribir `docs/SCHEMA.md`: semver, tabla mayor/menor/parche (FR-019), formato de nota de migración, procedimiento de regeneración, referencia a principio I [TS-040, TS-041]
-- [ ] T053 [P] [US6] Alinear `skills/static-inference-expert-claude/references/json-schema.md` y `skills/static-inference-expert-kiro/references/json-schema.md` con el contrato (7 divergencias) y remitir a `schema/1.0.0/` como fuente de verdad [TS-042]
-- [ ] T054 [P] [US6] Marcar como obsoletos y remitir a `schema/1.0.0/` los contratos `specs/002-dotnet-roslyn-analyzer/contracts/dependency-graph-schema.md`, `specs/003-dotnet-code-issues/contracts/code-issues-schema.md` y `specs/001-mcp-server-local/contracts/mcp-tools.md`; actualizar `MCP.md` y `README.md` [TS-042]
-- [ ] T055 [US6] Ejecutar T051 hasta verde [TS-040, TS-041, TS-042, TS-043]
+- [x] T052 [P] [US6] Escribir `docs/SCHEMA.md`: semver, tabla mayor/menor/parche (FR-019), formato de nota de migración, procedimiento de regeneración, referencia a principio I [TS-040, TS-041] — _written in English (exact policy table wording)_
+- [x] T053 [P] [US6] Alinear `skills/static-inference-expert-claude/references/json-schema.md` y `skills/static-inference-expert-kiro/references/json-schema.md` con el contrato (7 divergencias) y remitir a `schema/1.0.0/` como fuente de verdad [TS-042]
+- [x] T054 [P] [US6] Marcar como obsoletos y remitir a `schema/1.0.0/` los contratos `specs/002-dotnet-roslyn-analyzer/contracts/dependency-graph-schema.md`, `specs/003-dotnet-code-issues/contracts/code-issues-schema.md` y `specs/001-mcp-server-local/contracts/mcp-tools.md`; actualizar `MCP.md` y `README.md` [TS-042]
+- [x] T055 [US6] Ejecutar T051 hasta verde [TS-040, TS-041, TS-042, TS-043] — _RED verified with docs stashed (TS-040..042 failed), GREEN after_
 
 ---
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T056 [P] Añadir entrada `[Unreleased]` en `CHANGELOG.md`: `meta.schema_version` (aditivo), `meta` en arquitectura/entrypoints, paquete `schema/`, `make schema-check`
+- [x] T056 [P] Añadir entrada `[Unreleased]` en `CHANGELOG.md`: `meta.schema_version` (aditivo), `meta` en arquitectura/entrypoints, paquete `schema/`, `make schema-check`
 - [ ] T057 Ejecutar `mvn -B clean verify`, `dotnet test`, `npm --prefix schema test` y `make schema-check`; Checkstyle/SpotBugs/`dotnet format` sin nuevos avisos [TS-034, TS-043, TS-044]
 - [ ] T058 Validar quickstart.md de punta a punta (incluida la tabla de divergencias §4) [TS-035, TS-036]
 

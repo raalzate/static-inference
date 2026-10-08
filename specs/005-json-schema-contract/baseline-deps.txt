@@ -53,3 +53,16 @@ Microsoft.Build.Locator:1.7.8
 Microsoft.CodeAnalysis.CSharp.Workspaces:4.9.2
 Microsoft.CodeAnalysis.VisualBasic.Workspaces:4.9.2
 Microsoft.CodeAnalysis.Workspaces.MSBuild:4.9.2
+
+[maven.direct.all]
+com.fasterxml.jackson.core:jackson-annotations:2.20:compile
+com.fasterxml.jackson.core:jackson-core:2.20.0:compile
+com.fasterxml.jackson.core:jackson-databind:2.20.0:compile
+fr.inria.gforge.spoon:spoon-core:10.4.2:compile
+io.modelcontextprotocol.sdk:mcp:1.1.0:compile
+javax.xml.bind:jaxb-api:2.3.1:compile
+org.junit.jupiter:junit-jupiter:5.10.0:test
+org.projectlombok:lombok:1.18.38:provided
+org.slf4j:slf4j-api:2.0.9:compile
+org.slf4j:slf4j-simple:2.0.9:compile
+xerces:xercesImpl:2.12.2:compile
