@@ -59,7 +59,7 @@ jobs:
           mvn -B checkstyle:check \
             -Dcheckstyle.config.location=sun_checks.xml \
             -Dcheckstyle.violationSeverity=warning \
-            -Dcheckstyle.maxAllowedViolations=4788  # baseline 2026-10-07: ratchet down, never up
+            -Dcheckstyle.maxAllowedViolations=4763  # baseline 2026-10-08: ratchet down, never up
 
       - name: Upload analysis reports
         if: always()
@@ -253,15 +253,14 @@ jobs:
           mkdir -p "dist/${DIST_NAME}/bin"
           cp target/java-dependency-extractor.jar "dist/${DIST_NAME}/bin/"
 
-      - name: Publish .NET analyzer (self-contained, single-file)
+      # Framework-dependent: a single-file bundle cannot load MSBuild and always
+      # degrades to roslyn-fallback (BUG-005).
+      - name: Publish .NET analyzer (framework-dependent)
         run: |
           dotnet publish src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj \
             -c Release \
             -r ${{ matrix.rid }} \
-            --self-contained true \
-            -p:PublishSingleFile=true \
-            -p:IncludeNativeLibrariesForSelfExtract=true \
-            -p:EnableCompressionInSingleFile=true \
+            --self-contained false \
             -p:DebugType=None \
             -p:DebugSymbols=false \
             -o "dist/${DIST_NAME}/bin"
@@ -280,12 +279,14 @@ jobs:
           ## Contents
 
           - \`bin/java-dependency-extractor.jar\` — Java analyzer (Spoon-based fat jar)
-          - \`${BIN_DOTNET}\` — .NET analyzer (self-contained single-file binary; .NET runtime bundled)
+          - \`${BIN_DOTNET}\` — .NET analyzer (framework-dependent; launcher + assemblies in \`bin/\`)
 
           ## Requirements
 
           - Java analyzer: **JRE/JDK 17+**
-          - .NET analyzer: **none** — runtime is bundled inside the binary.
+          - .NET analyzer: **.NET 8 runtime**. Install the **.NET 8 SDK** for full
+            project loading via MSBuild; with only the runtime the analyzer falls
+            back to direct source parsing (\`meta.source = roslyn-fallback\`).
 
           ## Usage
 

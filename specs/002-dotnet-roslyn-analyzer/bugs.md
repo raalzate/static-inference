@@ -77,3 +77,43 @@
 **Root Cause**: `MicroserviceNameGenerator.extractDomainTokens` breaks on the first matching role while iterating `Set.of(...)`, whose iteration order is salted per JVM.
 
 **Fix Reference**: role keywords held in `List.of(...)` (fixed precedence); test `MicroserviceNameGeneratorTest`; 5 runs on jee-architecture-master byte-identical.
+
+---
+
+## BUG-005
+
+**Reported**: 2026-10-08
+**Severity**: high
+**Status**: fixed
+**GitHub Issue**: _(none)_
+
+**Description**: Released .NET analyzer always runs in degraded mode (`meta.source = roslyn-fallback`): the self-contained single-file build can never load MSBuild
+
+**Reproduction Steps**:
+1. Download a release bundle and run it on a machine with the .NET 8 SDK installed
+2. Analyze `test-for-demo/dotnet-ecommerce`
+3. Observe `meta.source` is `roslyn-fallback`, while a framework-dependent build reports `roslyn`
+
+**Root Cause**: Release job published `--self-contained true -p:PublishSingleFile=true`; MSBuildLocator cannot load SDK assemblies from a single-file bundle, so `ProjectAnalyzer` always fell back to Adhoc.
+
+**Fix Reference**: Release publishes framework-dependent (`--self-contained false`); release README states .NET 8 runtime/SDK requirement; test `ReleaseWorkflowTest`.
+
+---
+
+## BUG-006
+
+**Reported**: 2026-10-08
+**Severity**: low
+**Status**: fixed
+**GitHub Issue**: _(none)_
+
+**Description**: Tool-locator "not found" test is not hermetic: it fails when `DOTNET_ANALYZER_PATH` is exported or the analyzer is on PATH
+
+**Reproduction Steps**:
+1. `export DOTNET_ANALYZER_PATH=<dir containing dotnet-analyzer>`
+2. Run `DotNetToolLocatorTest`
+3. Observe `locate_whenNotFound_throwsWithInstructions` fails
+
+**Root Cause**: `DotNetToolLocator` read `System.getenv` directly, so tests inherited the developer environment.
+
+**Fix Reference**: Package-private constructor with injectable environment lookup; locator tests use an empty environment; test `locate_withEmptyInjectedEnvironment_throwsEvenIfProcessEnvIsSet`.

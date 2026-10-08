@@ -300,3 +300,7 @@ US3 (DI analysis), US4 (quality metrics), and US6 (messaging) add depth incremen
 - [x] T-B006 [BUG-003] Verify fix passes test bugfix_BUG-003.feature for BUG-003
 - [x] T-B007 [BUG-004] Implement fix for BUG-004 referencing test spec bugfix_BUG-004.feature: iterate role keywords in a fixed declared order
 - [x] T-B008 [BUG-004] Verify fix passes test bugfix_BUG-004.feature for BUG-004
+- [x] T-B009 [BUG-005] Implement fix for BUG-005 referencing test spec bugfix_BUG-005.feature: publish dotnet-analyzer framework-dependent in release; update release README requirements
+- [x] T-B010 [BUG-005] Verify fix passes test bugfix_BUG-005.feature for BUG-005
+- [x] T-B011 [BUG-006] Implement fix for BUG-006 referencing test spec bugfix_BUG-006.feature: injectable environment lookup in DotNetToolLocator
+- [x] T-B012 [BUG-006] Verify fix passes test bugfix_BUG-006.feature for BUG-006
