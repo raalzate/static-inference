@@ -1,5 +1,8 @@
 # Static Inference — Java & .NET Dependency Extractor con Motor de Inferencia de Microservicios
 
+> **Movido a `maestria-ia/apps/dev-arch/engine`; este repo queda de solo lectura.**
+> Desde la feature 006-devarch-monorepo (2026-10-08) el motor Static Inference vive, con su historia completa, en el producto dev-arch del monorepo `maestria-ia` (`apps/dev-arch/engine`; contrato en `apps/dev-arch/schema`, especificaciones en `apps/dev-arch/specs`). No abras cambios aquí: hazlos en el monorepo.
+
 Herramienta de análisis estático que extrae dependencias de proyectos Java multi-módulo y .NET/C#, genera clusters inteligentes de componentes, y propone arquitecturas de microservicios con nombres de negocio y clasificación de viabilidad. Detecta automáticamente el tipo de proyecto (Java o .NET) a partir de los archivos de construcción presentes.
 
 [![Ver video en YouTube](https://img.youtube.com/vi/m8U0r368jR8/maxresdefault.jpg)](https://www.youtube.com/watch?v=m8U0r368jR8)
