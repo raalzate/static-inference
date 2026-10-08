@@ -187,8 +187,8 @@ description: "Task list for 005-json-schema-contract"
 ## Phase 9: Polish & Cross-Cutting Concerns
 
 - [x] T056 [P] Añadir entrada `[Unreleased]` en `CHANGELOG.md`: `meta.schema_version` (aditivo), `meta` en arquitectura/entrypoints, paquete `schema/`, `make schema-check`
-- [ ] T057 Ejecutar `mvn -B clean verify`, `dotnet test`, `npm --prefix schema test` y `make schema-check`; Checkstyle/SpotBugs/`dotnet format` sin nuevos avisos [TS-034, TS-043, TS-044]
-- [ ] T058 Validar quickstart.md de punta a punta (incluida la tabla de divergencias §4) [TS-035, TS-036]
+- [x] T057 Ejecutar `mvn -B clean verify`, `dotnet test`, `npm --prefix schema test` y `make schema-check`; Checkstyle/SpotBugs/`dotnet format` sin nuevos avisos [TS-034, TS-043, TS-044] — _mvn verify 301/301 + 121/121 scenarios (SCHEMA_CHECK_E2E=true), dotnet 156/156, npm 17/17, schema-check OK; SpotBugs 0, Checkstyle 4788 (= baseline), dotnet format clean_
+- [x] T058 Validar quickstart.md de punta a punta (incluida la tabla de divergencias §4) [TS-035, TS-036] — _§1-§3 run by hand (CLI twice byte-identical, schema_version x3, check --file OK); §4 divergences covered by TS-035/TS-036 e2e_
 
 ---
 

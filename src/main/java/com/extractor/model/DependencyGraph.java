@@ -71,11 +71,12 @@ public class DependencyGraph {
     }
 
     /**
-     * Endpoints and schemas ({@code output_entrypoints.json}, embedded as {@code api_contracts}).
-     * {@code meta} (005, FR-008) is serialized first.
+     * Endpoints and schemas ({@code output_entrypoints.json}, embedded
+     * as {@code api_contracts}). {@code meta} (005, FR-008) goes first.
      */
     @JsonPropertyOrder({"meta", "endpoints", "schemas"})
     public static class ApiContracts {
+        /** Contract metadata (005, FR-008). */
         @JsonProperty("meta")
         private DocumentMeta meta = new DocumentMeta();
 
@@ -85,12 +86,22 @@ public class DependencyGraph {
         @JsonProperty("schemas")
         private Map<String, ApiSchema> schemas = new HashMap<>();
 
+        /**
+         * Returns the contract metadata.
+         *
+         * @return the contract metadata
+         */
         public DocumentMeta getMeta() {
             return meta;
         }
 
-        public void setMeta(DocumentMeta meta) {
-            this.meta = meta;
+        /**
+         * Sets the contract metadata.
+         *
+         * @param documentMeta the contract metadata
+         */
+        public void setMeta(final DocumentMeta documentMeta) {
+            this.meta = documentMeta;
         }
 
         public List<ApiEndpoint> getEndpoints() {
@@ -111,11 +122,13 @@ public class DependencyGraph {
     }
 
     /**
-     * Metadata for the dependency graph. {@code schema_version} (005, FR-008) is serialized right after
-     * {@code source}; the rest of the order is unchanged (FR-011).
+     * Metadata for the dependency graph. {@code schema_version}
+     * (005, FR-008) is serialized right after {@code source}; the rest
+     * of the order is unchanged (FR-011).
      */
-    @JsonPropertyOrder({"source", "schema_version", "collected_at", "microservice_candidates",
-            "dependency_accuracy", "decomposition_accuracy"})
+    @JsonPropertyOrder({"source", "schema_version", "collected_at",
+            "microservice_candidates", "dependency_accuracy",
+            "decomposition_accuracy"})
     public static class Meta {
         /** System property / environment variable enabling {@code collected_at}. */
         public static final String COLLECTED_AT_OPT_IN = "STATIC_INFERENCE_COLLECTED_AT";
@@ -123,6 +136,7 @@ public class DependencyGraph {
         @JsonProperty("source")
         private String source = "spoon";
 
+        /** Contract version (005, FR-008). */
         @JsonProperty("schema_version")
         private String schemaVersion = SchemaVersion.CURRENT;
 
@@ -161,12 +175,22 @@ public class DependencyGraph {
             this.source = source;
         }
 
+        /**
+         * Returns the contract version.
+         *
+         * @return the contract version
+         */
         public String getSchemaVersion() {
             return schemaVersion;
         }
 
-        public void setSchemaVersion(String schemaVersion) {
-            this.schemaVersion = schemaVersion;
+        /**
+         * Sets the contract version.
+         *
+         * @param version the contract version
+         */
+        public void setSchemaVersion(final String version) {
+            this.schemaVersion = version;
         }
 
         public String getCollectedAt() {

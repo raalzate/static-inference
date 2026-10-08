@@ -39,6 +39,7 @@ public class DotNetBridgeAnalyzer implements LanguageAnalyzer {
     private final DotNetToolLocator locator;
     private final Duration timeout;
     private final ObjectMapper objectMapper;
+    /** Non-fatal warnings of the last parse (FR-022). */
     private final List<String> warnings = new ArrayList<>();
 
     /**
@@ -141,7 +142,8 @@ public class DotNetBridgeAnalyzer implements LanguageAnalyzer {
 
         try {
             JsonNode tree = objectMapper.readTree(json);
-            DependencyGraph graph = objectMapper.treeToValue(tree, DependencyGraph.class);
+            DependencyGraph graph =
+                    objectMapper.treeToValue(tree, DependencyGraph.class);
             reconcileSchemaVersion(tree, graph);
             return graph;
         } catch (JsonProcessingException e) {
@@ -151,12 +153,18 @@ public class DotNetBridgeAnalyzer implements LanguageAnalyzer {
     }
 
     /**
-     * Compares the contract version declared by the .NET analyzer with the engine's (FR-022): a missing or
-     * different value is reported as a warning naming both versions, and the engine version is emitted.
+     * Compares the contract version declared by the .NET analyzer with
+     * the engine's (FR-022): a missing or different value is reported as
+     * a warning naming both versions, and the engine version is emitted.
+     *
+     * @param tree  the raw .NET analyzer output
+     * @param graph the deserialized graph
      */
-    private void reconcileSchemaVersion(JsonNode tree, DependencyGraph graph) {
+    private void reconcileSchemaVersion(final JsonNode tree,
+                                        final DependencyGraph graph) {
         JsonNode declared = tree.path("meta").path("schema_version");
-        String dotnetVersion = declared.isTextual() ? declared.asText() : "absent";
+        String dotnetVersion = declared.isTextual()
+                ? declared.asText() : "absent";
         if (!SchemaVersion.CURRENT.equals(dotnetVersion)) {
             String warning = "dotnet-analyzer schema_version " + dotnetVersion
                     + " != engine " + SchemaVersion.CURRENT;
@@ -170,11 +178,13 @@ public class DotNetBridgeAnalyzer implements LanguageAnalyzer {
         if (graph.getApiContracts() == null) {
             graph.setApiContracts(new DependencyGraph.ApiContracts());
         }
-        graph.getApiContracts().getMeta().setSchemaVersion(SchemaVersion.CURRENT);
+        graph.getApiContracts().getMeta()
+                .setSchemaVersion(SchemaVersion.CURRENT);
     }
 
     /**
-     * Warnings collected while parsing the .NET analyzer output (e.g. contract version mismatch).
+     * Warnings collected while parsing the .NET analyzer output
+     * (e.g. contract version mismatch).
      *
      * @return an unmodifiable view of the warnings
      */

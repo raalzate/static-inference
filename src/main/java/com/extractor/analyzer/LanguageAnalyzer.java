@@ -32,7 +32,8 @@ public interface LanguageAnalyzer {
     DependencyResolver getDependencyResolver();
 
     /**
-     * Non-fatal warnings produced by the last {@link #analyzeProject(Path)} call (Constitution V).
+     * Non-fatal warnings of the last {@link #analyzeProject(Path)} call
+     * (Constitution V).
      *
      * @return the warnings, empty by default
      */
