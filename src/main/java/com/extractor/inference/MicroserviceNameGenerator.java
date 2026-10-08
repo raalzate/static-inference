@@ -117,7 +117,8 @@ public class MicroserviceNameGenerator {
 
     private static Set<String> extractDomainTokens(List<String> components) {
         Set<String> tokens = new HashSet<>();
-        Set<String> roleKeywords = Set.of("service", "controller", "repository", "repo", "usecase", 
+        // Ordered: the first matching role wins, so iteration order must be fixed (BUG-004)
+        List<String> roleKeywords = List.of("service", "controller", "repository", "repo", "usecase", 
                                          "operations", "listener", "publisher", "adapter", "factory", "handler", "db");
         
         for (String comp : components) {
