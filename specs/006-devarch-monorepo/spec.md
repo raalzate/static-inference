@@ -164,7 +164,7 @@ Como desarrollador o agente de IA trabajando en dev-arch, quiero un único conju
 
 **Estructura e importación**
 
-- **FR-001**: El producto MUST residir en una única carpeta del monorepo con seis áreas: web, motor, contrato, skills, documentación y contenedores.
+- **FR-001**: El producto MUST residir en una única carpeta del monorepo con seis áreas: web, motor, contrato, skills, documentación y contenedores; además de las áreas, la raíz del producto solo contiene gobernanza (Constitución, Premisa, especificaciones, instrucciones de agentes), la fuente de versión, la configuración unificada y el soporte de orquestación y de pruebas de aceptación del producto.
 - **FR-002**: El motor MUST importarse con su historia completa de commits, de modo que la historia de cualquier archivo del motor muestre sus commits originales.
 - **FR-003**: La aplicación web existente MUST reubicarse íntegra en el área web sin cambios funcionales, salvo los exigidos por FR-013 a FR-016.
 - **FR-004**: Ningún binario del analizador (paquete ejecutable Java ni ejecutable del analizador .NET) MUST estar versionado; el binario copiado a mano y el archivo de salida antiguo de la web MUST eliminarse.
@@ -177,7 +177,7 @@ Como desarrollador o agente de IA trabajando en dev-arch, quiero un único conju
 - **FR-008**: El producto MUST ofrecer, desde su raíz, comandos únicos para: construir todo, probar todo, probar solo el motor, probar solo la web, verificar el contrato, levantar la web en desarrollo con el motor recién construido, limpiar artefactos, y dos marcadores reservados (pruebas extremo a extremo y diagnóstico del entorno) que informan que su contenido llega en features posteriores.
 - **FR-009**: El comando de construcción MUST producir el motor ejecutable, el analizador .NET y la web, y dejar el motor en la ubicación que usa la web por defecto.
 - **FR-010**: El comando de pruebas MUST ejecutar las pruebas del motor Java, las del analizador .NET excluyendo la categoría de corpus, las del contrato y las de la web, y fallar si cualquiera falla.
-- **FR-011**: Toda herramienta Java invocada por los comandos MUST respetar el JDK seleccionado por la variable de entorno estándar de Java; antes de compilar, los comandos MUST verificar JDK 17, .NET 8 y Node 20 y fallar nombrando el prerrequisito faltante.
+- **FR-011**: Toda herramienta Java invocada por los comandos MUST respetar el JDK seleccionado por la variable de entorno estándar de Java; antes de compilar, los comandos MUST verificar JDK 17 (exactamente esa versión mayor), un kit de desarrollo .NET de versión 8 o superior junto con el entorno de ejecución .NET 8, y Node 20 o superior, y fallar nombrando el prerrequisito faltante, la versión encontrada y la requerida.
 - **FR-012**: Los paquetes de la web y del contrato MUST gestionarse como un único espacio de trabajo de dependencias del producto, instalable con un solo comando y reproducible desde los archivos de bloqueo versionados.
 
 **Web con motor local**
@@ -234,6 +234,7 @@ Como desarrollador o agente de IA trabajando en dev-arch, quiero un único conju
 - **SC-006**: La verificación de contrato desde la raíz del producto reporta los cuatro frentes correctos y sigue fallando ante una divergencia en cualquiera de ellos.
 - **SC-007**: Los cuatro artefactos con versión (motor, analizador .NET, web, servidor MCP) reportan la misma versión que la fuente única; cambiar la versión requiere editar exactamente un archivo.
 - **SC-008**: Un cambio limitado a una sola área activa solo las verificaciones de esa área (y de sus dependientes); un cambio fuera del producto no activa ninguna.
+- **SC-009**: Cada verificación de área en integración continua termina en 20 minutos o menos, y el tiempo total no supera en más de un 25 % al de las verificaciones actuales del motor más la nueva de la web.
 
 ## Clarifications
 
@@ -249,3 +250,12 @@ Como desarrollador o agente de IA trabajando en dev-arch, quiero un único conju
 - Q: ¿El análisis de un ZIP .NET desde la web es obligatorio para el criterio de salida? -> A: El criterio de salida exige el ZIP Java; el ZIP .NET es obligatorio cuando el entorno tiene el SDK .NET (en integración continua sí). (default elegido por agente — pendiente confirmar) [FR-013, SC-002]
 - Q: ¿Qué hacen los marcadores de pruebas extremo a extremo y diagnóstico? -> A: Informan que se implementan en features posteriores (011 y 012) y terminan con éxito, para no bloquear el comando de pruebas. (default elegido por agente — pendiente confirmar) [FR-008]
 - Q: ¿La Constitución cambia de alcance al trasladarse? -> A: No; se traslada sin enmiendas (gobierna el motor; la ampliación a todo el producto es la enmienda 2.0.0 de la Fase 7 y requiere aprobación explícita). Mientras tanto, los principios aplicables (TDD, huella mínima) se respetan también en los cambios de la web de esta feature. (default elegido por agente — pendiente confirmar) [FR-005]
+- Q: ¿Cómo se nombran las etiquetas de publicación en un monorepo con otros proyectos? -> A: Con prefijo de producto (`dev-arch-v<versión>`), para no colisionar con etiquetas de otros proyectos; la publicación en la rama principal sigue generando pre-releases. (default elegido por agente — pendiente confirmar) [FR-023, US5-AS7]
+- Q: ¿"La web muestra componentes y propuestas" (US3-AS1) se verifica en el navegador? -> A: En esta feature se verifica sobre la respuesta del análisis (componentes y propuestas no vacíos, versión de contrato); la verificación visual automatizada en navegador es la feature 011. (default elegido por agente — pendiente confirmar) [US3, SC-002]
+- Q: ¿Desde dónde se espera que un agente de IA arranque el servidor MCP local configurado? -> A: Desde la raíz del producto (la ruta relativa al motor se resuelve desde allí). (default elegido por agente — pendiente confirmar) [FR-027, US7-AS1]
+
+### Assumptions
+
+- La construcción desde un clon limpio dispone de acceso a los registros públicos de dependencias (Maven Central, NuGet, npm).
+- La importación del motor se hace desde su rama principal una vez integrada esta especificación, de modo que las especificaciones 001–006 viajan con la historia.
+- Los volcados SQL y archivos de bloqueo de los proyectos de demostración, ignorados globalmente por el monorepo, siguen siendo necesarios y versionados.

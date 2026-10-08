@@ -12,7 +12,7 @@ Esta feature no introduce datos de dominio; sus "entidades" son el layout del pr
 | `schemaDir` | `apps/dev-arch/schema` | `VERSION` (contrato, 1.0.0), `1.0.0/`, `gen/`, `generated/` |
 | `webDir` | `apps/dev-arch/web` | app Next.js |
 | `engineDist` | `apps/dev-arch/web/engine-dist` | generado; `engine.jar` + `dotnet-analyzer*` |
-| `areas` | `web`, `engine`, `schema`, `skills`, `docs`, `docker` | FR-001 (exactamente seis) |
+| `areas` | `web`, `engine`, `schema`, `skills`, `docs`, `docker` | FR-001 (seis áreas; además `scripts/`, `tests/acceptance/`, `specs/` y archivos de gobernanza/configuración en la raíz) |
 
 **Reglas de validación**
 - Las seis áreas existen como directorios; `CONSTITUTION.md`, `PREMISE.md`, `specs/` existen en `productRoot`.
