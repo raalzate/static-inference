@@ -4,7 +4,7 @@
 **Created**: 2026-10-08 (`/iikit-01-specify`), extendido por `/iikit-03-checklist` el 2026-10-08
 **Feature**: [spec.md](../spec.md)
 
-> Modo no interactivo: los gaps se resolvieron con defaults conservadores registrados en spec.md *Clarifications* como "(default elegido por agente — pendiente confirmar)". La confirmación del usuario sigue pendiente y se reporta, pero no bloquea el checklist (los defaults están documentados y son reversibles).
+> Modo no interactivo: los gaps se resolvieron con defaults conservadores registrados en spec.md *Clarifications* como "(default elegido por agente — confirmado por usuario 2026-10-08)". La confirmación del usuario sigue pendiente y se reporta, pero no bloquea el checklist (los defaults están documentados y son reversibles).
 
 ## Content Quality
 
@@ -67,7 +67,7 @@
 - [x] **CHK028**: ¿Se documenta el acceso a registros de dependencias para el clon limpio? [Assumption → añadida]
 - [x] **CHK029**: ¿Se documenta que la importación ocurre tras integrar la spec en la rama principal del motor? [Assumption → añadida]
 - [x] **CHK030**: ¿Se acota lo que queda fuera (cliente MCP, trabajos, seguridad de carga, Docker, doctor, enmienda)? [Scope, Contexto, Clarifications]
-- [x] **CHK031**: ¿Los defaults del agente están registrados con su estado de confirmación? [Assumption] — 10 defaults "pendiente confirmar"; se reportan al usuario
+- [x] **CHK031**: ¿Los defaults del agente están registrados con su estado de confirmación? [Assumption] — 10 defaults confirmados por usuario 2026-10-08 (A1: promover schema/; A2: nota en AGENTS.md; A3: job propio 45 min; A4: congelar repo origen)
 
 ## Summary
 

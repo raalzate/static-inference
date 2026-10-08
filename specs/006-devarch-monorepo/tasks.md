@@ -172,6 +172,13 @@ description: "Task list for 006-devarch-monorepo"
 
 ---
 
+
+## Phase 11: Decisiones de usuario 2026-10-08 (A2, A3, A4)
+
+- [ ] T052 [A2] Añadir en `apps/dev-arch/AGENTS.md` una nota NO normativa: "CONSTITUTION.md v1.x gobierna `engine/`; alcance producto (web) se define en la enmienda 2.0.0 de la Fase 7". No modificar CONSTITUTION.md.
+- [ ] T053 [A3] En `.github/workflows/dev-arch.yml`, ejecutar TS-006/TS-007 (clon limpio + `make build && make test`) en un job propio `acceptance-clean-clone` con `timeout-minutes: 45`, solo en push a main y tags `dev-arch-v*`; el resto del job `acceptance` respeta el límite de SC-009.
+- [ ] T054 [A4] Tras T002, congelar el repo origen `project/static-inference`: README con aviso "Movido a maestria-ia/apps/dev-arch/engine; este repo queda de solo lectura" y commit en su `main`. No borrar nada.
+
 ## Dependencies & Execution Order
 
 - **Setup (T001–T008)**: T001 → T002 → T003, T004 (paralelas entre sí) → T005 → T006, T007, T008.
