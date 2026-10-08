@@ -1,12 +1,20 @@
 package com.extractor.inference;
 
+import com.extractor.model.DocumentMeta;
 import com.extractor.model.SecretLocation;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
 import java.util.Map;
 
+@JsonPropertyOrder({"meta", "project_metadata", "proposals",
+        "support_libraries", "summary"})
 public class ConsolidatedArchitecture {
+    /** Contract metadata (005, FR-008), serialized first. */
+    @JsonProperty("meta")
+    private final DocumentMeta meta = new DocumentMeta();
+
     @JsonProperty("project_metadata")
     private ProjectMetadata projectMetadata;
     
@@ -27,6 +35,15 @@ public class ConsolidatedArchitecture {
         this.proposals = proposals;
         this.supportLibraries = supportLibraries;
         this.summary = summary;
+    }
+
+    /**
+     * Returns the contract metadata (005, FR-008).
+     *
+     * @return the contract metadata
+     */
+    public DocumentMeta getMeta() {
+        return meta;
     }
 
     public ProjectMetadata getProjectMetadata() { return projectMetadata; }

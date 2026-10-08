@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static-inference.dev/schema/1.0.0/mcp/get_api_contracts.response.schema.json",
+  "title": "GetApiContractsResponse",
+  "description": "Successful get_api_contracts response: the entrypoints document.",
+  "$ref": "../entrypoints.schema.json"
+}

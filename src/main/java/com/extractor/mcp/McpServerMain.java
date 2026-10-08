@@ -18,7 +18,7 @@ import java.util.List;
 public class McpServerMain {
 
     private static final String SERVER_NAME = "static-inference";
-    private static final String SERVER_VERSION = "1.1.0";
+    private static final String SERVER_VERSION = "1.2.0";
 
     /**
      * Creates tool specifications for all 5 MCP tools.

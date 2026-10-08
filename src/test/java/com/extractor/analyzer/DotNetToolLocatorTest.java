@@ -99,7 +99,8 @@ class DotNetToolLocatorTest {
     void locate_whenNotFound_throwsWithInstructions() {
         // Arrange: empty directory, no system property, tool not on PATH
         Path emptyBase = tempDir.resolve("nonexistent");
-        DotNetToolLocator locator = new DotNetToolLocator(emptyBase);
+        // Hermetic: ignore the developer's DOTNET_ANALYZER_PATH / PATH (BUG-006)
+        DotNetToolLocator locator = new DotNetToolLocator(emptyBase, false, name -> null);
 
         String previousValue = System.getProperty("DOTNET_ANALYZER_PATH");
         try {
@@ -159,6 +160,30 @@ class DotNetToolLocatorTest {
                 System.setProperty("DOTNET_ANALYZER_PATH", previousValue);
             } else {
                 System.clearProperty("DOTNET_ANALYZER_PATH");
+            }
+        }
+    }
+
+    // --- Hermetic lookup [BUG-006] ---
+
+    /**
+     * [BUG-006] With an injected empty environment the lookup must fail even if the
+     * developer exported DOTNET_ANALYZER_PATH or has the analyzer on PATH.
+     */
+    @Test
+    void locate_withEmptyInjectedEnvironment_throwsEvenIfProcessEnvIsSet() {
+        Path emptyBase = tempDir.resolve("nonexistent-hermetic");
+        DotNetToolLocator locator = new DotNetToolLocator(emptyBase, false, name -> null);
+
+        String previousValue = System.getProperty("DOTNET_ANALYZER_PATH");
+        try {
+            System.clearProperty("DOTNET_ANALYZER_PATH");
+
+            IllegalStateException ex = assertThrows(IllegalStateException.class, locator::locate);
+            assertTrue(ex.getMessage().contains("dotnet-analyzer"));
+        } finally {
+            if (previousValue != null) {
+                System.setProperty("DOTNET_ANALYZER_PATH", previousValue);
             }
         }
     }

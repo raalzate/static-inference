@@ -86,6 +86,8 @@ La herramienta genera automáticamente **3 archivos JSON** especializados:
 
 ## 📋 Referencia de Salidas
 
+> **Contrato formal (fuente de verdad)**: `schema/1.0.0/` describe los tres archivos y las respuestas MCP en JSON Schema 2020-12; cada archivo declara `meta.schema_version` (`"1.0.0"`). Política de versionado y notas de migración: [`docs/SCHEMA.md`](docs/SCHEMA.md). Tipos TypeScript y validadores zod generados: `schema/generated/`. Verificación de Java, .NET y tipos generados: `make schema-check`. Los ejemplos de abajo son ilustrativos.
+
 ### 1. Grafo Completo (`output.json`)
 
 Contiene el análisis exhaustivo de todos los componentes y sus relaciones:
@@ -110,12 +112,12 @@ Contiene el análisis exhaustivo de todos los componentes y sus relaciones:
     }
   ],
   "edges": [],
-  "api_contracts": [],
-  "meta": { "source": "spoon" }
+  "api_contracts": { "meta": { "schema_version": "1.0.0" }, "endpoints": [], "schemas": {} },
+  "meta": { "source": "spoon", "schema_version": "1.0.0", "microservice_candidates": {} }
 }
 ```
 
-> Los campos `cbo` y `lcom` van planos en cada componente, no anidados bajo `metrics`. La detección de lenguaje se hace vía `meta.source` (`spoon` para Java, `dotnet` para .NET).
+> Los campos `cbo` y `lcom` van planos en cada componente, no anidados bajo `metrics`. La detección de lenguaje se hace vía `meta.source` (`spoon` para Java, `roslyn` o `roslyn-fallback` para .NET).
 
 
 ### 2. Arquitectura Consolidada (`output_architecture.json`)
@@ -124,6 +126,7 @@ Propuesta final de agrupación lógica:
 
 ```json
 {
+  "meta": { "schema_version": "1.0.0" },
   "proposals": [
     {
       "id": 0,
@@ -178,14 +181,15 @@ Propuesta final de agrupación lógica:
     "package_dependencies": { "...": "package → { components_count, depends_on_packages[] }" },
     "total_components": 20,
     "total_loc": 1450,
-    "components_with_secrets": ["..."],
-    "shared_domain": { "...": "..." }
+    "components_with_secrets": 1,
+    "shared_domain": "unknown",
+    "secrets_locations": [ { "path": "src/main/resources/application.properties", "line": 3, "kind": "JDBC_PASSWORD", "redacted": true } ]
   },
   "summary": "ANÁLISIS DE ARQUITECTURA - COMPONENTES AGRUPADOS\n..."
 }
 ```
 
-> El conteo `Alta/Media/Baja` se imprime dentro del `summary` (string pre-formateado en español, listo para mostrar). No existe un objeto `viability_summary` — derívalo agrupando `proposals[*].viability` si lo necesitas estructurado. `project_metadata.secrets_locations` (mapa `componentId → [file:line]`) sólo aparece cuando hay componentes con `sensitive_data == true`.
+> El conteo `Alta/Media/Baja` se imprime dentro del `summary` (string pre-formateado en español, listo para mostrar). No existe un objeto `viability_summary` — derívalo agrupando `proposals[*].viability` si lo necesitas estructurado. `project_metadata.secrets_locations` es una lista de `{path, line, kind, redacted}` (vacía cuando no hay secretos) y `components_with_secrets` es un entero.
 
 **Clasificación de Viabilidad:**
 - **Alta (≥0.7)**: Listos para implementar

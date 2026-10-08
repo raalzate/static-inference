@@ -1,0 +1,8 @@
+{
+  "testify": {
+    "assertion_hash": "51530e0a278fb6f54b921bb9c15669c14d9d8df8c9c7843c7752e6b87a84e1ba",
+    "generated_at": "2026-10-08T00:29:30Z",
+    "features_dir": "specs/005-json-schema-contract/tests/features",
+    "file_count": 6
+  }
+}

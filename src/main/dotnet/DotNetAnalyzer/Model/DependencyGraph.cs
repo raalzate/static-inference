@@ -45,6 +45,13 @@ public class Meta
     [JsonPropertyName("source")]
     public string Source { get; set; } = "roslyn";
 
+    /// <summary>
+    /// Contract version (FR-009). Declared right after <see cref="Source"/> so it is serialized immediately
+    /// after <c>source</c>; the rest of the property order is unchanged (FR-011).
+    /// </summary>
+    [JsonPropertyName("schema_version")]
+    public string SchemaVersion { get; set; } = Model.SchemaVersion.Current;
+
     /// <summary>Environment variable that opts in to emitting collected_at.</summary>
     public const string CollectedAtOptIn = "STATIC_INFERENCE_COLLECTED_AT";
 

@@ -101,7 +101,6 @@ env/
 .vscode/
 .venv/
 drafts/
-specs/
 .ruff_cache/
 .mcp.json
 AGENTS.md
@@ -109,3 +108,8 @@ CLAUDE.md
 tessl.json
 .agents/
 .serena/
+
+# 005-json-schema-contract: contract package and versioned sample outputs
+schema/node_modules/
+!schema/fixtures/**/output*.json
+!src/test/resources/baseline-v1.1.0/**/output*.json

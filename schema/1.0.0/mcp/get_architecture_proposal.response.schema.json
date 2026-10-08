@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static-inference.dev/schema/1.0.0/mcp/get_architecture_proposal.response.schema.json",
+  "title": "GetArchitectureProposalResponse",
+  "description": "Successful get_architecture_proposal response (with or without minViability): the consolidated architecture document.",
+  "$ref": "../architecture.schema.json"
+}

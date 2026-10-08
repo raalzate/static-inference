@@ -59,7 +59,7 @@ jobs:
           mvn -B checkstyle:check \
             -Dcheckstyle.config.location=sun_checks.xml \
             -Dcheckstyle.violationSeverity=warning \
-            -Dcheckstyle.maxAllowedViolations=4788  # baseline 2026-10-07: ratchet down, never up
+            -Dcheckstyle.maxAllowedViolations=4763  # baseline 2026-10-08: ratchet down, never up
 
       - name: Upload analysis reports
         if: always()
@@ -141,6 +141,50 @@ jobs:
           name: dotnet-analysis-reports
           path: dotnet-security-report.sarif
 
+  # ─── Output contract (005-json-schema-contract) ─────────────────
+  schema-check:
+    name: Contract - schema-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: schema/package-lock.json
+
+      - name: Verify Java, .NET and generated types against the contract
+        run: make schema-check
+
+      - name: BDD scenarios of 005 (incl. end-to-end schema-check divergences)
+        env:
+          SCHEMA_CHECK_E2E: 'true'
+        run: mvn -B test -Dtest=RunSchemaContractFeaturesTest
+
+      - name: Upload schema-check logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: schema-check-logs
+          path: |
+            target/schema-check/*.log
+            target/cucumber-reports/
+
   # ─── Release distribution (main-merge or tag) ──────────────────
   release:
     name: Build & Publish Distribution (${{ matrix.rid }})
@@ -209,15 +253,14 @@ jobs:
           mkdir -p "dist/${DIST_NAME}/bin"
           cp target/java-dependency-extractor.jar "dist/${DIST_NAME}/bin/"
 
-      - name: Publish .NET analyzer (self-contained, single-file)
+      # Framework-dependent: a single-file bundle cannot load MSBuild and always
+      # degrades to roslyn-fallback (BUG-005).
+      - name: Publish .NET analyzer (framework-dependent)
         run: |
           dotnet publish src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj \
             -c Release \
             -r ${{ matrix.rid }} \
-            --self-contained true \
-            -p:PublishSingleFile=true \
-            -p:IncludeNativeLibrariesForSelfExtract=true \
-            -p:EnableCompressionInSingleFile=true \
+            --self-contained false \
             -p:DebugType=None \
             -p:DebugSymbols=false \
             -o "dist/${DIST_NAME}/bin"
@@ -236,12 +279,14 @@ jobs:
           ## Contents
 
           - \`bin/java-dependency-extractor.jar\` — Java analyzer (Spoon-based fat jar)
-          - \`${BIN_DOTNET}\` — .NET analyzer (self-contained single-file binary; .NET runtime bundled)
+          - \`${BIN_DOTNET}\` — .NET analyzer (framework-dependent; launcher + assemblies in \`bin/\`)
 
           ## Requirements
 
           - Java analyzer: **JRE/JDK 17+**
-          - .NET analyzer: **none** — runtime is bundled inside the binary.
+          - .NET analyzer: **.NET 8 runtime**. Install the **.NET 8 SDK** for full
+            project loading via MSBuild; with only the runtime the analyzer falls
+            back to direct source parsing (\`meta.source = roslyn-fallback\`).
 
           ## Usage
 

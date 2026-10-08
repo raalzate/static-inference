@@ -79,6 +79,8 @@ En Claude Code, las herramientas del servidor aparecen automaticamente al inicia
 
 ## Herramientas Disponibles
 
+> **Contrato de respuestas (fuente de verdad)**: las respuestas exitosas de las 5 herramientas están descritas formalmente en `schema/1.0.0/mcp/*.response.schema.json` (JSON Schema 2020-12; política de versionado en `docs/SCHEMA.md`). `get_dependency_graph`, `get_architecture_proposal` y `get_api_contracts` devuelven exactamente los documentos `output.json`, `output_architecture.json` y `output_entrypoints.json` (con `meta.schema_version = "1.0.0"`); `get_component_metrics` devuelve un `Component` y `analyze_project` el resumen de abajo (ambos sin `meta`). Esta página es una guía; ante cualquier diferencia prevalece `schema/1.0.0/`. Verificación: `make schema-check`.
+
 ### `analyze_project`
 
 Ejecuta el pipeline completo de analisis estatico. Genera archivos JSON en disco y retorna un resumen.
@@ -124,7 +126,7 @@ Retorna el grafo de dependencias completo sin generar archivos en disco.
 |-----------|------|-----------|-------------|
 | `projectPath` | string | Si | Ruta absoluta al directorio raiz del proyecto |
 
-**Respuesta:** Objeto `DependencyGraph` con componentes, aristas, contratos API y metadatos.
+**Respuesta:** Objeto `DependencyGraph` con componentes, aristas, contratos API y metadatos (`meta.source` ∈ `spoon` \| `roslyn` \| `roslyn-fallback`, `meta.schema_version`). Contrato: `schema/1.0.0/mcp/get_dependency_graph.response.schema.json`.
 
 ---
 
@@ -139,7 +141,7 @@ Retorna propuestas de descomposicion en microservicios con scores de viabilidad.
 | `projectPath` | string | Si | Ruta absoluta al directorio raiz del proyecto |
 | `minViability` | string | No | Umbral minimo de viabilidad: `"Alta"`, `"Media"`, `"Baja"` |
 
-**Respuesta:** Objeto `ConsolidatedArchitecture` con propuestas filtradas por viabilidad.
+**Respuesta:** Objeto `ConsolidatedArchitecture` (`meta`, `project_metadata`, `proposals`, `support_libraries`, `summary`) con propuestas filtradas por viabilidad. Contrato: `schema/1.0.0/mcp/get_architecture_proposal.response.schema.json`.
 
 **Ejemplo de uso:** Obtener solo propuestas listas para implementar:
 ```
@@ -157,6 +159,8 @@ Retorna los endpoints REST y contratos de mensajeria descubiertos en el proyecto
 | Parametro | Tipo | Requerido | Descripcion |
 |-----------|------|-----------|-------------|
 | `projectPath` | string | Si | Ruta absoluta al directorio raiz del proyecto |
+
+**Respuesta:** documento de entrypoints (`meta`, `endpoints`, `schemas`). Contrato: `schema/1.0.0/mcp/get_api_contracts.response.schema.json`.
 
 **Deteccion soportada:**
 - **Java:** `@RestController`, `@RequestMapping`, `@Path` (JAX-RS)
@@ -187,6 +191,8 @@ Retorna metricas detalladas de un componente especifico.
 - Tablas de BD utilizadas
 - Rol de mensajeria
 - Grafo de llamadas
+
+**Respuesta:** un `Component` (contrato: `schema/1.0.0/mcp/get_component_metrics.response.schema.json` → `common.schema.json#/$defs/Component`).
 
 **Manejo de errores:** Si el componente no existe, retorna la lista de componentes disponibles.
 

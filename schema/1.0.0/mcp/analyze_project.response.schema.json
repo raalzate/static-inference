@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static-inference.dev/schema/1.0.0/mcp/analyze_project.response.schema.json",
+  "title": "AnalyzeProjectResponse",
+  "description": "Successful analyze_project response: analysis summary (camelCase, unchanged shape, no meta).",
+  "type": "object",
+  "properties": {
+    "componentCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "edgeCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "proposalCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "endpointCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "filesGenerated": {
+      "description": "Paths of output.json, output_architecture.json and output_entrypoints.json.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "summary": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "componentCount",
+    "edgeCount",
+    "proposalCount",
+    "endpointCount",
+    "filesGenerated",
+    "summary"
+  ],
+  "additionalProperties": false
+}
