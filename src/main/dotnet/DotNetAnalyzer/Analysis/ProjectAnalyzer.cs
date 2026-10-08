@@ -155,7 +155,7 @@ public class ProjectAnalyzer
             Meta = new Meta
             {
                 Source = usedFallback ? "roslyn-fallback" : "roslyn",
-                CollectedAt = DateTime.UtcNow.ToString("o"),
+                CollectedAt = Meta.CurrentCollectedAt(),
             },
         };
 
@@ -440,7 +440,7 @@ public class ProjectAnalyzer
             Meta = new Meta
             {
                 Source = "roslyn",
-                CollectedAt = DateTime.UtcNow.ToString("o"),
+                CollectedAt = Meta.CurrentCollectedAt(),
             },
         };
     }

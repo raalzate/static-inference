@@ -6,10 +6,12 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Finds the dotnet-analyzer executable on the system.
- * Search order: 1) JAR sibling directory, 2) System PATH, 3) DOTNET_ANALYZER_PATH property/env var.
+ * Search order: 1) JAR sibling directory, 2) DOTNET_ANALYZER_PATH property/env var, 3) System PATH.
+ * On Windows the {@code .exe} name is tried first.
  */
 public class DotNetToolLocator {
 
@@ -18,12 +20,26 @@ public class DotNetToolLocator {
     private static final String ENV_VAR_NAME = "DOTNET_ANALYZER_PATH";
 
     private final Path baseDir;
+    private final List<String> executableNames;
 
     /**
      * Creates a locator that searches relative to the given base directory (typically JAR location).
      */
     public DotNetToolLocator(Path baseDir) {
+        this(baseDir, System.getProperty("os.name", "").toLowerCase().startsWith("windows"));
+    }
+
+    /**
+     * Creates a locator for an explicit platform (testable).
+     *
+     * @param baseDir base directory for the sibling lookup
+     * @param windows whether to look for {@code dotnet-analyzer.exe} first
+     */
+    public DotNetToolLocator(Path baseDir, boolean windows) {
         this.baseDir = baseDir;
+        this.executableNames = windows
+                ? List.of(EXECUTABLE_NAME + ".exe", EXECUTABLE_NAME)
+                : List.of(EXECUTABLE_NAME);
     }
 
     /**
@@ -35,8 +51,8 @@ public class DotNetToolLocator {
     public Path locate() {
         // 1. Check sibling directory (same folder as the JAR)
         if (baseDir != null && Files.isDirectory(baseDir)) {
-            Path sibling = baseDir.resolve(EXECUTABLE_NAME);
-            if (Files.exists(sibling)) {
+            Path sibling = resolveIn(baseDir);
+            if (sibling != null) {
                 logger.info("Found dotnet-analyzer in sibling directory: {}", sibling);
                 return sibling.toAbsolutePath();
             }
@@ -49,8 +65,8 @@ public class DotNetToolLocator {
         }
         if (envPath != null && !envPath.isEmpty()) {
             Path envDir = Path.of(envPath);
-            Path envExe = envDir.resolve(EXECUTABLE_NAME);
-            if (Files.exists(envExe)) {
+            Path envExe = Files.isDirectory(envDir) ? resolveIn(envDir) : null;
+            if (envExe != null) {
                 logger.info("Found dotnet-analyzer via {}: {}", ENV_VAR_NAME, envExe);
                 return envExe.toAbsolutePath();
             }
@@ -82,9 +98,19 @@ public class DotNetToolLocator {
         if (pathEnv == null) return null;
 
         for (String dir : pathEnv.split(System.getProperty("path.separator"))) {
-            Path candidate = Path.of(dir).resolve(EXECUTABLE_NAME);
-            if (Files.exists(candidate)) {
+            Path candidate = resolveIn(Path.of(dir));
+            if (candidate != null) {
                 return candidate.toAbsolutePath();
+            }
+        }
+        return null;
+    }
+
+    private Path resolveIn(Path dir) {
+        for (String name : executableNames) {
+            Path candidate = dir.resolve(name);
+            if (Files.isRegularFile(candidate)) {
+                return candidate;
             }
         }
         return null;
