@@ -1,0 +1,8 @@
+{
+  "testify": {
+    "assertion_hash": "384d08d8632342aa4de1d307e50020b90baaf9e42d8b5cd22a74085444505fbf",
+    "generated_at": "2026-10-08T14:03:38Z",
+    "features_dir": "specs/006-devarch-monorepo/tests/features",
+    "file_count": 7
+  }
+}
