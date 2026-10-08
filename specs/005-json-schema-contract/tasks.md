@@ -151,15 +151,15 @@ description: "Task list for 005-json-schema-contract"
 
 ### Tests for User Story 5 (escribir primero, deben FALLAR)
 
-- [ ] T045 [P] [US5] Step definitions en `src/test/java/com/extractor/bdd/SchemaCheckSteps.java`: copian el repo a un directorio temporal (worktree), introducen cada divergencia, ocultan herramientas vía `PATH` y ejecutan `scripts/schema-check.sh`; aserción de formato de líneas, exit code y tiempo < 10 min [TS-034, TS-035, TS-036, TS-037, TS-038]
-- [ ] T046 [P] [US5] Step definition de CI en `src/test/java/com/extractor/bdd/CiWorkflowSteps.java` (parsea `.github/workflows/ci.yml`: job `schema-check` con JDK 17/.NET 8/Node 20, sin `continue-on-error`) [TS-039]
+- [x] T045 [P] [US5] Step definitions en `src/test/java/com/extractor/bdd/SchemaCheckSteps.java`: copian el repo a un directorio temporal (worktree), introducen cada divergencia, ocultan herramientas vía `PATH` y ejecutan `scripts/schema-check.sh`; aserción de formato de líneas, exit code y tiempo < 10 min [TS-034, TS-035, TS-036, TS-037, TS-038] — _end-to-end; gated by SCHEMA_CHECK_E2E=true (enabled in CI job schema-check); all 11 scenarios green locally_
+- [x] T046 [P] [US5] Step definition de CI en `src/test/java/com/extractor/bdd/CiWorkflowSteps.java` (parsea `.github/workflows/ci.yml`: job `schema-check` con JDK 17/.NET 8/Node 20, sin `continue-on-error`) [TS-039]
 
 ### Implementation for User Story 5
 
-- [ ] T047 [US5] Implementar `scripts/schema-check.sh` según contracts/schema-check.md (4 frentes, agregación, `NOT VERIFIED` ⇒ exit 1, mensajes con frente y ruta) [TS-034, TS-035, TS-036, TS-037, TS-038]
-- [ ] T048 [US5] Crear `Makefile` raíz con target `schema-check` (y `schema-generate`) que invoca el script [TS-034]
-- [ ] T049 [US5] Añadir job `schema-check` bloqueante en `.github/workflows/ci.yml` (setup-java 17, setup-dotnet 8.0.x, setup-node 20, `make schema-check`) [TS-039]
-- [ ] T050 [US5] Ejecutar T045–T046 hasta verde [TS-034, TS-035, TS-036, TS-037, TS-038, TS-039]
+- [x] T047 [US5] Implementar `scripts/schema-check.sh` según contracts/schema-check.md (4 frentes, agregación, `NOT VERIFIED` ⇒ exit 1, mensajes con frente y ruta) [TS-034, TS-035, TS-036, TS-037, TS-038] — _also publishes the framework-dependent analyzer and installs target/dotnet-analyzer as launcher_
+- [x] T048 [US5] Crear `Makefile` raíz con target `schema-check` (y `schema-generate`) que invoca el script [TS-034]
+- [x] T049 [US5] Añadir job `schema-check` bloqueante en `.github/workflows/ci.yml` (setup-java 17, setup-dotnet 8.0.x, setup-node 20, `make schema-check`) [TS-039] — _+ step running the 005 Cucumber scenarios with SCHEMA_CHECK_E2E=true_
+- [x] T050 [US5] Ejecutar T045–T046 hasta verde [TS-034, TS-035, TS-036, TS-037, TS-038, TS-039] — _make schema-check 37-44 s locally_
 
 **Checkpoint**: criterio de salida de la Fase 1 cumplido.
 

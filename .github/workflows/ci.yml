@@ -141,6 +141,50 @@ jobs:
           name: dotnet-analysis-reports
           path: dotnet-security-report.sarif
 
+  # ─── Output contract (005-json-schema-contract) ─────────────────
+  schema-check:
+    name: Contract - schema-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: schema/package-lock.json
+
+      - name: Verify Java, .NET and generated types against the contract
+        run: make schema-check
+
+      - name: BDD scenarios of 005 (incl. end-to-end schema-check divergences)
+        env:
+          SCHEMA_CHECK_E2E: 'true'
+        run: mvn -B test -Dtest=RunSchemaContractFeaturesTest
+
+      - name: Upload schema-check logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: schema-check-logs
+          path: |
+            target/schema-check/*.log
+            target/cucumber-reports/
+
   # ─── Release distribution (main-merge or tag) ──────────────────
   release:
     name: Build & Publish Distribution (${{ matrix.rid }})
