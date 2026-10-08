@@ -8,11 +8,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * Bridges Java and the .NET Roslyn analyzer by invoking the dotnet-analyzer
@@ -25,9 +29,10 @@ import java.util.stream.Collectors;
 public class DotNetBridgeAnalyzer implements LanguageAnalyzer {
 
     private static final Logger logger = LoggerFactory.getLogger(DotNetBridgeAnalyzer.class);
-    private static final long DEFAULT_TIMEOUT_MINUTES = 5;
+    private static final Duration DEFAULT_TIMEOUT = Duration.ofMinutes(5);
 
     private final DotNetToolLocator locator;
+    private final Duration timeout;
     private final ObjectMapper objectMapper;
 
     /**
@@ -36,7 +41,18 @@ public class DotNetBridgeAnalyzer implements LanguageAnalyzer {
      * @param locator the tool locator for finding the dotnet-analyzer executable
      */
     public DotNetBridgeAnalyzer(DotNetToolLocator locator) {
+        this(locator, DEFAULT_TIMEOUT);
+    }
+
+    /**
+     * Creates a new analyzer with an explicit subprocess timeout.
+     *
+     * @param locator the tool locator for finding the dotnet-analyzer executable
+     * @param timeout maximum wall-clock time the subprocess may run
+     */
+    public DotNetBridgeAnalyzer(DotNetToolLocator locator, Duration timeout) {
         this.locator = locator;
+        this.timeout = timeout;
         this.objectMapper = new ObjectMapper();
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
@@ -60,27 +76,22 @@ public class DotNetBridgeAnalyzer implements LanguageAnalyzer {
         pb.redirectErrorStream(false);
 
         Process process = pb.start();
+        process.getOutputStream().close();
 
-        // Read stdout
-        String stdout;
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(process.getInputStream()))) {
-            stdout = reader.lines().collect(Collectors.joining("\n"));
-        }
+        // Drain both streams concurrently so a full stderr pipe cannot block stdout (BUG-002)
+        CompletableFuture<String> stdoutFuture = drain(process.getInputStream());
+        CompletableFuture<String> stderrFuture = drain(process.getErrorStream());
 
-        // Read stderr for diagnostics
-        String stderr;
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(process.getErrorStream()))) {
-            stderr = reader.lines().collect(Collectors.joining("\n"));
-        }
-
-        boolean finished = process.waitFor(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
+        boolean finished = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
         if (!finished) {
+            process.descendants().forEach(ProcessHandle::destroyForcibly);
             process.destroyForcibly();
             throw new RuntimeException(
-                    "dotnet-analyzer timed out after " + DEFAULT_TIMEOUT_MINUTES + " minutes");
+                    "dotnet-analyzer timed out after " + timeout.toSeconds() + " seconds");
         }
+
+        String stdout = stdoutFuture.join();
+        String stderr = stderrFuture.join();
 
         int exitCode = process.exitValue();
         if (exitCode != 0) {
@@ -94,6 +105,17 @@ public class DotNetBridgeAnalyzer implements LanguageAnalyzer {
         }
 
         return parseOutput(stdout);
+    }
+
+    private static CompletableFuture<String> drain(InputStream stream) {
+        return CompletableFuture.supplyAsync(() -> {
+            try (InputStream in = stream; ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                in.transferTo(out);
+                return out.toString(StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     /**

@@ -1,2 +1,0 @@
-/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/dotnet-analyzer.pdb
-/Users/raul.alzate/Documents/maestria/maestria/project/static-inference/target/dotnet-analyzer

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SpotBugs baseline (2026-10-07). CI fails on any finding NOT listed here.
+  Ratchet: remove entries as they are fixed; never add new ones without review.
+-->
+<FindBugsFilter>
+  <!-- Model/DTO classes intentionally expose mutable collections (Jackson-bound). -->
+  <Match><Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/></Match>
+
+  <!-- '\n' kept on purpose: '%n' would make report text platform-dependent (principle IV). -->
+  <Match>
+    <Class name="com.extractor.inference.MicroserviceRecommendationEngine"/>
+    <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
+  </Match>
+
+  <!-- Legacy baseline: behaviour-preserving cleanup pending (tracked for feature 008). -->
+  <Match><Class name="com.extractor.analyzer.ProjectAnalyzer"/><Method name="analyzeSpringEvents"/><Bug pattern="DLS_DEAD_LOCAL_STORE"/></Match>
+  <Match><Class name="com.extractor.inference.ClusteringAlgorithm"/><Bug pattern="DLS_DEAD_LOCAL_STORE,UC_USELESS_CONDITION,WMI_WRONG_MAP_ITERATOR"/></Match>
+  <Match><Class name="com.extractor.inference.MicroserviceRecommendationEngine"/><Method name="aggregatePackageDependencies"/><Bug pattern="WMI_WRONG_MAP_ITERATOR"/></Match>
+  <Match><Class name="com.extractor.model.ApiSchema"/><Bug pattern="URF_UNREAD_FIELD"/></Match>
+  <Match><Class name="com.extractor.service.AnalysisService"/><Method name="getJarDirectory"/><Bug pattern="DCN_NULLPOINTER_EXCEPTION"/></Match>
+  <Match><Class name="com.extractor.utils.DependencyResolver"/><Method name="parseMavenPom"/><Bug pattern="SBSC_USE_STRINGBUFFER_CONCATENATION"/></Match>
+</FindBugsFilter>

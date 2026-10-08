@@ -76,7 +76,7 @@ Inline subset of the entrypoints file. Use `output_entrypoints.json` as the cano
 | Field | Notes |
 |-------|-------|
 | `source` | `spoon` (Java path) \| `dotnet` (Roslyn bridge). Use this to detect language, NOT a `language` key. |
-| `collected_at` | ISO-8601 UTC timestamp |
+| `collected_at` | ISO-8601 UTC timestamp. **Opt-in**: only present when `STATIC_INFERENCE_COLLECTED_AT=true`; omitted by default so output is deterministic |
 | `microservice_candidates` | map (often empty in graph; populated when the architecture stage runs inline) |
 | `dependency_accuracy` | float\|null — populated when ground truth is supplied (CLI has no flag for it; usually null) |
 | `decomposition_accuracy` | float\|null — same as above |

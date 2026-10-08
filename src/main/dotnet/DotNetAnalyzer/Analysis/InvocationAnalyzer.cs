@@ -1,7 +1,7 @@
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using DotNetAnalyzer.Model;
+using CSharpSyntax = Microsoft.CodeAnalysis.CSharp.Syntax;
+using VbSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace DotNetAnalyzer.Analysis;
 
@@ -14,7 +14,7 @@ public class InvocationAnalyzer
 
         foreach (var syntaxTree in compilation.SyntaxTrees)
         {
-            SemanticModel? semanticModel = null;
+            SemanticModel? semanticModel;
             try
             {
                 semanticModel = compilation.GetSemanticModel(syntaxTree);
@@ -29,29 +29,35 @@ public class InvocationAnalyzer
 
             var root = syntaxTree.GetRoot();
 
-            // Pass 2a: Method call dependencies
-            AnalyzeMethodCalls(root, semanticModel, knownComponents, edgeMap);
-
-            // Pass 2b: Constructor injection dependencies
-            AnalyzeConstructorInjection(root, semanticModel, knownComponents, edgeMap);
+            if (compilation.Language == LanguageNames.CSharp)
+            {
+                AnalyzeMethodCallsCSharp(root, semanticModel, knownComponents, edgeMap);
+                AnalyzeConstructorInjectionCSharp(root, semanticModel, knownComponents, edgeMap);
+            }
+            else if (compilation.Language == LanguageNames.VisualBasic)
+            {
+                AnalyzeMethodCallsVb(root, semanticModel, knownComponents, edgeMap);
+                AnalyzeConstructorInjectionVb(root, semanticModel, knownComponents, edgeMap);
+            }
         }
 
         return edgeMap.Values.ToList();
     }
 
-    private static void AnalyzeMethodCalls(
+    // ─── C# walkers (preserved verbatim) ──────────────────────────────────────
+
+    private static void AnalyzeMethodCallsCSharp(
         SyntaxNode root,
         SemanticModel semanticModel,
         HashSet<string> knownComponents,
         Dictionary<string, Edge> edgeMap)
     {
-        var invocations = root.DescendantNodes().OfType<InvocationExpressionSyntax>();
+        var invocations = root.DescendantNodes().OfType<CSharpSyntax.InvocationExpressionSyntax>();
 
         foreach (var invocation in invocations)
         {
-            // Find the caller type (the enclosing class/interface)
             var callerType = invocation.Ancestors()
-                .OfType<TypeDeclarationSyntax>()
+                .OfType<CSharpSyntax.TypeDeclarationSyntax>()
                 .FirstOrDefault();
 
             if (callerType == null)
@@ -65,39 +71,22 @@ public class InvocationAnalyzer
             if (!knownComponents.Contains(callerId))
                 continue;
 
-            // Resolve the invoked method
-            var symbolInfo = semanticModel.GetSymbolInfo(invocation);
-            var methodSymbol = symbolInfo.Symbol as IMethodSymbol
-                ?? symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault();
-
-            if (methodSymbol?.ContainingType == null)
-                continue;
-
-            var calleeId = GetFullyQualifiedName(methodSymbol.ContainingType);
-
-            if (!knownComponents.Contains(calleeId))
-                continue;
-
-            // Skip self-calls
-            if (callerId == calleeId)
-                continue;
-
-            AddOrIncrementEdge(edgeMap, callerId, calleeId, "call");
+            ResolveCallAndAddEdge(invocation, semanticModel, callerId, knownComponents, edgeMap);
         }
     }
 
-    private static void AnalyzeConstructorInjection(
+    private static void AnalyzeConstructorInjectionCSharp(
         SyntaxNode root,
         SemanticModel semanticModel,
         HashSet<string> knownComponents,
         Dictionary<string, Edge> edgeMap)
     {
-        var constructors = root.DescendantNodes().OfType<ConstructorDeclarationSyntax>();
+        var constructors = root.DescendantNodes().OfType<CSharpSyntax.ConstructorDeclarationSyntax>();
 
         foreach (var constructor in constructors)
         {
             var containingType = constructor.Ancestors()
-                .OfType<TypeDeclarationSyntax>()
+                .OfType<CSharpSyntax.TypeDeclarationSyntax>()
                 .FirstOrDefault();
 
             if (containingType == null)
@@ -116,21 +105,131 @@ public class InvocationAnalyzer
                 if (parameter.Type == null)
                     continue;
 
-                var typeInfo = semanticModel.GetTypeInfo(parameter.Type);
-                var paramType = typeInfo.Type as INamedTypeSymbol;
-                if (paramType == null)
-                    continue;
-
-                var paramTypeId = GetFullyQualifiedName(paramType);
-                if (!knownComponents.Contains(paramTypeId))
-                    continue;
-
-                if (containerId == paramTypeId)
-                    continue;
-
-                AddOrIncrementEdge(edgeMap, containerId, paramTypeId, "injection");
+                var paramType = semanticModel.GetTypeInfo(parameter.Type).Type as INamedTypeSymbol;
+                AddInjectionIfKnown(paramType, containerId, knownComponents, edgeMap);
             }
         }
+    }
+
+    // ─── VB walkers (parallel structure, VB syntax nodes) ─────────────────────
+
+    private static void AnalyzeMethodCallsVb(
+        SyntaxNode root,
+        SemanticModel semanticModel,
+        HashSet<string> knownComponents,
+        Dictionary<string, Edge> edgeMap)
+    {
+        var invocations = root.DescendantNodes().OfType<VbSyntax.InvocationExpressionSyntax>();
+
+        foreach (var invocation in invocations)
+        {
+            // VB types are declared with ClassBlock, ModuleBlock, StructureBlock,
+            // InterfaceBlock — all derive from TypeBlockSyntax in the VB API.
+            var callerType = invocation.Ancestors()
+                .OfType<VbSyntax.TypeBlockSyntax>()
+                .FirstOrDefault();
+
+            if (callerType == null)
+                continue;
+
+            var callerSymbol = semanticModel.GetDeclaredSymbol(callerType) as INamedTypeSymbol;
+            if (callerSymbol == null)
+                continue;
+
+            var callerId = GetFullyQualifiedName(callerSymbol);
+            if (!knownComponents.Contains(callerId))
+                continue;
+
+            ResolveCallAndAddEdge(invocation, semanticModel, callerId, knownComponents, edgeMap);
+        }
+    }
+
+    private static void AnalyzeConstructorInjectionVb(
+        SyntaxNode root,
+        SemanticModel semanticModel,
+        HashSet<string> knownComponents,
+        Dictionary<string, Edge> edgeMap)
+    {
+        // VB declares constructors as `Sub New(...)` inside a ConstructorBlockSyntax.
+        var constructors = root.DescendantNodes().OfType<VbSyntax.ConstructorBlockSyntax>();
+
+        foreach (var constructor in constructors)
+        {
+            var containingType = constructor.Ancestors()
+                .OfType<VbSyntax.TypeBlockSyntax>()
+                .FirstOrDefault();
+
+            if (containingType == null)
+                continue;
+
+            var containingSymbol = semanticModel.GetDeclaredSymbol(containingType) as INamedTypeSymbol;
+            if (containingSymbol == null)
+                continue;
+
+            var containerId = GetFullyQualifiedName(containingSymbol);
+            if (!knownComponents.Contains(containerId))
+                continue;
+
+            // Sub New parameters live on the ConstructorBlock's SubNewStatement.
+            var parameterList = constructor.SubNewStatement?.ParameterList;
+            if (parameterList == null)
+                continue;
+
+            foreach (var parameter in parameterList.Parameters)
+            {
+                var typeSyntax = parameter.AsClause?.Type;
+                if (typeSyntax == null)
+                    continue;
+
+                var paramType = semanticModel.GetTypeInfo(typeSyntax).Type as INamedTypeSymbol;
+                AddInjectionIfKnown(paramType, containerId, knownComponents, edgeMap);
+            }
+        }
+    }
+
+    // ─── Shared symbol-level logic ───────────────────────────────────────────
+
+    private static void ResolveCallAndAddEdge(
+        SyntaxNode invocation,
+        SemanticModel semanticModel,
+        string callerId,
+        HashSet<string> knownComponents,
+        Dictionary<string, Edge> edgeMap)
+    {
+        var symbolInfo = semanticModel.GetSymbolInfo(invocation);
+        var methodSymbol = symbolInfo.Symbol as IMethodSymbol
+            ?? symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault();
+
+        if (methodSymbol?.ContainingType == null)
+            return;
+
+        var calleeId = GetFullyQualifiedName(methodSymbol.ContainingType);
+        if (!knownComponents.Contains(calleeId))
+            return;
+
+        if (callerId == calleeId)
+            return;
+
+        AddOrIncrementEdge(edgeMap, callerId, calleeId, "call");
+    }
+
+    private static void AddInjectionIfKnown(
+        INamedTypeSymbol? paramType,
+        string containerId,
+        HashSet<string> knownComponents,
+        Dictionary<string, Edge> edgeMap)
+    {
+        if (paramType == null)
+            return;
+
+        var paramTypeId = GetFullyQualifiedName(paramType);
+        if (!knownComponents.Contains(paramTypeId))
+            return;
+
+        if (containerId == paramTypeId)
+            return;
+
+        AddOrIncrementEdge(edgeMap, containerId, paramTypeId, "injection");
     }
 
     private static void AddOrIncrementEdge(

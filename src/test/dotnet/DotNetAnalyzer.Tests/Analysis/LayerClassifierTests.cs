@@ -31,10 +31,12 @@ public class LayerClassifierTests
         components[0].Layer.Should().Be("Controlador");
     }
 
-    [Fact]
-    public void Classify_ControllerSuffix_AssignsControladorLayer()
+    [Fact(DisplayName = "TS-033: *Controller suffix WITHOUT HTTP markers → Negocio (FR-021)")]
+    public void Classify_ControllerSuffixWithoutHttpMarkers_AssignsNegocioLayer()
     {
-        // Arrange
+        // Arrange — VB legacy facades and any C# class named "*Controller"
+        // without [ApiController]/[Route]/[Http*] and without ControllerBase
+        // inheritance must NOT be mistaken for HTTP controllers.
         var components = new List<Component>
         {
             new Component
@@ -48,6 +50,64 @@ public class LayerClassifierTests
         _classifier.Classify(components);
 
         // Assert
+        components[0].Layer.Should().Be("Negocio");
+    }
+
+    [Fact(DisplayName = "TS-035: *Controller extending ControllerBase → Controlador (FR-020)")]
+    public void Classify_ControllerExtendingControllerBase_AssignsControladorLayer()
+    {
+        var components = new List<Component>
+        {
+            new Component
+            {
+                Id = "Sample.UserController",
+                Annotations = new List<string>(),
+                Extends = "Microsoft.AspNetCore.Mvc.ControllerBase",
+            }
+        };
+
+        _classifier.Classify(components);
+
+        components[0].Layer.Should().Be("Controlador");
+    }
+
+    [Fact(DisplayName = "TS-035: *Controller extending Controller (MVC) → Controlador (FR-020)")]
+    public void Classify_ControllerExtendingController_AssignsControladorLayer()
+    {
+        var components = new List<Component>
+        {
+            new Component
+            {
+                Id = "Sample.HomeController",
+                Annotations = new List<string>(),
+                Extends = "Controller",
+            }
+        };
+
+        _classifier.Classify(components);
+
+        components[0].Layer.Should().Be("Controlador");
+    }
+
+    [Theory(DisplayName = "TS-034: HTTP attribute marker → Controlador (FR-020)")]
+    [InlineData("HttpGet")]
+    [InlineData("HttpPost")]
+    [InlineData("HttpPut")]
+    [InlineData("HttpDelete")]
+    [InlineData("HttpPatch")]
+    public void Classify_HttpVerbAttribute_AssignsControladorLayer(string annotation)
+    {
+        var components = new List<Component>
+        {
+            new Component
+            {
+                Id = "Sample.OrderController",
+                Annotations = new List<string> { annotation },
+            }
+        };
+
+        _classifier.Classify(components);
+
         components[0].Layer.Should().Be("Controlador");
     }
 

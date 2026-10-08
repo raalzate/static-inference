@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -88,7 +89,7 @@ public class MicroserviceInferenceMain {
     }
 
     private static void saveToFile(String content, String filePath) throws IOException {
-        try (FileWriter writer = new FileWriter(filePath)) {
+        try (FileWriter writer = new FileWriter(filePath, StandardCharsets.UTF_8)) {
             writer.write(content);
         }
     }

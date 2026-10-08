@@ -118,4 +118,48 @@ class DotNetToolLocatorTest {
             }
         }
     }
+
+    // --- Windows executable [BUG-003] ---
+
+    /**
+     * [BUG-003] On Windows the analyzer ships as dotnet-analyzer.exe; the sibling
+     * lookup must find it.
+     */
+    @Test
+    void locate_onWindowsWithExeInSiblingDir_returnsExe() throws IOException {
+        Path executable = tempDir.resolve("dotnet-analyzer.exe");
+        Files.createFile(executable);
+
+        DotNetToolLocator locator = new DotNetToolLocator(tempDir, true);
+
+        assertEquals(executable.toAbsolutePath(), locator.locate().toAbsolutePath());
+    }
+
+    /**
+     * [BUG-003] DOTNET_ANALYZER_PATH pointing to a directory containing the .exe
+     * must resolve on Windows.
+     */
+    @Test
+    void locate_onWindowsWithExeViaSystemProperty_returnsExe() throws IOException {
+        Path customDir = tempDir.resolve("custom-win");
+        Files.createDirectories(customDir);
+        Path executable = customDir.resolve("dotnet-analyzer.exe");
+        Files.createFile(executable);
+        Path emptyBase = tempDir.resolve("empty-win");
+        Files.createDirectories(emptyBase);
+
+        String previousValue = System.getProperty("DOTNET_ANALYZER_PATH");
+        try {
+            System.setProperty("DOTNET_ANALYZER_PATH", customDir.toString());
+            DotNetToolLocator locator = new DotNetToolLocator(emptyBase, true);
+
+            assertEquals(executable.toAbsolutePath(), locator.locate().toAbsolutePath());
+        } finally {
+            if (previousValue != null) {
+                System.setProperty("DOTNET_ANALYZER_PATH", previousValue);
+            } else {
+                System.clearProperty("DOTNET_ANALYZER_PATH");
+            }
+        }
+    }
 }

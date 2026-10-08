@@ -45,8 +45,18 @@ public class Meta
     [JsonPropertyName("source")]
     public string Source { get; set; } = "roslyn";
 
+    /// <summary>Environment variable that opts in to emitting collected_at.</summary>
+    public const string CollectedAtOptIn = "STATIC_INFERENCE_COLLECTED_AT";
+
+    /// <summary>Null unless opted in: wall-clock timestamps break deterministic output (BUG-001).</summary>
     [JsonPropertyName("collected_at")]
-    public string CollectedAt { get; set; } = string.Empty;
+    public string? CollectedAt { get; set; }
+
+    /// <summary>Current UTC timestamp when opted in via <see cref="CollectedAtOptIn"/>, otherwise null.</summary>
+    public static string? CurrentCollectedAt() =>
+        bool.TryParse(Environment.GetEnvironmentVariable(CollectedAtOptIn), out var enabled) && enabled
+            ? DateTime.UtcNow.ToString("o")
+            : null;
 
     [JsonPropertyName("microservice_candidates")]
     public Dictionary<string, string> MicroserviceCandidates { get; set; }

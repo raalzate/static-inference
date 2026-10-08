@@ -1,5 +1,6 @@
 package com.extractor.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
@@ -96,10 +97,14 @@ public class DependencyGraph {
      * Metadata for the dependency graph
      */
     public static class Meta {
+        /** System property / environment variable enabling {@code collected_at}. */
+        public static final String COLLECTED_AT_OPT_IN = "STATIC_INFERENCE_COLLECTED_AT";
+
         @JsonProperty("source")
         private String source = "spoon";
 
         @JsonProperty("collected_at")
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         private String collectedAt;
 
         @JsonProperty("microservice_candidates")
@@ -112,8 +117,17 @@ public class DependencyGraph {
         private Map<String, Object> decompositionAccuracy;
 
         public Meta() {
-            this.collectedAt = Instant.now().toString();
+            // Opt-in only: wall-clock timestamps break deterministic output (principle IV, BUG-001)
+            this.collectedAt = collectedAtOptIn() ? Instant.now().toString() : null;
             this.microserviceCandidates = new HashMap<>();
+        }
+
+        static boolean collectedAtOptIn() {
+            String value = System.getProperty(COLLECTED_AT_OPT_IN);
+            if (value == null) {
+                value = System.getenv(COLLECTED_AT_OPT_IN);
+            }
+            return Boolean.parseBoolean(value);
         }
 
         public String getSource() {

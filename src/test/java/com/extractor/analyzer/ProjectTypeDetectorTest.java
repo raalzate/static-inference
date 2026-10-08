@@ -67,6 +67,16 @@ class ProjectTypeDetectorTest {
         assertEquals(ProjectType.DOTNET, result);
     }
 
+    @Test
+    void detect_withVbprojFile_returnsDotnet() throws IOException {
+        Files.writeString(tempDir.resolve("MyApp.vbproj"),
+                "<Project ToolsVersion=\"4.0\"><PropertyGroup><TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion></PropertyGroup></Project>");
+
+        ProjectType result = detector.detect(tempDir);
+
+        assertEquals(ProjectType.DOTNET, result);
+    }
+
     // --- Ambiguous detection [TS-013] ---
 
     @Test

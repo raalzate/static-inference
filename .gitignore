@@ -58,6 +58,11 @@ output.json
 output_architecture.json
 output_layers.json
 output_web.json
+output_entrypoints.json
+.si-output/
+
+# .NET build artifacts
+obj/
 
 # Python (if using visualization scripts)
 __pycache__/
@@ -103,3 +108,4 @@ AGENTS.md
 CLAUDE.md
 tessl.json
 .agents/
+.serena/

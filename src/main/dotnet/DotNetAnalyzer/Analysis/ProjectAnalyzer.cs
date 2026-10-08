@@ -1,6 +1,8 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
+using DotNetAnalyzer.Analysis.Common;
+using DotNetAnalyzer.Analysis.Vb;
 using DotNetAnalyzer.Model;
 
 namespace DotNetAnalyzer.Analysis;
@@ -39,10 +41,10 @@ public class ProjectAnalyzer
         {
             try
             {
-                var fallbackCompilation = LoadCompilationViaAdhoc(projectPath);
-                if (fallbackCompilation != null)
+                var fallback = LoadCompilationsViaAdhoc(projectPath);
+                if (fallback.Count > 0)
                 {
-                    compilations.Add(fallbackCompilation);
+                    compilations.AddRange(fallback);
                     usedFallback = true;
                     Console.Error.WriteLine("[WARN] Using AdhocWorkspace fallback — semantic analysis may have reduced accuracy.");
                 }
@@ -112,19 +114,48 @@ public class ProjectAnalyzer
             }
         }
 
+        // Determinism (Constitución IV, SC-008): final ordering pass over every
+        // list serialized into the JSON output. Done once, here, after all passes.
+        var orderedComponents = allComponents
+            .OrderBy(c => c.Id, StringComparer.Ordinal)
+            .ToList();
+
+        foreach (var c in orderedComponents)
+        {
+            c.Files = c.Files.OrderBy(f => f, StringComparer.Ordinal).ToList();
+            c.TablesUsed = c.TablesUsed.Distinct(StringComparer.Ordinal).OrderBy(t => t, StringComparer.Ordinal).ToList();
+            c.SecretsReferences = c.SecretsReferences.Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal).ToList();
+            c.ExternalDependencies = c.ExternalDependencies.Distinct(StringComparer.Ordinal).OrderBy(d => d, StringComparer.Ordinal).ToList();
+            c.Annotations = c.Annotations.Distinct(StringComparer.Ordinal).OrderBy(a => a, StringComparer.Ordinal).ToList();
+            c.Implements = c.Implements.Distinct(StringComparer.Ordinal).OrderBy(i => i, StringComparer.Ordinal).ToList();
+            c.CallsIn = c.CallsIn.Distinct(StringComparer.Ordinal).OrderBy(x => x, StringComparer.Ordinal).ToList();
+            c.CallsOut = c.CallsOut.Distinct(StringComparer.Ordinal).OrderBy(x => x, StringComparer.Ordinal).ToList();
+        }
+
+        var orderedEdges = allEdges
+            .OrderBy(e => e.From, StringComparer.Ordinal)
+            .ThenBy(e => e.To, StringComparer.Ordinal)
+            .ThenBy(e => e.Type, StringComparer.Ordinal)
+            .ToList();
+
+        var orderedEndpoints = allEndpoints
+            .OrderBy(e => e.Method, StringComparer.Ordinal)
+            .ThenBy(e => e.Path, StringComparer.Ordinal)
+            .ToList();
+
         // Assemble the dependency graph
         var graph = new DependencyGraph
         {
-            Components = allComponents,
-            Edges = allEdges,
+            Components = orderedComponents,
+            Edges = orderedEdges,
             ApiContracts = new ApiContracts
             {
-                Endpoints = allEndpoints,
+                Endpoints = orderedEndpoints,
             },
             Meta = new Meta
             {
                 Source = usedFallback ? "roslyn-fallback" : "roslyn",
-                CollectedAt = DateTime.UtcNow.ToString("o"),
+                CollectedAt = Meta.CurrentCollectedAt(),
             },
         };
 
@@ -146,59 +177,160 @@ public class ProjectAnalyzer
             }
         };
 
-        // Resolve directory → find .sln or .csproj automatically
-        string resolvedPath = projectPath;
+        // Resolve directory → find .sln, .csproj or .vbproj automatically.
+        // .sln has highest precedence; otherwise we collect all .csproj AND .vbproj
+        // present in the directory (so a mixed directory is processed end to end).
+        var resolvedPaths = new List<string>();
         if (Directory.Exists(projectPath))
         {
             var slnFiles = Directory.GetFiles(projectPath, "*.sln");
-            var csprojFiles = Directory.GetFiles(projectPath, "*.csproj");
+            // Stable order for determinism (Constitución IV).
+            Array.Sort(slnFiles, StringComparer.Ordinal);
 
             if (slnFiles.Length > 0)
-                resolvedPath = slnFiles[0];
-            else if (csprojFiles.Length > 0)
-                resolvedPath = csprojFiles[0];
-            else
-                throw new ArgumentException($"No .sln or .csproj found in directory: {projectPath}");
-        }
-
-        if (resolvedPath.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))
-        {
-            var solution = await workspace.OpenSolutionAsync(resolvedPath);
-            foreach (var project in solution.Projects)
             {
-                try
-                {
-                    var compilation = await project.GetCompilationAsync();
-                    if (compilation != null)
-                        compilations.Add(compilation);
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine($"[WARN] Could not compile project '{project.Name}': {ex.Message}");
-                }
+                resolvedPaths.Add(slnFiles[0]);
             }
-        }
-        else if (resolvedPath.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
-        {
-            var project = await workspace.OpenProjectAsync(resolvedPath);
-            var compilation = await project.GetCompilationAsync();
-            if (compilation != null)
-                compilations.Add(compilation);
+            else
+            {
+                var csprojFiles = Directory.GetFiles(projectPath, "*.csproj");
+                var vbprojFiles = Directory.GetFiles(projectPath, "*.vbproj");
+                Array.Sort(csprojFiles, StringComparer.Ordinal);
+                Array.Sort(vbprojFiles, StringComparer.Ordinal);
+
+                resolvedPaths.AddRange(csprojFiles);
+                resolvedPaths.AddRange(vbprojFiles);
+
+                if (resolvedPaths.Count == 0)
+                    throw new ArgumentException(
+                        $"No .sln, .csproj or .vbproj found in directory: {projectPath}");
+            }
         }
         else
         {
-            throw new ArgumentException($"Unsupported project file type: {resolvedPath}. Expected .sln or .csproj");
+            resolvedPaths.Add(projectPath);
+        }
+
+        if (resolvedPaths.Count == 1
+            && resolvedPaths[0].EndsWith(".vbproj", StringComparison.OrdinalIgnoreCase))
+        {
+            VbProjectLoader.WarnIfNonWindows();
+        }
+
+        foreach (var resolvedPath in resolvedPaths)
+        {
+            if (resolvedPath.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))
+            {
+                var solution = await workspace.OpenSolutionAsync(resolvedPath);
+                var orderedProjects = solution.Projects
+                    .OrderBy(p => p.FilePath ?? p.Name, StringComparer.Ordinal)
+                    .ToList();
+
+                foreach (var project in orderedProjects)
+                {
+                    try
+                    {
+                        var compilation = await project.GetCompilationAsync();
+                        if (compilation != null)
+                        {
+                            compilations.Add(VbProjectLoader.StripAutogenerated(compilation));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine($"[WARN] Could not compile project '{project.Name}': {ex.Message}");
+                    }
+                }
+            }
+            else if (resolvedPath.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
+            {
+                var project = await workspace.OpenProjectAsync(resolvedPath);
+                var compilation = await project.GetCompilationAsync();
+                if (compilation != null)
+                {
+                    compilations.Add(VbProjectLoader.StripAutogenerated(compilation));
+                }
+            }
+            else if (resolvedPath.EndsWith(".vbproj", StringComparison.OrdinalIgnoreCase))
+            {
+                Compilation? compilation = null;
+                try
+                {
+                    var project = await workspace.OpenProjectAsync(resolvedPath);
+                    compilation = await project.GetCompilationAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"[WARN] MSBuildWorkspace failed for '{resolvedPath}': {ex.Message}");
+                }
+
+                // Legacy .vbproj on systems without VS Build Tools resolves but yields
+                // an empty compilation. Detect that and fall back to Adhoc per-project
+                // so we still emit a usable graph for this project.
+                if (compilation == null || !compilation.SyntaxTrees.Any())
+                {
+                    var adhoc = VbProjectLoader.LoadAdhoc(resolvedPath);
+                    if (adhoc != null)
+                    {
+                        Console.Error.WriteLine(
+                            $"[WARN] Falling back to Adhoc VB compilation for '{resolvedPath}' (MSBuild returned no syntax trees).");
+                        compilations.Add(adhoc);
+                    }
+                }
+                else
+                {
+                    compilations.Add(VbProjectLoader.StripAutogenerated(compilation));
+                }
+            }
+            else
+            {
+                throw new ArgumentException(
+                    $"Unsupported project file type: {resolvedPath}. Expected .sln, .csproj or .vbproj");
+            }
         }
 
         return compilations;
     }
 
-    private static Compilation? LoadCompilationViaAdhoc(string projectPath)
+    private static List<Compilation> LoadCompilationsViaAdhoc(string projectPath)
     {
+        var compilations = new List<Compilation>();
+
+        // Decide language by extension (file) or by detecting .vb / .cs in the dir.
+        bool isVbProj = File.Exists(projectPath)
+                        && projectPath.EndsWith(".vbproj", StringComparison.OrdinalIgnoreCase);
+        bool isCsProj = File.Exists(projectPath)
+                        && projectPath.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase);
+
         var directory = File.Exists(projectPath)
             ? Path.GetDirectoryName(projectPath) ?? "."
             : projectPath;
 
+        if (isVbProj)
+        {
+            var vbCompilation = VbProjectLoader.LoadAdhoc(projectPath);
+            if (vbCompilation != null)
+                compilations.Add(vbCompilation);
+            return compilations;
+        }
+
+        if (!isCsProj)
+        {
+            // Directory or .sln-flavored fallback: glob both languages.
+            var vbCompilation = VbProjectLoader.LoadAdhoc(directory);
+            if (vbCompilation != null)
+                compilations.Add(vbCompilation);
+        }
+
+        var csCompilation = LoadCSharpAdhoc(directory);
+        if (csCompilation != null)
+            compilations.Add(csCompilation);
+
+        return compilations;
+    }
+
+    private static Compilation? LoadCSharpAdhoc(string directory)
+    {
         var csFiles = Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories);
 
         if (csFiles.Length == 0)
@@ -206,6 +338,8 @@ public class ProjectAnalyzer
             Console.Error.WriteLine("[WARN] No .cs files found in directory.");
             return null;
         }
+
+        Array.Sort(csFiles, StringComparer.Ordinal);
 
         var syntaxTrees = new List<SyntaxTree>();
         foreach (var file in csFiles)
@@ -306,7 +440,7 @@ public class ProjectAnalyzer
             Meta = new Meta
             {
                 Source = "roslyn",
-                CollectedAt = DateTime.UtcNow.ToString("o"),
+                CollectedAt = Meta.CurrentCollectedAt(),
             },
         };
     }
