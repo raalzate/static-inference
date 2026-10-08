@@ -117,3 +117,22 @@
 **Root Cause**: `DotNetToolLocator` read `System.getenv` directly, so tests inherited the developer environment.
 
 **Fix Reference**: Package-private constructor with injectable environment lookup; locator tests use an empty environment; test `locate_withEmptyInjectedEnvironment_throwsEvenIfProcessEnvIsSet`.
+
+---
+
+## BUG-007
+
+**Reported**: 2026-10-08
+**Severity**: medium
+**Status**: investigating (not reproduced)
+**GitHub Issue**: _(none)_
+
+**Description**: Intermittent failure of TS-017 `SchemaVersionContractTest.twoRunsAreByteIdentical[dotnet-ecommerce]` (output.json mismatch at byte 782) during full `mvn verify`
+
+**Reproduction Steps**:
+1. Run full `mvn -B -o verify` repeatedly (observed 2 failures in ~5 full runs, one while `dotnet test` ran concurrently)
+2. Not reproduced: 8 sequential + 12 concurrent raw analyzer runs, 6 CLI runs, 3 fresh-copy pairs, 12 targeted test loops, 2 full verifies — all byte-identical
+
+**Root Cause**: _(unknown — suspected environment contention in MSBuild design-time load; capture diff with `-Djunit.jupiter.tempdir.cleanup.mode.default=NEVER` on next occurrence)_
+
+**Fix Reference**: _(empty until implementation)_
