@@ -1,0 +1,15 @@
+{
+  "reconstruction": {
+    "reconstructed_at": "2026-10-07",
+    "reason": "specs/ is gitignored; original feature directory was lost",
+    "sources": [
+      "git log main..HEAD (1e5681b..3627dfb)",
+      "test DisplayName TS-XXX identifiers",
+      "PLAN-INTEGRACION-DEV-ARCH.md §1.1 item 8, Fase 0, Fase 4 (feature 009)"
+    ],
+    "testify_note": "Original .feature files and assertion hash lost; regenerate with /iikit-04-testify if formal TS-XXX traceability is required"
+  },
+  "status": "complete",
+  "closed_scope": "VB: carga (VbProjectLoader + Adhoc fallback) + filtro autogenerados + tipos + invocaciones + DI + messaging + LOC + layer",
+  "deferred_to": "009"
+}

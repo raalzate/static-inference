@@ -1,0 +1,8 @@
+{
+  "testify": {
+    "assertion_hash": "20c54556cd07e16c0605d5f1453ecd688bdc0b933959823acf8f4317225614ce",
+    "generated_at": "2026-10-08T00:11:55Z",
+    "features_dir": "specs/002-dotnet-roslyn-analyzer/tests/features",
+    "file_count": 10
+  }
+}

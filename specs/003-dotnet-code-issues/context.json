@@ -1,0 +1,8 @@
+{
+  "testify": {
+    "assertion_hash": "bb17de48029c8850cfa8b67bf131c5bdf7903f0b47ab26fd002c1e140f916e4e",
+    "generated_at": "2026-04-07T19:49:47Z",
+    "features_dir": "specs/003-dotnet-code-issues/tests/features",
+    "file_count": 3
+  }
+}

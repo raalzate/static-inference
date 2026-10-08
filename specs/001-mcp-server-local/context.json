@@ -1,0 +1,8 @@
+{
+  "testify": {
+    "assertion_hash": "087be7b2b076e77daaf2040580d0c1ce403848b166f1377e701c7a8dece3179a",
+    "generated_at": "2026-03-25T13:35:53Z",
+    "features_dir": "specs/001-mcp-server-local/tests/features",
+    "file_count": 5
+  }
+}
