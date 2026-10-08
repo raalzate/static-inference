@@ -42,4 +42,15 @@ public class MetaDeterminismTests
             Environment.SetEnvironmentVariable(Meta.CollectedAtOptIn, null);
         }
     }
+
+    [Fact(DisplayName = "TS-017: schema_version emitted by default, right after source")]
+    [Trait("Category", "SchemaContract")]
+    public void SchemaVersion_ByDefault_IsEmittedAfterSource()
+    {
+        Environment.SetEnvironmentVariable(Meta.CollectedAtOptIn, null);
+
+        var json = JsonSerializer.Serialize(new Meta { CollectedAt = Meta.CurrentCollectedAt() }, Options);
+
+        json.Should().StartWith("{\"source\":\"roslyn\",\"schema_version\":\"1.0.0\"");
+    }
 }

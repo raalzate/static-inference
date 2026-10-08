@@ -54,18 +54,18 @@ description: "Task list for 005-json-schema-contract"
 
 ### Tests for User Story 2 (escribir primero, deben FALLAR)
 
-- [ ] T012 [P] [US2] Step definitions de versión en `src/test/java/com/extractor/bdd/SchemaVersionSteps.java` y test JUnit `src/test/java/com/extractor/schema/SchemaVersionContractTest.java` (`@Tag("schema-contract")`), incluida validación de `schema_version` ausente/mal formada y de `collected_at` [TS-013, TS-014, TS-016, TS-017, TS-018, TS-019]
-- [ ] T013 [P] [US2] Test de no regresión contra línea base en `src/test/java/com/extractor/schema/BaselineParityTest.java` (elimina `meta.schema_version` y los `meta` nuevos y compara byte a byte) [TS-020]
-- [ ] T014 [P] [US2] Extender `src/test/java/com/extractor/analyzer/DotNetBridgeAnalyzerTest.java` con versión ausente/distinta → warning con ambas versiones y salida con `1.0.0` [TS-021]
-- [ ] T015 [P] [US2] Test xUnit `src/test/dotnet/DotNetAnalyzer.Tests/Model/SchemaVersionTests.cs` (`[Trait("Category","SchemaContract")]`): grafo crudo de `SampleProject`, `CodeIssuesSample` y `VbLegacy` contiene `schema_version` justo tras `source`; extender `Model/MetaDeterminismTests.cs` [TS-015, TS-017]
+- [x] T012 [P] [US2] Step definitions de versión en `src/test/java/com/extractor/bdd/SchemaVersionSteps.java` y test JUnit `src/test/java/com/extractor/schema/SchemaVersionContractTest.java` (`@Tag("schema-contract")`), incluida validación de `schema_version` ausente/mal formada y de `collected_at` [TS-013, TS-014, TS-016, TS-017, TS-018, TS-019]
+- [x] T013 [P] [US2] Test de no regresión contra línea base en `src/test/java/com/extractor/schema/BaselineParityTest.java` (elimina `meta.schema_version` y los `meta` nuevos y compara byte a byte) [TS-020]
+- [x] T014 [P] [US2] Extender `src/test/java/com/extractor/analyzer/DotNetBridgeAnalyzerTest.java` con versión ausente/distinta → warning con ambas versiones y salida con `1.0.0` [TS-021]
+- [x] T015 [P] [US2] Test xUnit `src/test/dotnet/DotNetAnalyzer.Tests/Model/SchemaVersionTests.cs` (`[Trait("Category","SchemaContract")]`): grafo crudo de `SampleProject`, `CodeIssuesSample` y `VbLegacy` contiene `schema_version` justo tras `source`; extender `Model/MetaDeterminismTests.cs` [TS-015, TS-017]
 
 ### Implementation for User Story 2
 
-- [ ] T016 [P] [US2] Crear `src/main/java/com/extractor/model/SchemaVersion.java` (`CURRENT = "1.0.0"`) y `src/main/java/com/extractor/model/DocumentMeta.java` (`schema_version`)
-- [ ] T017 [US2] Añadir `schema_version` a `DependencyGraph.Meta` tras `source` (`@JsonPropertyOrder`) y `meta` (primer campo) a `DependencyGraph.ApiContracts` en `src/main/java/com/extractor/model/DependencyGraph.java` (depende de T016)
-- [ ] T018 [US2] Añadir `meta` (primer campo) a `src/main/java/com/extractor/inference/ConsolidatedArchitecture.java` (depende de T016)
-- [ ] T019 [US2] Propagar/verificar versión en `src/main/java/com/extractor/analyzer/DotNetBridgeAnalyzer.java`: warning `dotnet-analyzer schema_version X != engine Y` en `AnalysisResult.warnings` y fijar `SchemaVersion.CURRENT` (depende de T017) [TS-021]
-- [ ] T020 [P] [US2] Crear `src/main/dotnet/DotNetAnalyzer/Model/SchemaVersion.cs` (`Current = "1.0.0"`) y añadir `Meta.SchemaVersion` con `[JsonPropertyName("schema_version")]` y `[JsonPropertyOrder]` tras `source` en `src/main/dotnet/DotNetAnalyzer/Model/DependencyGraph.cs`
+- [x] T016 [P] [US2] Crear `src/main/java/com/extractor/model/SchemaVersion.java` (`CURRENT = "1.0.0"`) y `src/main/java/com/extractor/model/DocumentMeta.java` (`schema_version`)
+- [x] T017 [US2] Añadir `schema_version` a `DependencyGraph.Meta` tras `source` (`@JsonPropertyOrder`) y `meta` (primer campo) a `DependencyGraph.ApiContracts` en `src/main/java/com/extractor/model/DependencyGraph.java` (depende de T016)
+- [x] T018 [US2] Añadir `meta` (primer campo) a `src/main/java/com/extractor/inference/ConsolidatedArchitecture.java` (depende de T016)
+- [x] T019 [US2] Propagar/verificar versión en `src/main/java/com/extractor/analyzer/DotNetBridgeAnalyzer.java`: warning `dotnet-analyzer schema_version X != engine Y` en `AnalysisResult.warnings` y fijar `SchemaVersion.CURRENT` (depende de T017) [TS-021] — _bridge exposes warnings via LanguageAnalyzer#getWarnings (default empty); AnalysisService merges them into AnalysisResult.warnings_
+- [x] T020 [P] [US2] Crear `src/main/dotnet/DotNetAnalyzer/Model/SchemaVersion.cs` (`Current = "1.0.0"`) y añadir `Meta.SchemaVersion` con `[JsonPropertyName("schema_version")]` y `[JsonPropertyOrder]` tras `source` en `src/main/dotnet/DotNetAnalyzer/Model/DependencyGraph.cs`
 - [ ] T021 [US2] Verificar que T012–T015 pasan y que la suite existente Java y .NET sigue verde [TS-044]
 
 **Checkpoint**: versión presente; salidas byte-idénticas a v1.1.0 salvo los campos nuevos.

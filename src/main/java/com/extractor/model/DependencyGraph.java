@@ -2,6 +2,7 @@ package com.extractor.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -69,12 +70,28 @@ public class DependencyGraph {
         this.meta = meta;
     }
 
+    /**
+     * Endpoints and schemas ({@code output_entrypoints.json}, embedded as {@code api_contracts}).
+     * {@code meta} (005, FR-008) is serialized first.
+     */
+    @JsonPropertyOrder({"meta", "endpoints", "schemas"})
     public static class ApiContracts {
+        @JsonProperty("meta")
+        private DocumentMeta meta = new DocumentMeta();
+
         @JsonProperty("endpoints")
         private List<ApiEndpoint> endpoints = new ArrayList<>();
 
         @JsonProperty("schemas")
         private Map<String, ApiSchema> schemas = new HashMap<>();
+
+        public DocumentMeta getMeta() {
+            return meta;
+        }
+
+        public void setMeta(DocumentMeta meta) {
+            this.meta = meta;
+        }
 
         public List<ApiEndpoint> getEndpoints() {
             return endpoints;
@@ -94,14 +111,20 @@ public class DependencyGraph {
     }
 
     /**
-     * Metadata for the dependency graph
+     * Metadata for the dependency graph. {@code schema_version} (005, FR-008) is serialized right after
+     * {@code source}; the rest of the order is unchanged (FR-011).
      */
+    @JsonPropertyOrder({"source", "schema_version", "collected_at", "microservice_candidates",
+            "dependency_accuracy", "decomposition_accuracy"})
     public static class Meta {
         /** System property / environment variable enabling {@code collected_at}. */
         public static final String COLLECTED_AT_OPT_IN = "STATIC_INFERENCE_COLLECTED_AT";
 
         @JsonProperty("source")
         private String source = "spoon";
+
+        @JsonProperty("schema_version")
+        private String schemaVersion = SchemaVersion.CURRENT;
 
         @JsonProperty("collected_at")
         @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -136,6 +159,14 @@ public class DependencyGraph {
 
         public void setSource(String source) {
             this.source = source;
+        }
+
+        public String getSchemaVersion() {
+            return schemaVersion;
+        }
+
+        public void setSchemaVersion(String schemaVersion) {
+            this.schemaVersion = schemaVersion;
         }
 
         public String getCollectedAt() {

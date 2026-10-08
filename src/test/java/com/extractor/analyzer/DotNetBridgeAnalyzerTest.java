@@ -5,6 +5,8 @@ import com.extractor.utils.DependencyResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.file.Path;
 
@@ -191,5 +193,39 @@ class DotNetBridgeAnalyzerTest {
         assertNotNull(resolver, "getDependencyResolver() should return a non-null resolver");
         assertInstanceOf(DotNetDependencyResolver.class, resolver,
                 "Resolver should be a DotNetDependencyResolver");
+    }
+
+    // --- Contract version propagation (005-json-schema-contract, FR-022) ---
+
+    private static String graphWithVersion(String versionField) {
+        return "{\"components\":[],\"edges\":[],\"api_contracts\":{\"endpoints\":[],\"schemas\":{}},"
+                + "\"meta\":{\"source\":\"roslyn\"" + versionField + ",\"microservice_candidates\":{}}}";
+    }
+
+    /**
+     * [TS-021] A missing or different .NET schema_version produces a warning naming both versions and the
+     * engine artifacts declare the engine version.
+     */
+    @ParameterizedTest(name = "TS-021: .NET schema_version {0} -> warning + engine version")
+    @ValueSource(strings = {"absent", "0.9.0", "2.0.0"})
+    void parseOutput_withDifferentSchemaVersion_warnsAndUsesEngineVersion(String dotnetVersion) {
+        String field = "absent".equals(dotnetVersion) ? "" : ",\"schema_version\":\"" + dotnetVersion + "\"";
+
+        DependencyGraph graph = analyzer.parseOutput(graphWithVersion(field));
+
+        assertEquals("1.0.0", graph.getMeta().getSchemaVersion(), "engine version must win");
+        assertEquals("1.0.0", graph.getApiContracts().getMeta().getSchemaVersion());
+        assertTrue(analyzer.getWarnings().stream()
+                        .anyMatch(w -> w.contains(dotnetVersion) && w.contains("1.0.0")),
+                "warning must name both versions: " + analyzer.getWarnings());
+    }
+
+    /** [TS-021] Matching versions produce no warning. */
+    @Test
+    void parseOutput_withMatchingSchemaVersion_noWarning() {
+        DependencyGraph graph = analyzer.parseOutput(graphWithVersion(",\"schema_version\":\"1.0.0\""));
+
+        assertEquals("1.0.0", graph.getMeta().getSchemaVersion());
+        assertTrue(analyzer.getWarnings().isEmpty(), "no warning expected: " + analyzer.getWarnings());
     }
 }

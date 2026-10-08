@@ -44,6 +44,7 @@ public class AnalysisService {
 
         LanguageAnalyzer analyzer = createAnalyzer(projectRoot);
         DependencyGraph dependencyGraph = analyzer.analyzeProject(projectRoot);
+        warnings.addAll(analyzer.getWarnings());
 
         InferenceEngine inferenceEngine = new InferenceEngine();
         MicroserviceCandidates candidates = inferenceEngine.analyze(dependencyGraph);

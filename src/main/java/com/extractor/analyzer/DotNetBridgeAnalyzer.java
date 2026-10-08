@@ -1,10 +1,12 @@
 package com.extractor.analyzer;
 
 import com.extractor.model.DependencyGraph;
+import com.extractor.model.SchemaVersion;
 import com.extractor.utils.DependencyResolver;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +17,9 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +39,7 @@ public class DotNetBridgeAnalyzer implements LanguageAnalyzer {
     private final DotNetToolLocator locator;
     private final Duration timeout;
     private final ObjectMapper objectMapper;
+    private final List<String> warnings = new ArrayList<>();
 
     /**
      * Creates a new analyzer that uses the given locator to find the dotnet-analyzer executable.
@@ -134,11 +140,47 @@ public class DotNetBridgeAnalyzer implements LanguageAnalyzer {
         }
 
         try {
-            return objectMapper.readValue(json, DependencyGraph.class);
+            JsonNode tree = objectMapper.readTree(json);
+            DependencyGraph graph = objectMapper.treeToValue(tree, DependencyGraph.class);
+            reconcileSchemaVersion(tree, graph);
+            return graph;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(
                     "Failed to parse dotnet-analyzer JSON output: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Compares the contract version declared by the .NET analyzer with the engine's (FR-022): a missing or
+     * different value is reported as a warning naming both versions, and the engine version is emitted.
+     */
+    private void reconcileSchemaVersion(JsonNode tree, DependencyGraph graph) {
+        JsonNode declared = tree.path("meta").path("schema_version");
+        String dotnetVersion = declared.isTextual() ? declared.asText() : "absent";
+        if (!SchemaVersion.CURRENT.equals(dotnetVersion)) {
+            String warning = "dotnet-analyzer schema_version " + dotnetVersion
+                    + " != engine " + SchemaVersion.CURRENT;
+            logger.warn(warning);
+            warnings.add(warning);
+        }
+        if (graph.getMeta() == null) {
+            graph.setMeta(new DependencyGraph.Meta());
+        }
+        graph.getMeta().setSchemaVersion(SchemaVersion.CURRENT);
+        if (graph.getApiContracts() == null) {
+            graph.setApiContracts(new DependencyGraph.ApiContracts());
+        }
+        graph.getApiContracts().getMeta().setSchemaVersion(SchemaVersion.CURRENT);
+    }
+
+    /**
+     * Warnings collected while parsing the .NET analyzer output (e.g. contract version mismatch).
+     *
+     * @return an unmodifiable view of the warnings
+     */
+    @Override
+    public List<String> getWarnings() {
+        return Collections.unmodifiableList(warnings);
     }
 
     /**

@@ -4,6 +4,7 @@ import com.extractor.model.DependencyGraph;
 import com.extractor.utils.DependencyResolver;
 
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Abstraction for language-specific static analysis.
@@ -29,4 +30,13 @@ public interface LanguageAnalyzer {
      * @return the language-specific dependency resolver
      */
     DependencyResolver getDependencyResolver();
+
+    /**
+     * Non-fatal warnings produced by the last {@link #analyzeProject(Path)} call (Constitution V).
+     *
+     * @return the warnings, empty by default
+     */
+    default List<String> getWarnings() {
+        return List.of();
+    }
 }
