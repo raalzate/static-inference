@@ -150,8 +150,8 @@ public class MessagingDetector
                 yield return nested;
         }
         foreach (var sub in ns.GetNamespaceMembers())
-        foreach (var t in EnumerateNamedTypes(sub))
-            yield return t;
+            foreach (var t in EnumerateNamedTypes(sub))
+                yield return t;
     }
 
     private static string GetFullyQualifiedName(INamedTypeSymbol symbol)

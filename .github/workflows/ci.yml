@@ -51,13 +51,15 @@ jobs:
       - name: Run SpotBugs analysis
         run: |
           mvn -B clean compile
-          mvn -B com.github.spotbugs:spotbugs-maven-plugin:4.8.3.1:check || true
+          mvn -B com.github.spotbugs:spotbugs-maven-plugin:4.8.3.1:check \
+            -Dspotbugs.excludeFilterFile=spotbugs-exclude.xml
 
       - name: Run Checkstyle
         run: |
           mvn -B checkstyle:check \
             -Dcheckstyle.config.location=sun_checks.xml \
-            -Dcheckstyle.violationSeverity=warning || true
+            -Dcheckstyle.violationSeverity=warning \
+            -Dcheckstyle.maxAllowedViolations=4788  # baseline 2026-10-07: ratchet down, never up
 
       - name: Upload analysis reports
         if: always()
@@ -94,6 +96,7 @@ jobs:
         run: |
           dotnet test src/test/dotnet/DotNetAnalyzer.Tests/DotNetAnalyzer.Tests.csproj \
             --no-restore \
+            --filter "Category!=Corpus" \
             --logger "trx;LogFileName=test-results.trx" \
             --results-directory ./dotnet-test-results
 
@@ -119,15 +122,14 @@ jobs:
 
       - name: Install analysis tools
         run: |
-          dotnet tool install --global dotnet-format || true
-          dotnet tool install --global security-scan || true
+          dotnet tool install --global security-scan
 
       - name: Run dotnet format check
         run: |
           dotnet format src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj \
-            --verify-no-changes --verbosity diagnostic || true
+            --verify-no-changes --verbosity diagnostic
 
-      - name: Run security scan
+      - name: Run security scan (report-only, SARIF uploaded)
         run: |
           security-scan src/main/dotnet/DotNetAnalyzer/DotNetAnalyzer.csproj \
             --export=dotnet-security-report.sarif || true

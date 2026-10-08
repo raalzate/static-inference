@@ -10,6 +10,7 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 
 import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -101,7 +102,7 @@ public final class AnalyzeProjectTool {
     }
 
     private static void writeFile(String content, String filePath) throws Exception {
-        try (FileWriter writer = new FileWriter(filePath)) {
+        try (FileWriter writer = new FileWriter(filePath, StandardCharsets.UTF_8)) {
             writer.write(content);
         }
     }

@@ -95,8 +95,8 @@ public class TypeAnalyzer
             }
 
             foreach (var sub in ns.GetNamespaceMembers())
-            foreach (var t in Walk(sub))
-                yield return t;
+                foreach (var t in Walk(sub))
+                    yield return t;
         }
 
         static IEnumerable<INamedTypeSymbol> WalkNested(INamedTypeSymbol type)

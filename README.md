@@ -111,7 +111,7 @@ Contiene el análisis exhaustivo de todos los componentes y sus relaciones:
   ],
   "edges": [],
   "api_contracts": [],
-  "meta": { "source": "spoon", "collected_at": "2026-04-29T12:00:00Z" }
+  "meta": { "source": "spoon" }
 }
 ```
 

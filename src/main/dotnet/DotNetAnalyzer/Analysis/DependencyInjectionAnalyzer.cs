@@ -106,8 +106,8 @@ public class DependencyInjectionAnalyzer
                 yield return nested;
         }
         foreach (var sub in ns.GetNamespaceMembers())
-        foreach (var t in EnumerateNamedTypes(sub))
-            yield return t;
+            foreach (var t in EnumerateNamedTypes(sub))
+                yield return t;
     }
 
     // ─── Pass 3a — constructor injection (C# walker) ──────────────────────────

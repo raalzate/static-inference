@@ -71,7 +71,9 @@ public class DotNetToolLocator {
                 return envExe.toAbsolutePath();
             }
             // Try as direct path to executable
-            if (Files.exists(envDir) && envDir.getFileName().toString().contains(EXECUTABLE_NAME)) {
+            Path envFileName = envDir.getFileName();
+            if (Files.isRegularFile(envDir) && envFileName != null
+                    && envFileName.toString().contains(EXECUTABLE_NAME)) {
                 logger.info("Found dotnet-analyzer via {} (direct path): {}", ENV_VAR_NAME, envDir);
                 return envDir.toAbsolutePath();
             }
